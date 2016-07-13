@@ -24,7 +24,7 @@ class PasswordResetRequestForm extends Model
             ['email', 'email'],
             ['email', 'exist',
                 'targetClass' => '\common\models\User',
-                'filter' => ['status' => User::STATUS_ACTIVE],
+                'filter' => ['status' => User::IS_DELETED_NOT_DELETED],
                 'message' => 'There is no user with such email.'
             ],
         ];
@@ -39,7 +39,7 @@ class PasswordResetRequestForm extends Model
     {
         /* @var $user User */
         $user = User::findOne([
-            'status' => User::STATUS_ACTIVE,
+            'status' => User::IS_DELETED_NOT_DELETED,
             'email' => $this->email,
         ]);
 
