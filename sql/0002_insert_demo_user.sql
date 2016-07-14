@@ -1,0 +1,3 @@
+INSERT INTO `User` VALUES 
+(1,'admin','$2y$13$oRIJni/4Sa2d6wdrmxUAf.AgqD5qQ4Cldq5MVREvHKblINF4ztDna',NULL,NULL,'ADMIN',NULL,NULL,0),
+(2,'guest','$2y$13$y7RwNl27htSDzgTmDqNDnOLnZ2dPUkgFmBgpBbajVqIMsMe8XWZsi',NULL,NULL,'USER',NULL,NULL,0);

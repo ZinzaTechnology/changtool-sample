@@ -12,6 +12,7 @@ class LoginForm extends Model
     public $username;
     public $password;
     public $rememberMe = true;
+    public $role = null;
 
     private $_user;
 
@@ -28,6 +29,7 @@ class LoginForm extends Model
             ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
             ['password', 'validatePassword'],
+            ['role', 'validateRole'],
         ];
     }
 
@@ -49,12 +51,27 @@ class LoginForm extends Model
     }
 
     /**
+     * Validates the role
+     * if try to login as admin, reject the non-admin user
+     */
+    public function validateRole($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            $user = $this->getUser();
+            if (!$user || !$user->validateRole($this->role)) {
+                $this->addError($attribute, 'Incorrect username or password.');
+            }
+        }
+    }
+
+    /**
      * Logs in a user using the provided username and password.
      *
      * @return boolean whether the user is logged in successfully
      */
-    public function login()
+    public function login($role = null)
     {
+        $this->role = $role;
         if ($this->validate()) {
             return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
         } else {

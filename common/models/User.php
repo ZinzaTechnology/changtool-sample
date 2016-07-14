@@ -26,6 +26,9 @@ class User extends ActiveRecord implements IdentityInterface
     const IS_DELETED_NOT_DELETED= 0;
     const IS_DELETED_DELETED= 1;
 
+    const ROLE_ADMIN = 'ADMIN';
+    const ROLE_USER = 'USER';
+
     /**
      * @inheritdoc
      */
@@ -148,6 +151,18 @@ class User extends ActiveRecord implements IdentityInterface
     public function validatePassword($password)
     {
         return Yii::$app->security->validatePassword($password, $this->password_hash);
+    }
+
+    /**
+     * Validate role
+     */
+    public function validateRole($role)
+    {
+        if (!$role) {
+            return true;
+        } else {
+            return ($this->role === $role);
+        }
     }
 
     /**
