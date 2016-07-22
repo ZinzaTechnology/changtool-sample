@@ -1,6 +1,6 @@
 <?php
 namespace frontend\controllers;
-
+use yii\data\ActiveData\ActiveDataProvider;
 use Yii;
 use yii\filters\VerbFilter;
 use common\models\LoginForm;
@@ -8,6 +8,7 @@ use common\models\LoginForm;
 /**
  * Dashboard controller
  */
+
 class UserController extends FrontendController
 {
     /**
@@ -36,6 +37,11 @@ class UserController extends FrontendController
             ],
         ];
     }
+    public function actionIndex()
+    {
+    	return $this->render('user');
+    }
+    
 
     /**
      * Login action.
@@ -46,23 +52,39 @@ class UserController extends FrontendController
     {
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            return $this->redirect(['/dashboard']);
         } else {
             return $this->render('login', [
                 'model' => $model,
             ]);
         }
     }
-
+    
+    public function actionIndexx()
+    {
+    	//$model = new User();
+    	//$dataProvider = $model->findAll('u_id');
+    	$dataProvider = User::find()->all();
+    	 
+    	//$dataProvider = Yii::app->findAll()
+    	return $this->render('user', [
+    			'dataProvider' => $dataProvider,
+    	]);
+    }
     /**
      * Logout action.
      *
      * @return string
      */
+    
+    
     public function actionLogout()
     {
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+    public function actionChoose(){
+    	
     }
 }

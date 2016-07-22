@@ -36,4 +36,9 @@ class FrontendController extends AppController
 
         return true;
     }
+    public function actionIndex()
+    {
+    	return $this->render('frontend');
+    }
+    
 }

@@ -5,6 +5,10 @@ use Yii;
 use yii\filters\VerbFilter;
 use common\models\LoginForm;
 use frontend\models\ContactForm;
+use yii\data\ActiveDataProvider;
+use frontend\models\UserTest;
+use yii\widgets\ActiveField;
+
 
 /**
  * Dashboard controller
@@ -43,11 +47,24 @@ class DashboardController extends FrontendController
      *
      * @return mixed
      */
-    public function actionIndex()
+public function actionIndex()
     {
-        return $this->render('index');
-    }
+    	 $dataProvider = new ActiveDataProvider([
+            'query' => UserTest::find(),
+        ]);
 
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
+
+public function actionTest(){
+	$model = new User();
+	return $this->render('test',[
+			'model'=> $model
+	]);
+}
     /**
      * Displays contact page.
      *
@@ -70,7 +87,8 @@ class DashboardController extends FrontendController
             ]);
         }
     }
-
+    
+   
     /**
      * Displays about page.
      *
