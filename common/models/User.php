@@ -235,4 +235,13 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->u_password_reset_token = null;
     }
+
+    /**
+     * Get user's avatar
+     * return default if not set
+     */
+    public function getAvatar()
+    {
+        return isset($current_user->u_avatar) ? $current_user->u_avatar : "/res/img/user_default.jpg";
+    }
 }
