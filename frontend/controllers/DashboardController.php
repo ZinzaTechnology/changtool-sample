@@ -6,8 +6,10 @@ use yii\filters\VerbFilter;
 use common\models\LoginForm;
 use frontend\models\ContactForm;
 use yii\data\ActiveDataProvider;
-use frontend\models\UserTest;
+use frontend\models\User;
 use yii\widgets\ActiveField;
+use backend\models\UserTest;
+use backend\models\TestExam;
 
 
 /**
@@ -49,14 +51,25 @@ class DashboardController extends FrontendController
      */
 public function actionIndex()
     {
-    	 $dataProvider = new ActiveDataProvider([
-            'query' => UserTest::find(),
-        ]);
-
-        return $this->render('index', [
+    	//$model = new User();
+    	//$dataProvider = $model->findAll('u_id');
+    	$dataProvider = User::find()->all();
+    	$user_test_models = UserTest::findAll(['u_id' => 1]);
+    	$test_exams = array();
+    	foreach($user_test_models as $user_test)
+    	{
+    		$test_exam = TestExam::findOne($user_test->te_id);
+    		array_push($test_exams, $test_exam);
+    	}
+    	
+    	//$dataProvider = Yii::app->findAll()
+    	return $this->render('index', [
             'dataProvider' => $dataProvider,
+    		'user_test_models' => $user_test_models,
+    		'test_exams' => $test_exams,
         ]);
     }
+    
     
 
 public function actionTest(){

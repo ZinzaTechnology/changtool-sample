@@ -3,6 +3,9 @@
 namespace frontend\models;
 
 use Yii;
+use backend\models\QuestionClone;
+use backend\models\AnswerClone;
+
 
 /**
  * This is the model class for table "user_test".
@@ -78,5 +81,21 @@ class UserTest extends \yii\db\ActiveRecord
     public function getU()
     {
         return $this->hasOne(User::className(), ['u_id' => 'u_id']);
+    }
+    public function getTest($testID) {
+    	$question = QuestionClone::find()->select('qc_id,qc_content')
+    	->where(['ut_id' => $testID])
+    	->asArray()
+    	->all();
+    	$count = 0;
+    	while ($count < count($question)) {
+    		$question[$count]['answer'] = AnswerClone::find()
+    		->select('ac_id,ac_content,ac_status')
+    		->where(['qc_id' => $question[$count]['qc_id']])
+    		->asArray()
+    		->all();
+    		$count++;
+    	}
+    	return $question;
     }
 }

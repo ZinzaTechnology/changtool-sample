@@ -8,7 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-
+use yii\data\Pagination;
 /**
  * UserTestController implements the CRUD actions for UserTest model.
  */
@@ -47,7 +47,13 @@ class UserTestController extends Controller
         	'model' => $model,
         ]);
     }
-
+    public function actionStart(){
+    	$id = Yii::$app->request->get('ut_id');
+    	$userTest = new UserTest();
+    	$data = $userTest->getTest($id);
+    	var_dump($data);
+    	var_dump($id);
+    }
     /**
      * Displays a single UserTest model.
      * @param integer $id
@@ -104,6 +110,22 @@ class UserTestController extends Controller
      * @param integer $id
      * @return mixed
      */
+    public function actionPagination() {
+    	//preparing the query
+    	$query = UserTest::find();
+    	// get the total number of users
+    	$count = $query->count();
+    	//creating the pagination object
+    	$pagination = new Pagination(['totalCount' => $count, 'defaultPageSize' => 10]);
+    	//limit the query using the pagination and retrieve the users
+    	$models = $query->offset($pagination->offset)
+    	->limit($pagination->limit)
+    	->all();
+    	return $this->render('pagination', [
+    			'models' => $models,
+    			'pagination' => $pagination,
+    	]);
+    }
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
