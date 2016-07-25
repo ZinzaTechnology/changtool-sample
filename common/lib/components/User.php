@@ -23,7 +23,7 @@ class User extends YiiUser
     public function getIsAdmin()
     {
         $identity = $this->getIdentity();
-        if (isset($identity) && $identity->role === 'ADMIN') {
+        if (isset($identity) && $identity->u_role === 'ADMIN') {
             return true;
         }
         return false;

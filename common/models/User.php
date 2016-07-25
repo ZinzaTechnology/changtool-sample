@@ -8,18 +8,21 @@ use yii\web\IdentityInterface;
 use common\lib\behaviors\DateTimeBehavior;
 
 /**
- * User model
+ * This is the model class for table "user".
  *
- * @property integer $id
- * @property string $username
- * @property string $password_hash
- * @property string $password_reset_token
- * @property string $email
- * @property string $auth_key
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
- * @property string $password write-only password
+ * @property integer $u_id
+ * @property string $u_name
+ * @property string $u_mail
+ * @property string $u_phone
+ * @property string $u_password_hash
+ * @property string $u_password_reset_token
+ * @property string $u_auth_key
+ * @property string $u_role
+ * @property string $u_created_at
+ * @property string $u_updated_at
+ * @property integer $u_is_deleted
+ *
+ * @property UserTest[] $userTests
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -34,7 +37,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function tableName()
     {
-        return 'User';
+        return 'user';
     }
 
     /**
@@ -53,15 +56,49 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
+            [['u_name', 'u_mail', 'u_phone', 'u_password_hash'], 'required'],
+            [['u_role'], 'string'],
+            [['u_created_at', 'u_updated_at'], 'safe'],
+            [['u_is_deleted'], 'integer'],
+            [['u_name'], 'string', 'max' => 32],
+            [['u_mail', 'u_phone', 'u_password_hash', 'u_password_reset_token', 'u_auth_key'], 'string', 'max' => 255],
         ];
     }
 
     /**
      * @inheritdoc
      */
+    public function attributeLabels()
+    {
+        return [
+            'u_id' => 'U ID',
+            'u_name' => 'U Name',
+            'u_mail' => 'U Mail',
+            'u_phone' => 'U Phone',
+            'u_password_hash' => 'U Password Hash',
+            'u_password_reset_token' => 'U Password Reset Token',
+            'u_auth_key' => 'U Auth Key',
+            'u_role' => 'U Role',
+            'u_created_at' => 'U Created At',
+            'u_updated_at' => 'U Updated At',
+            'u_is_deleted' => 'U Is Deleted',
+        ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserTests()
+    {
+        return $this->hasMany(UserTest::className(), ['u_id' => 'u_id']);
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public static function findIdentity($id)
     {
-        return static::findOne(['user_id' => $id, 'is_deleted' => self::IS_DELETED_NOT_DELETED]);
+        return static::findOne(['u_id' => $id, 'u_is_deleted' => self::IS_DELETED_NOT_DELETED]);
     }
 
     /**
@@ -80,7 +117,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username, 'is_deleted' => self::IS_DELETED_NOT_DELETED]);
+        return static::findOne(['u_name' => $username, 'u_is_deleted' => self::IS_DELETED_NOT_DELETED]);
     }
 
     /**
@@ -96,8 +133,8 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         return static::findOne([
-            'password_reset_token' => $token,
-            'status' => self::IS_DELETED_NOT_DELETED,
+            'u_password_reset_token' => $token,
+            'u_status' => self::IS_DELETED_NOT_DELETED,
         ]);
     }
 
@@ -131,7 +168,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getAuthKey()
     {
-        return $this->auth_key;
+        return $this->u_auth_key;
     }
 
     /**
@@ -150,7 +187,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function validatePassword($password)
     {
-        return Yii::$app->security->validatePassword($password, $this->password_hash);
+        return Yii::$app->security->validatePassword($password, $this->u_password_hash);
     }
 
     /**
@@ -161,7 +198,7 @@ class User extends ActiveRecord implements IdentityInterface
         if (!$role) {
             return true;
         } else {
-            return ($this->role === $role);
+            return ($this->u_role === $role);
         }
     }
 
@@ -172,7 +209,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function setPassword($password)
     {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        $this->u_password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
     /**
@@ -180,7 +217,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function generateAuthKey()
     {
-        $this->auth_key = Yii::$app->security->generateRandomString();
+        $this->u_auth_key = Yii::$app->security->generateRandomString();
     }
 
     /**
@@ -188,7 +225,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function generatePasswordResetToken()
     {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+        $this->u_password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
     /**
@@ -196,6 +233,6 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function removePasswordResetToken()
     {
-        $this->password_reset_token = null;
+        $this->u_password_reset_token = null;
     }
 }

@@ -7,3 +7,5 @@ $this->title = 'Dashboard';
 <div class="site-index">
 This is your Dashboard
 </div>
+
+

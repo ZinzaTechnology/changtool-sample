@@ -23,10 +23,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Answer`
+-- Table structure for table `answer`
 --
 
-CREATE TABLE IF NOT EXISTS `Answer` (
+CREATE TABLE IF NOT EXISTS `answer` (
   `qa_id` int(11) NOT NULL,
   `q_id` int(11) NOT NULL,
   `qa_content` text COLLATE utf8_unicode_ci NOT NULL,
@@ -36,10 +36,10 @@ CREATE TABLE IF NOT EXISTS `Answer` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `AnswerClone`
+-- Table structure for table `answer_clone`
 --
 
-CREATE TABLE IF NOT EXISTS `AnswerClone` (
+CREATE TABLE IF NOT EXISTS `answer_clone` (
   `ac_id` int(11) NOT NULL,
   `qc_id` int(11) NOT NULL,
   `ac_content` text COLLATE utf8_unicode_ci NOT NULL,
@@ -49,10 +49,10 @@ CREATE TABLE IF NOT EXISTS `AnswerClone` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Question`
+-- Table structure for table `question`
 --
 
-CREATE TABLE IF NOT EXISTS `Question` (
+CREATE TABLE IF NOT EXISTS `question` (
   `q_id` int(11) NOT NULL,
   `q_category` int(11) NOT NULL,
   `q_level` int(11) NOT NULL,
@@ -66,10 +66,10 @@ CREATE TABLE IF NOT EXISTS `Question` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `QuestionClone`
+-- Table structure for table `question_clone`
 --
 
-CREATE TABLE IF NOT EXISTS `QuestionClone` (
+CREATE TABLE IF NOT EXISTS `question_clone` (
   `qc_id` int(11) NOT NULL,
   `qc_content` text COLLATE utf8_unicode_ci NOT NULL,
   `ut_id` int(11) DEFAULT NULL
@@ -78,10 +78,10 @@ CREATE TABLE IF NOT EXISTS `QuestionClone` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Tag`
+-- Table structure for table `tag`
 --
 
-CREATE TABLE IF NOT EXISTS `Tag` (
+CREATE TABLE IF NOT EXISTS `tag` (
   `qt_id` int(11) NOT NULL,
   `q_id` int(11) NOT NULL,
   `qt_content` varchar(32) COLLATE utf8_unicode_ci NOT NULL
@@ -90,10 +90,10 @@ CREATE TABLE IF NOT EXISTS `Tag` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `TestExam`
+-- Table structure for table `test_exam`
 --
 
-CREATE TABLE IF NOT EXISTS `TestExam` (
+CREATE TABLE IF NOT EXISTS `test_exam` (
   `te_id` int(11) NOT NULL,
   `te_code` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `te_category` int(4) NOT NULL,
@@ -109,10 +109,10 @@ CREATE TABLE IF NOT EXISTS `TestExam` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `TestExamQuestions`
+-- Table structure for table `test_exam_questions`
 --
 
-CREATE TABLE IF NOT EXISTS `TestExamQuestions` (
+CREATE TABLE IF NOT EXISTS `test_exam_questions` (
   `te_id` int(11) NOT NULL,
   `q_id` int(11) NOT NULL,
   `not_use` bit(1) DEFAULT NULL
@@ -121,10 +121,10 @@ CREATE TABLE IF NOT EXISTS `TestExamQuestions` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `User`
+-- Table structure for table `user`
 --
 
-CREATE TABLE IF NOT EXISTS `User` (
+CREATE TABLE IF NOT EXISTS `user` (
   `u_id` int(11) NOT NULL,
   `u_name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `u_mail` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
@@ -139,20 +139,20 @@ CREATE TABLE IF NOT EXISTS `User` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `User`
+-- Dumping data for table `user`
 --
 
-INSERT INTO `User` (`u_id`, `u_name`, `u_mail`, `u_phone`, `u_password_hash`, `u_password_reset_token`, `u_auth_key`, `u_role`, `u_created_at`, `u_updated_at`, `u_is_deleted`) VALUES
+INSERT INTO `user` (`u_id`, `u_name`, `u_mail`, `u_phone`, `u_password_hash`, `u_password_reset_token`, `u_auth_key`, `u_role`, `u_created_at`, `u_updated_at`, `u_is_deleted`) VALUES
 (1, 'admin', 'admin@zinza.com.vn', '0123456789', '$2y$13$oRIJni/4Sa2d6wdrmxUAf.AgqD5qQ4Cldq5MVREvHKblINF4ztDna', NULL, NULL, 'ADMIN', NULL, NULL, 0),
 (2, 'guest', 'guest@zinza.com.vn', '9876543210', '$2y$13$y7RwNl27htSDzgTmDqNDnOLnZ2dPUkgFmBgpBbajVqIMsMe8XWZsi', NULL, NULL, 'USER', NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `UserTest`
+-- Table structure for table `user_test`
 --
 
-CREATE TABLE IF NOT EXISTS `UserTest` (
+CREATE TABLE IF NOT EXISTS `user_test` (
   `ut_id` int(11) NOT NULL,
   `u_id` int(11) NOT NULL,
   `te_id` int(11) NOT NULL,
@@ -169,144 +169,144 @@ CREATE TABLE IF NOT EXISTS `UserTest` (
 --
 
 --
--- Indexes for table `Answer`
+-- Indexes for table `answer`
 --
-ALTER TABLE `Answer`
+ALTER TABLE `answer`
   ADD PRIMARY KEY (`qa_id`,`q_id`),
-  ADD KEY `Answer` (`q_id`);
+  ADD KEY `answer` (`q_id`);
 
 --
--- Indexes for table `AnswerClone`
+-- Indexes for table `answer_clone`
 --
-ALTER TABLE `AnswerClone`
+ALTER TABLE `answer_clone`
   ADD PRIMARY KEY (`ac_id`,`qc_id`),
-  ADD KEY `AnswerClone` (`qc_id`);
+  ADD KEY `answer_clone` (`qc_id`);
 
 --
--- Indexes for table `Question`
+-- Indexes for table `question`
 --
-ALTER TABLE `Question`
+ALTER TABLE `question`
   ADD PRIMARY KEY (`q_id`);
 
 --
--- Indexes for table `QuestionClone`
+-- Indexes for table `question_clone`
 --
-ALTER TABLE `QuestionClone`
+ALTER TABLE `question_clone`
   ADD PRIMARY KEY (`qc_id`);
 
 --
--- Indexes for table `Tag`
+-- Indexes for table `tag`
 --
-ALTER TABLE `Tag`
+ALTER TABLE `tag`
   ADD PRIMARY KEY (`qt_id`,`q_id`),
-  ADD KEY `Tag` (`q_id`);
+  ADD KEY `tag` (`q_id`);
 
 --
--- Indexes for table `TestExam`
+-- Indexes for table `test_exam`
 --
-ALTER TABLE `TestExam`
+ALTER TABLE `test_exam`
   ADD PRIMARY KEY (`te_id`);
 
 --
--- Indexes for table `TestExamQuestions`
+-- Indexes for table `test_exam_questions`
 --
-ALTER TABLE `TestExamQuestions`
+ALTER TABLE `test_exam_questions`
   ADD PRIMARY KEY (`te_id`,`q_id`),
-  ADD KEY `TestExamQuestions` (`q_id`);
+  ADD KEY `test_exam_questions` (`q_id`);
 
 --
--- Indexes for table `User`
+-- Indexes for table `user`
 --
-ALTER TABLE `User`
+ALTER TABLE `user`
   ADD PRIMARY KEY (`u_id`);
 
 --
--- Indexes for table `UserTest`
+-- Indexes for table `user_test`
 --
-ALTER TABLE `UserTest`
+ALTER TABLE `user_test`
   ADD PRIMARY KEY (`ut_id`),
-  ADD KEY `UserTest_ibfk_1` (`te_id`),
-  ADD KEY `UserTest` (`u_id`);
+  ADD KEY `user_test_ibfk_1` (`te_id`),
+  ADD KEY `user_test` (`u_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `Answer`
+-- AUTO_INCREMENT for table `answer`
 --
-ALTER TABLE `Answer`
+ALTER TABLE `answer`
   MODIFY `qa_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
--- AUTO_INCREMENT for table `AnswerClone`
+-- AUTO_INCREMENT for table `answer_clone`
 --
-ALTER TABLE `AnswerClone`
+ALTER TABLE `answer_clone`
   MODIFY `ac_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
--- AUTO_INCREMENT for table `Question`
+-- AUTO_INCREMENT for table `question`
 --
-ALTER TABLE `Question`
+ALTER TABLE `question`
   MODIFY `q_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=101;
 --
--- AUTO_INCREMENT for table `QuestionClone`
+-- AUTO_INCREMENT for table `question_clone`
 --
-ALTER TABLE `QuestionClone`
+ALTER TABLE `question_clone`
   MODIFY `qc_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
--- AUTO_INCREMENT for table `Tag`
+-- AUTO_INCREMENT for table `tag`
 --
-ALTER TABLE `Tag`
+ALTER TABLE `tag`
   MODIFY `qt_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
--- AUTO_INCREMENT for table `TestExam`
+-- AUTO_INCREMENT for table `test_exam`
 --
-ALTER TABLE `TestExam`
+ALTER TABLE `test_exam`
   MODIFY `te_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
--- AUTO_INCREMENT for table `User`
+-- AUTO_INCREMENT for table `user`
 --
-ALTER TABLE `User`
+ALTER TABLE `user`
   MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
--- AUTO_INCREMENT for table `UserTest`
+-- AUTO_INCREMENT for table `user_test`
 --
-ALTER TABLE `UserTest`
+ALTER TABLE `user_test`
   MODIFY `ut_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `Answer`
+-- Constraints for table `answer`
 --
-ALTER TABLE `Answer`
-  ADD CONSTRAINT `Answer` FOREIGN KEY (`q_id`) REFERENCES `Question` (`q_id`);
+ALTER TABLE `answer`
+  ADD CONSTRAINT `answer` FOREIGN KEY (`q_id`) REFERENCES `question` (`q_id`);
 
 --
 -- Constraints for table `AnswerClone`
 --
-ALTER TABLE `AnswerClone`
-  ADD CONSTRAINT `AnswerClone` FOREIGN KEY (`qc_id`) REFERENCES `QuestionClone` (`qc_id`);
+ALTER TABLE `answer_clone`
+  ADD CONSTRAINT `answer_clone` FOREIGN KEY (`qc_id`) REFERENCES `question_clone` (`qc_id`);
 
 --
--- Constraints for table `Tag`
+-- Constraints for table `tag`
 --
-ALTER TABLE `Tag`
-  ADD CONSTRAINT `Tag` FOREIGN KEY (`q_id`) REFERENCES `Question` (`q_id`);
+ALTER TABLE `tag`
+  ADD CONSTRAINT `tag` FOREIGN KEY (`q_id`) REFERENCES `question` (`q_id`);
 
 --
--- Constraints for table `TestExamQuestions`
+-- Constraints for table `test_exam_questions`
 --
-ALTER TABLE `TestExamQuestions`
-  ADD CONSTRAINT `TestExamQuestions_ibfk_1` FOREIGN KEY (`te_id`) REFERENCES `TestExam` (`te_id`),
-  ADD CONSTRAINT `TestExamQuestions` FOREIGN KEY (`q_id`) REFERENCES `Question` (`q_id`);
+ALTER TABLE `test_exam_questions`
+  ADD CONSTRAINT `test_exam_questions_ibfk_1` FOREIGN KEY (`te_id`) REFERENCES `test_exam` (`te_id`),
+  ADD CONSTRAINT `test_exam_questions` FOREIGN KEY (`q_id`) REFERENCES `question` (`q_id`);
 
 --
--- Constraints for table `UserTest`
+-- Constraints for table `user_test`
 --
-ALTER TABLE `UserTest`
-  ADD CONSTRAINT `UserTest_ibfk_1` FOREIGN KEY (`te_id`) REFERENCES `TestExam` (`te_id`),
-  ADD CONSTRAINT `UserTest` FOREIGN KEY (`u_id`) REFERENCES `User` (`u_id`);
+ALTER TABLE `user_test`
+  ADD CONSTRAINT `user_test_ibfk_1` FOREIGN KEY (`te_id`) REFERENCES `test_exam` (`te_id`),
+  ADD CONSTRAINT `user_test` FOREIGN KEY (`u_id`) REFERENCES `user` (`u_id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
