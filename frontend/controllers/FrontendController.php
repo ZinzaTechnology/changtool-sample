@@ -1,24 +1,10 @@
 <?php
-/**
- * @author: cuongnx
- * @email: cuong@zinza.com.vn
- * @license: ZINZA Technology
- */
-
 namespace frontend\controllers;
-
 use Yii;
 use common\controllers\AppController;
 
-/**
- * this is the base class for all controllers in frontend
- * extends the common AppController
- */
 class FrontendController extends AppController
 {
-    /**
-     * control login process here
-     */
     public function beforeAction($action)
     {
         if ($action->id === 'login'
@@ -36,8 +22,7 @@ class FrontendController extends AppController
 
         return true;
     }
-    public function actionIndex()
-    {
+    public function actionIndex(){
     	return $this->render('frontend');
     }
     

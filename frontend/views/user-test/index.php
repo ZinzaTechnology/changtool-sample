@@ -1,14 +1,10 @@
 <?php
-
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 use yii\widgets\ActiveField;
 use yii\data\Pagination;
 use yii\widgets\LinkPager;
-
-/* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Test Exam';
 
@@ -18,7 +14,7 @@ $this->title = 'Test Exam';
 	
 	
     <h4><?= Html::encode($this->title) ?></h4>
-     <?php $form = ActiveForm::begin(['action' => 'test/index', 'id' => 'forum_post', 'method' => 'post',]); ?>
+    <?php $form = ActiveForm::begin(['action' => 'test/index', 'id' => 'forum_post', 'method' => 'post',]); ?>
     <?= $form->field($model, 'te_id')->textArea() ?>
     <?php ActiveForm::end(); ?>
     
@@ -26,7 +22,7 @@ $this->title = 'Test Exam';
     
    
 	
-	 <div style="display: inline-block; width: 100%">
+	<div style="display: inline-block; width: 100%">
 	<div style="float:left">	
 		    <?php echo $form->field($model, 'te_id')
 		    	->textInput(['style'=>'width:300px;float:left;margin-top:30px'])

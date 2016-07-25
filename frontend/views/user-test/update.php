@@ -1,9 +1,5 @@
 <?php
-
 use yii\helpers\Html;
-
-/* @var $this yii\web\View */
-/* @var $model frontend\models\UserTest */
 
 $this->title = 'Update User Test: ' . $model->ut_id;
 $this->params['breadcrumbs'][] = ['label' => 'User Tests', 'url' => ['index']];

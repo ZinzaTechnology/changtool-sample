@@ -1,41 +1,14 @@
 <?php
-
 namespace frontend\models;
-
 use Yii;
 
-/**
- * This is the model class for table "test_exam".
- *
- * @property integer $te_id
- * @property string $te_code
- * @property integer $te_category
- * @property integer $te_level
- * @property string $te_title
- * @property integer $te_time
- * @property integer $te_num_of_questions
- * @property string $te_created_at
- * @property string $te_last_updated_at
- * @property integer $te_is_deleted
- *
- * @property TestExamQuestions[] $testExamQuestions
- * @property Question[] $qs
- * @property UserTest[] $userTests
- */
 class TestExam extends \yii\db\ActiveRecord
 {
-	
-    /**
-     * @inheritdoc
-     */
     public static function tableName()
     {
         return 'test_exam';
     }
 
-    /**
-     * @inheritdoc
-     */
     public function rules()
     {
         return [
@@ -47,9 +20,6 @@ class TestExam extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function attributeLabels()
     {
         return [
@@ -66,26 +36,17 @@ class TestExam extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTestExamQuestions()
     {
         return $this->hasMany(TestExamQuestions::className(), ['te_id' => 'te_id']);
         
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getQs()
     {
         return $this->hasMany(Question::className(), ['q_id' => 'q_id'])->viaTable('test_exam_questions', ['te_id' => 'te_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUserTests()
     {
         return $this->hasMany(UserTest::className(), ['te_id' => 'te_id']);

@@ -1,10 +1,6 @@
 <?php
-
 use yii\helpers\Html;
 use yii\helpers\Url;
-
-/* @var $this yii\web\View */
-/* @var $model frontend\models\UserTest */
 
 $this->title = 'Doing Test';
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['/dashboard']];

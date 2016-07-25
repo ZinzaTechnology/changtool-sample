@@ -1,39 +1,14 @@
 <?php
-
 namespace frontend\models;
-
 use Yii;
 
-/**
- * This is the model class for table "user".
- *
- * @property integer $u_id
- * @property string $u_name
- * @property string $u_mail
- * @property string $u_phone
- * @property string $u_password_hash
- * @property string $u_password_reset_token
- * @property string $u_auth_key
- * @property string $u_role
- * @property string $u_created_at
- * @property string $u_updated_at
- * @property integer $u_is_deleted
- *
- * @property UserTest[] $userTests
- */
 class User extends \yii\db\ActiveRecord
 {
-    /**
-     * @inheritdoc
-     */
     public static function tableName()
     {
         return 'user';
     }
 
-    /**
-     * @inheritdoc
-     */
     public function rules()
     {
         return [
@@ -46,9 +21,6 @@ class User extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function attributeLabels()
     {
         return [
@@ -66,9 +38,6 @@ class User extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getUserTests()
     {
         return $this->hasMany(UserTest::className(), ['u_id' => 'u_id']);

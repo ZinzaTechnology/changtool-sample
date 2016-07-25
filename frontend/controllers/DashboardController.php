@@ -11,14 +11,10 @@ use backend\models\TestExam;
 use backend\models\AnswerClone;
 use yii\helpers\Url;
 
-/**
- * Dashboard controller
- */
+
 class DashboardController extends FrontendController {
 
-    /**
-     * @inheritdoc
-     */
+   
     public function behaviors() {
         return [
             'verbs' => [
@@ -30,9 +26,6 @@ class DashboardController extends FrontendController {
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function actions() {
         return [
             'error' => [
@@ -41,11 +34,6 @@ class DashboardController extends FrontendController {
         ];
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return mixed
-     */
     public function actionStartTest() {
         if ($id = Yii::$app->request->get('id')) {
             if ($userTest = UserTest::findOne($id)) {
@@ -96,17 +84,12 @@ class DashboardController extends FrontendController {
 
     public function actionMark() {
         $id = Yii::$app->request->get('id');
-//        if ($id) {
         if ($mark = UserTest::getMark($id))
-//            if ($mark) {
             return $this->render('test/result', [
                         'mark' => $mark
             ]);
-//            } 
         else
             return $this->redirect(Url::toRoute('/'));
-//        }
-//        else return $this->redirect(Url::toRoute('/'));
     }
 
     public function actionIndex() {
@@ -125,12 +108,7 @@ class DashboardController extends FrontendController {
                     'data' => $test_exams,
         ]);
     }
-
-    /**
-     * Displays contact page.
-     *
-     * @return mixed
-     */
+    
     public function actionContact() {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
@@ -148,11 +126,6 @@ class DashboardController extends FrontendController {
         }
     }
 
-    /**
-     * Displays about page.
-     *
-     * @return mixed
-     */
     public function actionAbout() {
         return $this->render('about');
     }

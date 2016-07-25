@@ -1,10 +1,6 @@
 <?php
-
 use yii\helpers\Html;
 use yii\widgets\DetailView;
-
-/* @var $this yii\web\View */
-/* @var $model frontend\models\UserTest */
 
 $this->title = $model->ut_id;
 $this->params['breadcrumbs'][] = ['label' => 'User Tests', 'url' => ['index']];

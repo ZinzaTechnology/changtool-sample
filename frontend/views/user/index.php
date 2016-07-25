@@ -1,8 +1,6 @@
 <?php
 use yii\helpers\Html;
 use yii\data\ActiveData\ActiveDataProvider;
-/* @var $this yii\web\View */
-
 
 $this->title = 'User';
 ?>

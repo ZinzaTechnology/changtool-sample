@@ -1,7 +1,5 @@
 <?php
-
 namespace frontend\models;
-
 use Yii;
 use yii\db\Query;
 use backend\models\TestExam;
@@ -11,34 +9,12 @@ use backend\models\Answer;
 use backend\models\AnswerClone;
 use yii\db\Expression;
 
-/**
- * This is the model class for table "user_test".
- *
- * @property integer $ut_id
- * @property integer $u_id
- * @property integer $te_id
- * @property string $ut_status
- * @property integer $ut_mark
- * @property string $ut_start_at
- * @property string $ut_finished_at
- * @property string $ut_question_clone_ids
- * @property string $ut_user_answer_ids
- *
- * @property TestExam $te
- * @property User $u
- */
 class UserTest extends \yii\db\ActiveRecord {
 
-    /**
-     * @inheritdoc
-     */
     public static function tableName() {
         return 'user_test';
     }
 
-    /**
-     * @inheritdoc
-     */
     public function rules() {
         return [
             [['u_id', 'te_id', 'ut_question_clone_ids'], 'required'],
@@ -50,9 +26,6 @@ class UserTest extends \yii\db\ActiveRecord {
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function attributeLabels() {
         return [
             'ut_id' => 'Id',
@@ -67,16 +40,10 @@ class UserTest extends \yii\db\ActiveRecord {
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getTe() {
         return $this->hasOne(TestExam::className(), ['te_id' => 'te_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getU() {
         return $this->hasOne(User::className(), ['u_id' => 'u_id']);
     }

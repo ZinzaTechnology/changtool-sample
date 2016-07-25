@@ -1,11 +1,7 @@
 <?php
-
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-/* @var $this yii\web\View */
-/* @var $model frontend\models\UserTest */
-/* @var $form yii\widgets\ActiveForm */
 ?>
 
 <div class="user-test-form">

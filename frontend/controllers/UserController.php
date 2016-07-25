@@ -5,15 +5,8 @@ use Yii;
 use yii\filters\VerbFilter;
 use common\models\LoginForm;
 
-/**
- * Dashboard controller
- */
-
 class UserController extends FrontendController
 {
-    /**
-     * @inheritdoc
-     */
     public function behaviors()
     {
         return [
@@ -25,10 +18,7 @@ class UserController extends FrontendController
             ],
         ];
     }
-
-    /**
-     * @inheritdoc
-     */
+    
     public function actions()
     {
         return [
@@ -41,13 +31,7 @@ class UserController extends FrontendController
     {
     	return $this->render('user');
     }
-    
 
-    /**
-     * Login action.
-     *
-     * @return string
-     */
     public function actionLogin()
     {
         $model = new LoginForm();
@@ -62,22 +46,12 @@ class UserController extends FrontendController
     
     public function actionIndexx()
     {
-    	//$model = new User();
-    	//$dataProvider = $model->findAll('u_id');
     	$dataProvider = User::find()->all();
-    	 
-    	//$dataProvider = Yii::app->findAll()
     	return $this->render('user', [
     			'dataProvider' => $dataProvider,
     	]);
     }
-    /**
-     * Logout action.
-     *
-     * @return string
-     */
-    
-    
+
     public function actionLogout()
     {
         Yii::$app->user->logout();
