@@ -49,10 +49,17 @@ class UserTestController extends Controller
     }
     public function actionStart(){
     	$id = Yii::$app->request->get('ut_id');
-    	$userTest = new UserTest();
-    	$data = $userTest->getTest($id);
-    	var_dump($data);
-    	var_dump($id);
+    	if(UserTest::findOne(['ut_id' => $id, 'u_id'=>Yii::$app->user->id])){
+    		if($request = Yii::$app->request->post()){
+    		
+    		}
+    		$updateTest = UserTest::findOne($id);
+    		$userTest = new UserTest();
+    		$data = $userTest->getTest($id);
+    		return $this->render('start',[
+    				'data' => $data,
+    		]);
+    	}
     }
     /**
      * Displays a single UserTest model.

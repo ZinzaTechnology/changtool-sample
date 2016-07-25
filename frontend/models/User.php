@@ -37,7 +37,7 @@ class User extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['u_name', 'u_mail', 'u_phone', 'u_password_hash'], 'required'],
+            [['u_id','u_name', 'u_mail', 'u_phone', 'u_password_hash'], 'required'],
             [['u_role'], 'string'],
             [['u_created_at', 'u_updated_at'], 'safe'],
             [['u_is_deleted'], 'integer'],
@@ -52,22 +52,25 @@ class User extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'u_id' => 'U ID',
-            'u_name' => 'U Name',
-            'u_mail' => 'U Mail',
-            'u_phone' => 'U Phone',
-            'u_password_hash' => 'U Password Hash',
-            'u_password_reset_token' => 'U Password Reset Token',
-            'u_auth_key' => 'U Auth Key',
-            'u_role' => 'U Role',
-            'u_created_at' => 'U Created At',
-            'u_updated_at' => 'U Updated At',
-            'u_is_deleted' => 'U Is Deleted',
+            'u_id' => 'User ID',
+            'u_name' => 'User Name',
+            'u_mail' => 'User Mail',
+            'u_phone' => 'User Phone',
+            'u_password_hash' => 'User Password Hash',
+            'u_password_reset_token' => 'User Password Reset Token',
+            'u_auth_key' => 'User Auth Key',
+            'u_role' => 'User Role',
+            'u_created_at' => 'User Created At',
+            'u_updated_at' => 'User Updated At',
+            'u_is_deleted' => 'User Is Deleted',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    
+    public function getUserTests()
+    {
+        return $this->hasMany(UserTest::className(), ['u_id' => 'u_id']);
+    }
 }
