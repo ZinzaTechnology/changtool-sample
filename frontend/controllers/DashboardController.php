@@ -84,6 +84,8 @@ class DashboardController extends FrontendController {
 
     public function actionMark() {
         $id = Yii::$app->request->get('id');
+        $array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
+        array_shift($array);	
         if ($mark = UserTest::getMark($id))
             return $this->render('test/result', [
                         'mark' => $mark

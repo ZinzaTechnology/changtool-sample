@@ -7,11 +7,13 @@ $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['/dashboard'
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-test-create">
+	
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?= Html::beginForm('', 'post', ['class' => 'form-group','id'=>'_start']); ?>
     <h3>TIME LEFT: <span id="countdown"></span></h3>
     <script>
+    
         function startTimer(duration, display) {
             var timer = duration, minutes, seconds;
             setInterval(function () {
