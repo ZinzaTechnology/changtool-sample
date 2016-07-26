@@ -20,21 +20,19 @@ use Yii;
  * @property TestExam $te
  * @property User $u
  */
-class UserTest extends \yii\db\ActiveRecord
-{
+class UserTest extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'user_test';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['u_id', 'te_id', 'ut_question_clone_ids'], 'required'],
             [['u_id', 'te_id', 'ut_mark'], 'integer'],
@@ -48,34 +46,79 @@ class UserTest extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
-            'ut_id' => 'Ut ID',
-            'u_id' => 'U ID',
-            'te_id' => 'Te ID',
-            'ut_status' => 'Ut Status',
-            'ut_mark' => 'Ut Mark',
-            'ut_start_at' => 'Ut Start At',
-            'ut_finished_at' => 'Ut Finished At',
-            'ut_question_clone_ids' => 'Ut Question Clone Ids',
-            'ut_user_answer_ids' => 'Ut User Answer Ids',
+            'ut_id' => 'Id',
+            'u_id' => 'User ID',
+            'te_id' => 'Test ID',
+            'ut_status' => 'Status',
+            'ut_mark' => 'Mark',
+            'ut_start_at' => 'Start At',
+            'ut_finished_at' => 'Finished At',
+            'ut_question_clone_ids' => 'Question Clone Ids',
+            'ut_user_answer_ids' => 'User Answer Ids',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTe()
-    {
+    public function getTe() {
         return $this->hasOne(TestExam::className(), ['te_id' => 'te_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getU()
-    {
+    public function getU() {
         return $this->hasOne(User::className(), ['u_id' => 'u_id']);
     }
+
+    public static function getUserTestInfoWithParams($params) {
+        $sql = "SELECT ut_id as 'Id', u_name as 'Username',te_category as 'Category', te_title as 'Title', te_level as 'Level', ut_status as 'Status', ut_start_at as 'Start time', ut_finished_at as 'End time' 
+                    FROM user_test 
+                    INNER JOIN user 
+                    ON user_test.u_id = user.u_id 
+                    INNER JOIN test_exam 
+                    ON user_test.te_id = test_exam.te_id 
+		";
+        $a;
+        if ($params) {
+            $a = array_filter($params);
+            unset($a['a']);
+            if (count($a) > 1)
+                $sql.= ' WHERE ' . implode(' = ? AND ', array_keys($a)) . ' = ? ';
+            else
+                $sql.= ' WHERE ' . array_keys($a) . ' = ? ';
+            $sql.=' ORDER BY ut_id DESC ';
+            if ($query = Yii::$app->db->createCommand($sql)) {
+                $x = 1;
+                foreach ($a as $e) {
+                    if ($x <= count($a)) {
+                        $query->bindValue($x, $e);
+                        $x++;
+                    }
+                }
+                return $query->queryAll();
+            }
+        }
+        return Yii::$app->db->createCommand($sql)->queryAll();
+        /********
+         * 
+         *  SEARCH chưa sửa chức năng search từ ngày - đến ngày
+         * 
+         */
+    }
+
+    public static function getUserTestInfo() {
+        $sql = "SELECT ut_id as 'Id', u_name as 'Username',te_category as 'Category', te_title as 'Title', te_level as 'Level', ut_status as 'Status', ut_start_at as 'Start time', ut_finished_at as 'End time' 
+                    FROM user_test 
+                    INNER JOIN user 
+                    ON user_test.u_id = user.u_id 
+                    INNER JOIN test_exam 
+                    ON user_test.te_id = test_exam.te_id 
+        ";
+        return Yii::$app->db->createCommand($sql)->queryAll();
+    }
+
 }
