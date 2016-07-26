@@ -2,7 +2,7 @@
 namespace frontend\models;
 use Yii;
 use yii\db\Query;
-use backend\models\TestExam;
+use common\models\TestExam;
 use backend\models\Question;
 use backend\models\QuestionClone;
 use backend\models\Answer;

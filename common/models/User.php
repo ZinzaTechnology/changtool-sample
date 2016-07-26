@@ -3,9 +3,10 @@ namespace common\models;
 
 use Yii;
 use yii\base\NotSupportedException;
-use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use common\models\AppActiveRecord;
 use common\lib\behaviors\DateTimeBehavior;
+use common\lib\components\AppConstant;
 
 /**
  * This is the model class for table "user".
@@ -24,13 +25,8 @@ use common\lib\behaviors\DateTimeBehavior;
  *
  * @property UserTest[] $userTests
  */
-class User extends ActiveRecord implements IdentityInterface
+class User extends AppActiveRecord implements IdentityInterface
 {
-    const IS_DELETED_NOT_DELETED= 0;
-    const IS_DELETED_DELETED= 1;
-
-    const ROLE_ADMIN = 'ADMIN';
-    const ROLE_USER = 'USER';
 
     /**
      * @inheritdoc
@@ -38,16 +34,6 @@ class User extends ActiveRecord implements IdentityInterface
     public static function tableName()
     {
         return 'user';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            DateTimeBehavior::className(),
-        ];
     }
 
     /**
@@ -98,7 +84,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['u_id' => $id, 'u_is_deleted' => self::IS_DELETED_NOT_DELETED]);
+        return static::findOne(['u_id' => $id, 'u_is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
     }
 
     /**
@@ -117,7 +103,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['u_name' => $username, 'u_is_deleted' => self::IS_DELETED_NOT_DELETED]);
+        return static::findOne(['u_name' => $username, 'u_is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
     }
 
     /**
@@ -134,7 +120,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'u_password_reset_token' => $token,
-            'u_status' => self::IS_DELETED_NOT_DELETED,
+            'u_status' => AppConstant::IS_DELETED_NOT_DELETED,
         ]);
     }
 
@@ -234,5 +220,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->u_password_reset_token = null;
+    }
+
+    /**
+     * Get user's avatar
+     * return default if not set
+     */
+    public function getAvatar()
+    {
+        return isset($current_user->u_avatar) ? $current_user->u_avatar : "/res/img/user_default.jpg";
     }
 }

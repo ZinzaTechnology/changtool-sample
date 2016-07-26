@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <h3><?= $d['qc_content'] ?></h3>
         <?php foreach ($d['answer'] as $answer) { ?>
             <div>
-                <input type="radio" name="question-<?= $d['qc_id'] ?>[]" value="<?= $answer['ac_id'] ?>" /> 
+                <input type="checkbox" name="question-<?= $d['qc_id'] ?>[]" value="<?= $answer['ac_id'] ?>" /> 
                 <?= $answer['ac_content'] ?>
             </div>
             <?php
