@@ -82,32 +82,45 @@ class UserTest extends \yii\db\ActiveRecord {
                     INNER JOIN test_exam 
                     ON user_test.te_id = test_exam.te_id 
 		";
-        $a;
-        if ($params) {
-            $a = array_filter($params);
-            unset($a['a']);
-            if (count($a) > 1)
-                $sql.= ' WHERE ' . implode(' = ? AND ', array_keys($a)) . ' = ? ';
-            else
-                $sql.= ' WHERE ' . array_keys($a) . ' = ? ';
-            $sql.=' ORDER BY ut_id DESC ';
-            if ($query = Yii::$app->db->createCommand($sql)) {
+        $params['a'] = null;
+        $paraFilted = array_filter($params);
+        if ($paraFilted) {
+            if (count($paraFilted)) {
+                $sql.= ' WHERE ';
+                $count = 0;
+                $keys = array_keys($paraFilted);
+                foreach ($keys as $key) {
+                    switch ($key) {
+                        case 'ut_start_at':
+                            $sql.= ' ut_start_at <= ? ';
+                            break;
+                        case 'ut_finished_at':
+                            $sql.= ' ut_finished_at >= ? ';
+                            break;
+                        default:
+                            $sql.= " {$key} = ? ";
+                            break;
+                    }
+                    if ($count < (count($paraFilted) - 1)) {
+                        $sql.= ' AND ';
+                        $count++;
+                    }
+                }
+            }
+        }
+        $sql.= ' ORDER BY ut_id DESC ';
+        if ($query = Yii::$app->db->createCommand($sql)) {
+            if ($paraFilted) {
                 $x = 1;
-                foreach ($a as $e) {
-                    if ($x <= count($a)) {
+                foreach ($paraFilted as $e) {
+                    if ($x <= count($paraFilted)) {
                         $query->bindValue($x, $e);
                         $x++;
                     }
                 }
-                return $query->queryAll();
             }
         }
-        return Yii::$app->db->createCommand($sql)->queryAll();
-        /********
-         * 
-         *  SEARCH chưa sửa chức năng search từ ngày - đến ngày
-         * 
-         */
+        return $query->queryAll();
     }
 
     public static function getUserTestInfo() {

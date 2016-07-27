@@ -42,7 +42,6 @@ class UsertestController extends Controller {
      * @return mixed
      */
     public function actionIndex() {
-
         if ($param = Yii::$app->request->get()) {
             if($param['a']=='Search')
                 $this->params = $param;
