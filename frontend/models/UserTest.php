@@ -4,11 +4,11 @@ namespace frontend\models;
 
 use Yii;
 use yii\db\Query;
-use backend\models\TestExam;
-use backend\models\Question;
-use backend\models\QuestionClone;
-use backend\models\Answer;
-use backend\models\AnswerClone;
+use common\models\TestExam;
+use common\models\Question;
+use common\models\QuestionClone;
+use common\models\Answer;
+use common\models\AnswerClone;
 use yii\db\Expression;
 
 /**

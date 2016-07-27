@@ -7,8 +7,8 @@ use yii\filters\VerbFilter;
 use frontend\models\ContactForm;
 use frontend\models\User;
 use frontend\models\UserTest;
-use backend\models\TestExam;
-use backend\models\AnswerClone;
+use common\models\TestExam;
+use common\models\AnswerClone;
 use yii\helpers\Url;
 
 /**
