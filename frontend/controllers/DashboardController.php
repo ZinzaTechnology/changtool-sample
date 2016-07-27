@@ -117,19 +117,11 @@ class DashboardController extends FrontendController
 
     public function actionIndex()
     {
-        $user_test_models = UserTest::find()->where(['u_id' => Yii::$app->user->id])->asArray()->all();
-        $test_exams = [];
-        foreach ($user_test_models as $user_test) {
-            $test_exam = TestExam::find()->where(['te_id' => $user_test])->asArray()->one();
-            $test_exam = array_merge($test_exam, [
-                'ut_start_at' => $user_test['ut_start_at'],
-                'ut_finished_at' => $user_test['ut_finished_at']
-            ]);
-            array_push($test_exams, $test_exam);
-        }
+        $logicUserTest = new LogicUserTest();
+        $userTests = $logicUserTest->findUserTestBySearch(['u_id' => Yii::$app->user->id]);
+
         return $this->render('index', [
-                    'user_test_models' => $user_test_models,
-                    'data' => $test_exams,
+            'user_test_models' => $userTests,
         ]);
     }
     
