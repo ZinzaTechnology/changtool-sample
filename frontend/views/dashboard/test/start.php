@@ -6,7 +6,7 @@ $this->title = 'Doing Test';
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['/dashboard']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="user-test-create">
+<div class="user-test-create" >
 	
 
     <h1 style = 'color:#1a1aff'><?= Html::encode($this->title) ?></h1>
@@ -61,9 +61,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     foreach ($data as $d) {
         ?>
-        <h3 style = 'color:#996633'><?= $d['qc_content']  ?> </h3>
+        <h2 style = 'color:#52A2AB'><?= $d['qc_content']  ?> </h2>
         <?php foreach ($d['answer'] as $answer) { ?>
-            <div style = 'color:#5c8a8a'>
+            <div style = 'color:#222E07'>
                 <input type="checkbox" name="question-<?= $d['qc_id'] ?>[]" value="<?= $answer['ac_id'] ?>" /> 
                 <?= $answer['ac_content'] ?>
             </div>
