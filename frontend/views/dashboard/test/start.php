@@ -13,7 +13,27 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= Html::beginForm('', 'post', ['class' => 'form-group','id'=>'_start']); ?>
     <h3>TIME LEFT: <span id="countdown"></span></h3>
     <script>
-    
+    var formSubmitting = false;
+    var setFormSubmitting = function() {
+        formSubmitting = true;
+        
+       };
+
+    window.onload = function() {
+        window.addEventListener("beforeunload", function (e) {
+            if (formSubmitting) {
+                return undefined;
+            }
+
+            var msg = "Do you really want to leave this page?";
+
+            (e || window.event).returnValue = msg; //Gecko + IE
+            return msg; //Gecko + Webkit, Safari, Chrome etc.
+        });
+        var fiveMinutes = <?= $time_count ?>,
+                display = document.querySelector('#countdown');
+        startTimer(fiveMinutes, display);   
+    };
         function startTimer(duration, display) {
             var timer = duration, minutes, seconds;
             setInterval(function () {
@@ -31,11 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
             }, 1000);
         }
 
-        window.onload = function () {
-            var fiveMinutes = <?= $time_count ?>,
-                    display = document.querySelector('#countdown');
-            startTimer(fiveMinutes, display);
-        };
+       
     </script>
     <?php
     foreach ($data as $d) {
@@ -50,6 +66,6 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
     ?>
-    <?= Html::submitButton('Submit', ['class' => 'btn btn-primary']) ?>
+    <?= Html::submitButton('Submit', ['class' => 'btn btn-primary', "onclick" => 'setFormSubmitting()']) ?>
     <?php Html::endForm(); ?>
 </div>
