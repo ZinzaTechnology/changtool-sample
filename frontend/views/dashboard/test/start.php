@@ -11,7 +11,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1 style = 'color:#1a1aff'><?= Html::encode($this->title) ?></h1>
     <?= Html::beginForm('', 'post', ['class' => 'form-group','id'=>'_start']); ?>
-    <h3 style = 'color:#e60000'>TIME LEFT: <span id="countdown"></span></h3>
+    <h2 style = 'color:#e60000' >TIME LEFT:  <span id="countdown"> </span> </h2>
+  	<div class="sk-spinner sk-spinner-three-bounce">
+    <div class="sk-bounce1"></div>
+    <div class="sk-bounce2"></div>
+    <div class="sk-bounce3"></div>
+    </div>
     <script>
     var formSubmitting = false;
     var setFormSubmitting = function() {
@@ -66,7 +71,8 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
     ?>
-    <?= Html::submitButton('Submit', ['class' => 'btn btn-primary', "onclick" => 'setFormSubmitting()']) ?>
+     <i class="fa fa-hand-o-right"></i>
+    <?=  Html::submitButton('Submit', ['class' => 'btn btn-primary', "onclick" => 'setFormSubmitting()'])  ?>
     
     <?php Html::endForm(); ?>
 </div>
