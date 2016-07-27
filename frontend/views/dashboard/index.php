@@ -20,7 +20,7 @@ $this->title = 'Dashboard';
                             echo Html::a("DOING (started at {$data['ut_start_at']})", Url::toRoute(['start-test', 'id' => $data['ut_id']]), ['class' => 'btn btn-success']);
                             break;
                         case "ASSIGNED":
-                            echo Html::a('Start', Url::toRoute(['start-test', 'id' => $data['ut_id']]), ['class' => 'btn btn-success']);
+                            echo Html::a('Start', Url::toRoute(['user-test/start-test', 'id' => $data['ut_id']]), ['class' => 'btn btn-success']);
                             break;
                     }
                     ?>

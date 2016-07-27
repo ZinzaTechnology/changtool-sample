@@ -9,6 +9,8 @@ use common\models\Question;
 use common\models\QuestionClone;
 use common\models\Answer;
 use common\models\AnswerClone;
+use common\lib\logic\LogicUserTest;
+
 use yii\db\Expression;
 
 /**
@@ -99,6 +101,7 @@ class UserTest extends \yii\db\ActiveRecord {
     }
 
     public static function setMark($id) {
+    	
         $testExam = UserTest::findOne($id);
         if ($testExam && $testExam->ut_status == "DONE") {
             $answer = unserialize($testExam->ut_user_answer_ids);
@@ -152,5 +155,4 @@ class UserTest extends \yii\db\ActiveRecord {
         )->execute();
         self::setMark($id);
     }
-
 }

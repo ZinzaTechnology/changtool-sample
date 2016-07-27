@@ -9,6 +9,7 @@ use frontend\models\User;
 use frontend\models\UserTest;
 use common\models\TestExam;
 use common\models\AnswerClone;
+use common\lib\logic\LogicUserTest;
 use yii\helpers\Url;
 
 /**
@@ -49,46 +50,9 @@ class DashboardController extends FrontendController
      *
      * @return mixed
      */
-    public function actionStartTest()
+   
+    public function actionMarkRecord()
     {
-        if ($id = Yii::$app->request->get('id')) {
-            if ($userTest = UserTest::findOne($id)) {
-                $time_count = 0;
-                if ($userTest->ut_status == 'ASSIGNED') {
-                    UserTest::updateStart($id);
-                    $time_count = TestExam::findOne($userTest->te_id)->te_time * 60;
-                } else {
-                    $testAllowed = (TestExam::findOne($userTest->te_id)->te_time) * 60;
-                    $mustFinishedAt = strtotime(UserTest::findOne($id)->ut_start_at) + $testAllowed;
-                    $time_access = strtotime(date('Y-m-d H:i:s'));
-                    $time_count = $mustFinishedAt - $time_access;
-                }
-                if ($checker = UserTest::findOne(['ut_id' => $id, 'u_id' => Yii::$app->user->id])) {
-                    switch ($checker->ut_status) {
-                        case "ASSIGNED":
-                            goto action;
-                            break;
-                        case "DOING":
-                            goto action;
-                            break;
-                        default:
-                            goto home;
-                            break;
-                    }
-                } else {
-                    goto home;
-                }
-            } else {
-                goto home;
-            }
-        } else {
-            goto home;
-        }
-
-        home: {
-            return $this->redirect(Url::toRoute('/'));
-        }
-        action: {
         if ($request = Yii::$app->request->post()) {
             UserTest::updateEnd($id, serialize($request));
             return $this->redirect(Url::toRoute(['mark', 'id' => $id]));
@@ -98,22 +62,10 @@ class DashboardController extends FrontendController
                         'data' => $data,
                         'time_count' => $time_count,
             ]);
-            }
+            
     }
 
-    public function actionMark()
-    {
-        $id = Yii::$app->request->get('id');
-        $array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
-        array_shift($array);
-        if ($mark = UserTest::getMark($id)) {
-            return $this->render('test/result', [
-                        'mark' => $mark
-            ]);
-        } else {
-            return $this->redirect(Url::toRoute('/'));
-        }
-    }
+   
 
     public function actionIndex()
     {
