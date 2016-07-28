@@ -123,15 +123,4 @@ class UserTest extends \yii\db\ActiveRecord {
         return $query->queryAll();
     }
 
-    public static function getUserTestInfo() {
-        $sql = "SELECT ut_id as 'Id', u_name as 'Username',te_category as 'Category', te_title as 'Title', te_level as 'Level', ut_status as 'Status', ut_start_at as 'Start time', ut_finished_at as 'End time' 
-                    FROM user_test 
-                    INNER JOIN user 
-                    ON user_test.u_id = user.u_id 
-                    INNER JOIN test_exam 
-                    ON user_test.te_id = test_exam.te_id 
-        ";
-        return Yii::$app->db->createCommand($sql)->queryAll();
-    }
-
 }

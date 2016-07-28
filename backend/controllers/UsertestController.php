@@ -16,14 +16,8 @@ use backend\models\Answer;
 use backend\models\User;
 use yii\data\ArrayDataProvider;
 
-/**
- * UserTestController implements the CRUD actions for UserTest model.
- */
 class UsertestController extends Controller {
 
-    /**
-     * @inheritdoc
-     */
     public $params;
 
     public function behaviors() {
@@ -37,108 +31,91 @@ class UsertestController extends Controller {
         ];
     }
 
-    /**
-     * Lists all UserTest models.
-     * @return mixed
-     */
     public function actionIndex() {
         if ($param = Yii::$app->request->get()) {
-            if($param['a']=='Search')
+            if ($param['a'] == 'Search')
                 $this->params = $param;
-            else $this->redirect ('/ba/usertest/');
+            else
+                $this->redirect('/ba/usertest/');
         }
-//                $dataProvider = new ArrayDataProvider([
-//            'allModels' => UserTest::getUserTestInfo(),
-//            'pagination' => [
-//                'pageSize' => 15,]
-//        ]);
-        $data = UserTest::getUserTestInfoWithParams($this->params);
         $dataProvider = new ArrayDataProvider([
-            'allModels' => $data,
+            'allModels' => UserTest::getUserTestInfoWithParams($this->params),
             'pagination' => [
                 'pageSize' => 15,]
         ]);
-//        $searchModel = new UserTestSearch();
 
         return $this->render('index', [
                     'dataProvider' => $dataProvider,
         ]);
-//        
-//        $searchModel = new UserTestSearch();
-//        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-//
-//        return $this->render('index', [
-//            'searchModel' => $searchModel,
-//            'dataProvider' => $dataProvider,
-//        ]);
     }
 
-    /**
-     * Displays a single UserTest model.
-     * @param integer $id
-     * @return mixed
-     */
     public function actionView($id) {
         return $this->render('view', [
                     'model' => $this->findModel($id),
         ]);
     }
 
-    /**
-     * Creates a new UserTest model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
+    public $extend,
+            $listTest = [],
+            $choice = ['User' => '', 'TestExam' => ''],
+            $count = 0;
+
     public function actionCreate() {
-//        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-//            return $this->redirect(['view', 'id' => $model->ut_id]);
-//        } else {
-//            
-//        }
-        var_dump(\Yii::$app->request->post());
+        if ($request = Yii::$app->request->post()) {
+
+            //First element of post() is '_csrf-backend => array_shift to remove it
+            $this->extend = $request;
+            $this->choice['User'] = User::find()->select('u_name')->where(['u_id' => $request['User']['u_id']])->one();
+
+            //Check submit type
+            if($request['submit'] == 'choose'){
+                $this->listTest = TestExam::find()
+                                    ->select('te_id,te_title')
+                                ->where([
+                                    'te_category' => $request['TestExam']['te_category'],
+                                    'te_level' => $request['TestExam']['te_level'],
+                                    'te_is_deleted' => 0
+                                ])->all();
+            }else if($request['submit'] == 'assign'){
+                $this->choice['TestExam'] = TestExam::find()
+                            ->select('te_title,te_time,te_time,te_num_of_questions')
+                        ->where(['te_id' => $request['TestExam']['te_id']])
+                        ->one();
+            }
+//            switch () {
+//                case 'choose':
+//                    //Search all Test exam by param got from post
+//                    $this->listTest = TestExam::find()
+//                                    ->select('te_id,te_title')
+//                                    ->where([
+//                                        'te_category' => $request['TestExam']['te_category'],
+//                                        'te_level' => $request['TestExam']['te_level'],
+//                                        'te_is_deleted' => 0
+//                                    ])->all();
+//                    break;
+//                case 'assign':
+//                    $this->choice['TestExam'] = TestExam::find()
+//                            ->select('te_title,te_time,te_time,te_num_of_questions')
+//                            ->where(['te_id' => $request['TestExam']['te_id']])
+//                            ->one();
+//                    break;
+//            }
+        }
         return $this->render('create', [
                     'user' => new User,
                     'testExam' => new TestExam,
+                    'extInfo' => $this->extend,
+                    'listTest' => $this->listTest,
+                    'choosen' => $this->choice,
         ]);
     }
 
-    /**
-     * Updates an existing UserTest model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id) {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->ut_id]);
-        } else {
-            return $this->render('update', [
-                        'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Deletes an existing UserTest model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
     public function actionDelete($id) {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the UserTest model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return UserTest the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($id) {
         if (($model = UserTest::findOne($id)) !== null) {
             return $model;

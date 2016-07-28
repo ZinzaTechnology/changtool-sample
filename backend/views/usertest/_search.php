@@ -11,8 +11,9 @@ $level = ['1' => 'Easy', '2' => 'Normal', '3' => 'Hard'];
 ?>
 
 <div class="user-test-search">
-    <form method="get">
-        Username <input type="text" name="u_name" value="<?= isset($_GET['u_name']) ? $_GET['u_name'] : '' ?>" />
+    <?php Html::beginForm('', 'get')?>
+    Username 
+        <input type="text" name="u_name" value="<?= isset($_GET['u_name']) ? $_GET['u_name'] : '' ?>" />
         Category <select name="te_category">
             <option value="0">--- Select Category ---</option>
             <?php for ($i = 1; $i <= count($category); $i++) { ?>
@@ -30,5 +31,5 @@ $level = ['1' => 'Easy', '2' => 'Normal', '3' => 'Hard'];
         End date<input type="date" name="ut_finished_at" value="<?= isset($_GET['ut_finished_at']) ? $_GET['ut_finished_at'] : '' ?>"/>
         <input type="submit" value="Search" name="a" />
         <input type="submit" value="Back" name="a" />
-    </form>
+    <?php Html::endForm(); ?>
 </div>
