@@ -68,38 +68,24 @@ class UsertestController extends Controller {
             $this->choice['User'] = User::find()->select('u_name')->where(['u_id' => $request['User']['u_id']])->one();
 
             //Check submit type
-            if($request['submit'] == 'choose'){
-                $this->listTest = TestExam::find()
+            switch ($request['submit']) {
+                case 'choose':
+                    //Search all Test exam by param got from post
+                    $this->listTest = TestExam::find()
                                     ->select('te_id,te_title')
-                                ->where([
-                                    'te_category' => $request['TestExam']['te_category'],
-                                    'te_level' => $request['TestExam']['te_level'],
-                                    'te_is_deleted' => 0
-                                ])->all();
-            }else if($request['submit'] == 'assign'){
-                $this->choice['TestExam'] = TestExam::find()
+                                    ->where([
+                                        'te_category' => $request['TestExam']['te_category'],
+                                        'te_level' => $request['TestExam']['te_level'],
+                                        'te_is_deleted' => 0
+                                    ])->all();
+                    break;
+                case 'assign':
+                    $this->choice['TestExam'] = TestExam::find()
                             ->select('te_title,te_time,te_time,te_num_of_questions')
-                        ->where(['te_id' => $request['TestExam']['te_id']])
-                        ->one();
+                            ->where(['te_id' => $request['TestExam']['te_id']])
+                            ->one();
+                    break;
             }
-//            switch () {
-//                case 'choose':
-//                    //Search all Test exam by param got from post
-//                    $this->listTest = TestExam::find()
-//                                    ->select('te_id,te_title')
-//                                    ->where([
-//                                        'te_category' => $request['TestExam']['te_category'],
-//                                        'te_level' => $request['TestExam']['te_level'],
-//                                        'te_is_deleted' => 0
-//                                    ])->all();
-//                    break;
-//                case 'assign':
-//                    $this->choice['TestExam'] = TestExam::find()
-//                            ->select('te_title,te_time,te_time,te_num_of_questions')
-//                            ->where(['te_id' => $request['TestExam']['te_id']])
-//                            ->one();
-//                    break;
-//            }
         }
         return $this->render('create', [
                     'user' => new User,
