@@ -9,6 +9,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\data\Pagination;
 use common\lib\logic\LogicUserTest;
+use common\lib\helpers\AppArrayHelper;
+
 use yii\helpers\Url;
 
 /**
@@ -52,7 +54,8 @@ class UserTestController extends Controller
     
     	$time_count = 0;
     	if ($userTest['ut_status'] == 'ASSIGNED') {
-    		UserTest::updateStart($id);
+    		$logicUserTest->updateUserTest($id, ['ut_status' => 'DOING', 'ut_start_at' => date('Y-m-d H:i:s')]);
+    	
     		$time_count = $userTest['te_time'] * 60;
     	} else {
     		$testAllowed = $userTest['te_time'] * 60;
@@ -65,7 +68,12 @@ class UserTestController extends Controller
     		case "ASSIGNED":
     		case "DOING":
     			if ($request = Yii::$app->request->post()) {
-    				UserTest::updateEnd($id, serialize($request));
+    				unset($request[Yii::$app->request->csrfParam]);
+    				$answer = serialize($request);
+    				
+    				$logicUserTest->updateUserTest($id,['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_user_answer_ids' => $answer]);
+    				$logicUserTest->setMark($id);
+    				
     				return $this->redirect(Url::toRoute(['mark', 'id' => $id]));
     			}
     			$data = (new UserTest())->getTest($id);
@@ -74,6 +82,7 @@ class UserTestController extends Controller
     					'time_count' => $time_count,
     			]);
     			break;
+    			
     		default:
     			$this->redirect(Url::toRoute('/'));
     			break;
