@@ -25,7 +25,8 @@ class Answer extends \common\models\AppActiveRecord
             [
                 [
                     'q_id',
-                    'qa_content'
+                    'qa_content',
+                   
                 ],
                 'required'
             ],

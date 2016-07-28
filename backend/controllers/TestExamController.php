@@ -157,19 +157,19 @@ class TestExamController extends BackendController
                 $ret = $logicTestExam->updateTestExamInfoToSession($request);
                 if (AppConstant::$ERROR_SESSION_EMPTY == $ret) {
                     $this->setSessionFlash('error', 'Cannot update becasue session is not setted');
-                    $this->redirect(['update', 'id' => $id]);
+                    return $this->redirect(['update', 'id' => $id]);
                 }
                 // Update new data to database
                 $ret = $logicTestExam->updateChangesFromSessionToDB($this);
                 if (AppConstant::$ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB == $ret) {
                     $this->setSessionFlash('error', 'Error occur when save Test Exam info');
-                    $this->redirect(['update', 'id' => $id]);
+                    return $this->redirect(['update', 'id' => $id]);
                 } elseif (AppConstant::$ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB == $ret) {
                     $this->setSessionFlash('error', 'Error occur when insert questions to test exam');
-                    $this->redirect(['update', 'id' => $id]);
+                    return $this->redirect(['update', 'id' => $id]);
                 } elseif (AppConstant::$ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB == $ret) {
                     $this->setSessionFlash('error', 'Error occur when delete questions from test exam');
-                    $this->redirect(['update', 'id' => $id]);
+                    return $this->redirect(['update', 'id' => $id]);
                 }
 
                 $logicTestExam->removeTestExamInfoFromSession();
@@ -235,7 +235,7 @@ class TestExamController extends BackendController
     {
         $logicTestExam = new LogicTestExam();
         if ($logicTestExam->deleteTestExamById($id)) {
-            $this->redirect(['/test-exam']);
+            return $this->redirect(['/test-exam']);
         } else {
             $this->setSessionFlash('error', 'Error occurs when deleting this test!');
             $this->goReferrer();
@@ -260,7 +260,7 @@ class TestExamController extends BackendController
             return $this->redirect('index');
         } elseif (AppConstant::$ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM == $ret) {
             $this->setSessionFlash('error', 'Question does not exist in this testExan');
-            $this->redirect(['update', 'id' => $id]);
+            return $this->redirect(['update', 'id' => $id]);
         }
         
         return $this->redirect(["update?id=$te_id&delete_question=TRUE"]);

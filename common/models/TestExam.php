@@ -90,9 +90,9 @@ class TestExam extends \common\models\AppActiveRecord
     public static function getData($param)
     {
         if ($param) {
-            return self::find()->where($param)->all();
+            return self::query()->where($param)->all();
         } else {
-            return self::find()->all();
+            return self::query()->all();
         }
     }
 }

@@ -14,7 +14,7 @@ use Yii;
  *
  * @property QuestionClone $qc
  */
-class AnswerClone extends \yii\db\ActiveRecord
+class AnswerClone extends AppActiveRecord
 {
 
     /**

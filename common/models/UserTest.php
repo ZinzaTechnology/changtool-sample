@@ -27,6 +27,8 @@ use yii\db\Expression;
  */
 class UserTest extends \common\models\AppActiveRecord
 {
+    public static $is_logic_delete = false;
+    public $question_clones = [];
 
     /**
      * @inheritdoc
@@ -69,22 +71,6 @@ class UserTest extends \common\models\AppActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTe()
-    {
-        return $this->hasOne(TestExam::className(), ['te_id' => 'te_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getU()
-    {
-        return $this->hasOne(User::className(), ['u_id' => 'u_id']);
-    }
-
     public static function saveUserTest($data)
     {
         $db = Yii::$app->db;
@@ -92,7 +78,7 @@ class UserTest extends \common\models\AppActiveRecord
         $dataInsert = [];
         foreach ($data['te_id'] as $test) {
             foreach ($data['u_id'] as $user) {
-                if (!self::find()->where(['te_id' => $test, 'u_id' => $user])->exists()) {
+                if (!self::query()->where(['te_id' => $test, 'u_id' => $user])->exists()) {
                     $dataInsert[] = [$test, $user];
                     $count++;
                 }

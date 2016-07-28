@@ -9,6 +9,7 @@
 namespace common\lib\logic;
 
 use Yii;
+use yii\web\BadRequestHttpException;
 use yii\db\Expression;
 use yii\db\Query;
 use common\lib\helpers\AppArrayHelper;
@@ -26,6 +27,8 @@ class LogicUserTest extends LogicBase
     private $_assignedSuccess = false;
     private $_testExam;
     private $_testExamParams = [];
+    private $_pageMax = 0;
+    private $_page = 0;
 
     public function __construct()
     {
@@ -70,6 +73,39 @@ class LogicUserTest extends LogicBase
         return [$this->_testExam['te_category'], $this->_testExam['te_level']];
     }
 
+    public function getPageMax()
+    {
+        return $this->_pageMax;
+    }
+
+    public function getPage()
+    {
+        return $this->_page;
+    }
+
+    public function getTestDataByPageParam($id, $page = null)
+    {
+        $data = $this->findTestDataByUtID($id);
+        $limitPerPage = AppConstant::USER_TEST_QUESTION_LIMIT_PER_PAGE;
+        $this->_pageMax = round((count($data) / $limitPerPage));
+        if (count($data) % $limitPerPage) {
+            $this->_pageMax++;
+        }
+        if ($page > $this->_pageMax) {
+            throw new BadRequestHttpException('Page is larger than page max!');
+        }
+        if (isset($page)) {
+            if (is_numeric($page) && $page > 0) {
+                $this->_page = $page;
+            } else {
+                throw new BadRequestHttpException('Page must be a number and more than 0!');
+            }
+        } else {
+            $this->_page = 1;
+        }
+        return array_slice($data, ($this->_page - 1) * $limitPerPage, $limitPerPage);
+    }
+
     public function assignTest()
     {
         $userTest = new UserTest;
@@ -79,7 +115,7 @@ class LogicUserTest extends LogicBase
                 $questions = [];
                 $userTestID = $lastUT_ID_count[0];
                 foreach ($this->_testExam['te_id'] as $teID) {
-                    $question = ArrayHelper::toArray((new LogicQuestion)->findQuestionByTestId($teID));
+                    $question = AppArrayHelper::toArray((new LogicQuestion)->findQuestionByTestId($teID));
                     foreach ($this->_testExam['u_id'] as $userID) {
                         $questions[] = array_merge(['ut_id' => $userTestID], ['question' => $question]);
                         $userTestID++;
@@ -114,10 +150,10 @@ class LogicUserTest extends LogicBase
         $userTest = new UserTest;
         $command = Yii::$app->db->createCommand();
         try {
-            $record = $userTest->findOne(['ut_id' => $id]);
+            $record = $userTest->queryOne(['ut_id' => $id]);
             switch ($record->ut_status) {
                 case 'ASSIGNED':
-                    $questionCloneID = ArrayHelper::getColumn(QuestionClone::findAll(['ut_id' => $id]), 'qc_id');
+                    $questionCloneID = AppArrayHelper::getColumn(QuestionClone::queryAll(['ut_id' => $id]), 'qc_id');
                     if (count($questionCloneID)) {
                         AnswerClone::deleteAll("qc_id in (" . implode(', ', $questionCloneID) . ")");
                     }
@@ -138,26 +174,25 @@ class LogicUserTest extends LogicBase
         return false;
     }
 
-public static function findUserTestBySearch($params)
+    public static function findUserTestBySearch($params)
     {
         $query = new Query;
         $query->from('user_test')
             ->innerJoin('user', 'user_test.u_id = user.u_id')
             ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id');
-        if(isset($params['u_name']))
-            $query->andFilterWhere(['like', 'u_name', $params['u_name']]);
-        if(isset($params['te_title']))
-            $query->andFilterWhere(['like', 'te_title', $params['te_title']]);
-        if(isset($params['te_category']))
-            $query->andFilterWhere(['te_category' => $params['te_category']]);
-        if(isset($params['te_level']))
-            $query->andFilterWhere(['te_level' => $params['te_level']]);
-        if(isset($params['ut_status']))
-            $query->andFilterWhere(['ut_status' => $params['ut_status']]);
-        if(isset($params['ut_start_at']))
-            $query->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']]);
-        if(isset($params['ut_finished_at']))
-            $query->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']]);
+
+        $params = AppArrayHelper::filterKeys($params, ['ut_id', 'u_id', 'u_name', 'te_title', 'te_category', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at']);
+
+        $query->andFilterWhere(['ut_id' => $params['ut_id']]);
+        $query->andFilterWhere(['user_test.u_id' => $params['u_id']]);
+        $query->andFilterWhere(['like', 'u_name', $params['u_name']]);
+        $query->andFilterWhere(['like', 'te_title', $params['te_title']]);
+        $query->andFilterWhere(['te_category' => $params['te_category']]);
+        $query->andFilterWhere(['te_level' => $params['te_level']]);
+        $query->andFilterWhere(['ut_status' => $params['ut_status']]);
+        $query->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']]);
+        $query->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']]);
+
         $query->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
     }
@@ -169,7 +204,7 @@ public static function findUserTestBySearch($params)
         $testData = [];
         foreach ($questionsClone as $question) {
             $answer = $this->findAnswerCloneByQcId($question['qc_id']);
-            $question = array_merge($question, ['trueAnswer' => ArrayHelper::getColumn($this->findAnswerCloneTrueByQcID($question['qc_id']), 'ac_content')]);
+            $question = array_merge($question, ['trueAnswer' => AppArrayHelper::getColumn($this->findAnswerCloneTrueByQcID($question['qc_id']), 'ac_content')]);
             $testData[] = array_merge($question, ['answer' => $answer]);
         }
         return $testData;
@@ -177,54 +212,52 @@ public static function findUserTestBySearch($params)
 
     public function findQuestionCloneByUtId($ut_id)
     {
-        return QuestionClone::find()->where(['ut_id' => $ut_id])->asArray()->all();
+        return QuestionClone::query()->andWhere(['ut_id' => $ut_id])->asArray()->all();
     }
 
     public function findAnswerCloneTrueByQcID($qc_id)
     {
-        return AnswerClone::find()->select('ac_content')->where(['qc_id' => $qc_id, 'ac_status' => AppConstant::ANSWER_STATUS_RIGHT])->asArray()->all();
+        return AnswerClone::query()->select('ac_content')->where(['qc_id' => $qc_id, 'ac_status' => AppConstant::ANSWER_STATUS_RIGHT])->asArray()->all();
     }
 
     public function findAnswerCloneByQcId($qc_id)
     {
-        return AnswerClone::find()->where(['qc_id' => $qc_id])->asArray()->all();
+        return AnswerClone::query()->andWhere(['qc_id' => $qc_id])->asArray()->all();
     }
-  public function  updateUserTest($id, $params){
-    	$updateTest = UserTest::findOne($id);
-    
-    	if (!$updateTest) {
-    		return false;
-    	}	
-    	$params = AppArrayHelper::filterKeys($params,['ut_status','ut_start_at','ut_finished_at','ut_user_answer_ids']);
-    		$updateTest->load(['UserTest' => $params]);
-    	if ($updateTest->validate()) {
-    		return $updateTest->save();
-    	}
-     }
 
-    public function findUserAnswerByUtId($ut_id)
+    public function updateUserTest($id, $params)
     {
-        return unserialize(UserTest::findOne(['ut_id' => $ut_id])->ut_user_answer_ids);
+        $updateTest = UserTest::queryOne($id);
+
+        if (!$updateTest) {
+            return false;
+        }
+        $params = AppArrayHelper::filterKeys($params, ['ut_status','ut_start_at','ut_finished_at','ut_user_answer_ids', 'ut_mark']);
+        $updateTest->load(['UserTest' => $params]);
+        if ($updateTest->validate()) {
+            return $updateTest->save();
+        }
     }
 
     public function findAnswersRandomByQuestionId($questionID, $type)
     {
-        $selectTrue = Answer::find()
-                ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_RIGHT])
-                ->orderBy(new Expression('rand()'))
-                ->limit($type)
-                ->asArray()
-                ->all();
-        $selectFalse = Answer::find()
-                ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_WRONG])
-                ->orderBy(new Expression('rand()'))
-                ->limit(AppConstant::QUESTION_ANSWERS_LIMIT - $type)
-                ->asArray()
-                ->all();
+        $selectTrue = Answer::query()
+            ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_RIGHT])
+            ->orderBy(new Expression('rand()'))
+            ->limit($type)
+            ->asArray()
+            ->all();
+        $selectFalse = Answer::query()
+            ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_WRONG])
+            ->orderBy(new Expression('rand()'))
+            ->limit(AppConstant::QUESTION_ANSWERS_LIMIT - $type)
+            ->asArray()
+            ->all();
         $result = array_merge($selectTrue, $selectFalse);
         shuffle($result);
         return $result;
     }
+
     public function setMark($id) {
     	$testExam = UserTest::findOne($id);
     	if ($testExam && $testExam->ut_status == "DONE") {
@@ -251,15 +284,65 @@ public static function findUserTestBySearch($params)
     	}
     	
     }
-    
-    public static function getMark($id) {
-    	$userTest = UserTest::findOne($id);
-    	if ($userTest)
-    		return [$userTest->ut_mark, TestExam::findOne($userTest->te_id)->te_num_of_questions];
-    		else{
-    			return false;
-    		}
+
+    public function findUserTestDataByUtId($ut_id)
+    {
+        // find user test
+        $userTest = UserTest::queryOne($ut_id);
+
+        if ($userTest) {
+            // find questions of the test
+            $question_clones = $this->findQuestionCloneByUtId($ut_id);
+            $userTest->question_clones = AppArrayHelper::index($question_clones, 'qc_id');
+
+            // find answers of questions
+            $answers = $this->findAnswerCloneByQcId(AppArrayHelper::getColumn($userTest->question_clones, 'qc_id'));
+            foreach ($answers as $ac) {
+                $ac_id = $ac['ac_id'];
+                $userTest->question_clones[$ac['qc_id']]['answers'][$ac_id] = $ac;
+            }
+        }
+
+        return $userTest;
+
     }
+
+    public function scoreUserTest($userTestData, $userAnswers)
+    {
+        $questions = $userTestData->question_clones;
+
+        if (empty($questions) || empty($userAnswers)) {
+            return 0;
+        }
+
+        $score = 0;
+        foreach ($userAnswers as $qc_id => $userAnswer) {
+            $question = $questions[$qc_id];
+
+            $answerCorrect = true;
+            $trueAnswerCount = 0;
+            foreach ($question['answers'] as $answer) {
+                if ($answer['ac_status'] == AppConstant::ANSWER_STATUS_RIGHT) {
+                    // find the number of true answers
+                    ++$trueAnswerCount;
+
+                    // find the true answer in userAnswer
+                    // if not found, the userAnswer is wrong
+                    $key = array_search($answer['ac_id'], $userAnswer);
+                    if ($key === false) {
+                        $answerCorrect = false;
+                    }
+                }
+            }
+            
+            if ($answerCorrect && (count($userAnswer) == $trueAnswerCount)) {
+                ++$score;
+            }
+        }
+
+        return $score;
+    }
+
     public function actionMark()
     {
     	$id = Yii::$app->request->get('id');
@@ -274,5 +357,6 @@ public static function findUserTestBySearch($params)
     	}
     }
   
+    
     
 }

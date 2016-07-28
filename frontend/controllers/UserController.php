@@ -28,10 +28,6 @@ class UserController extends FrontendController
             ],
         ];
     }
-    public function actionIndex()
-    {
-        return $this->render('user');
-    }
 
     public function actionLogin()
     {
@@ -45,21 +41,9 @@ class UserController extends FrontendController
         }
     }
     
-    public function actionIndexx()
-    {
-        $dataProvider = User::find()->all();
-        return $this->render('user', [
-                'dataProvider' => $dataProvider,
-        ]);
-    }
-
     public function actionLogout()
     {
         Yii::$app->user->logout();
-
         return $this->goHome();
-    }
-    public function actionChoose()
-    {
     }
 }

@@ -6,7 +6,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use backend\assets\AppAsset;
-use backend\widgets\SideMenu;
+use common\widgets\SideMenu;
 use common\widgets\Alert;
 use common\assets\CommonAsset;
 
@@ -99,12 +99,20 @@ $current_user = Yii::$app->user->identity;
                             'icon' => 'fa-tasks',
                             'url' => ["/user-test"],
                             'controllers' => [
-                                'usertest' => '*',
+                                'user-test' => '*',
+                            ],
+                        ],
+                        [
+                            'label' => 'Import Data',
+                            'icon' => 'fa-upload',
+                            'url' => ["/import-data"],
+                            'controllers' => [
+                                'import-data' => '*',
                             ],
                         ],
                     ],
                 ]);
-endif; ?>
+            endif; ?>
             </ul>
 
         </div>

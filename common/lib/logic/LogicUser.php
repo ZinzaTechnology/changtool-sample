@@ -44,20 +44,30 @@ class LogicUser extends LogicBase
         $user->save();
     }
     
-    public function updateUserById(&$user, $params)
+    public function updateUser(&$user, $params)
     {
         $user->u_fullname = $params['u_fullname'];
         $user->u_mail = $params['u_mail'];
         $user->u_role = $params['u_role'];
         
-        return $user->save();
+        if ($user->validate()) {
+            $user->save();
+        }
+        return $user;
     }
     
-    public function changePasswordUserById(&$user, $params)
+    public function changePassword(&$user, $params)
     {
+        if($params['u_password_hash'] !== $params['confirm_pwd_update']) {
+            return null;
+        }
+        
         $user->u_password_hash = Yii::$app->security->generatePasswordHash($params['u_password_hash']);
-
-        return $user->save();
+        
+        if ($user->validate()) {
+            $user->save();
+        }
+        return $user;
     }
     
     public function findUserBySearch($params, &$userSearch)
@@ -77,8 +87,8 @@ class LogicUser extends LogicBase
         }
         
         $query->andFilterWhere(['or', ['like', 'u_name', $userSearch->globalSearch],
-        ['like', 'u_mail', $userSearch->globalSearch],
-        ['like', 'u_fullname', $userSearch->globalSearch]]);
+            ['like', 'u_mail', $userSearch->globalSearch],
+            ['like', 'u_fullname', $userSearch->globalSearch]]);
         
         return $dataProvider;
     }

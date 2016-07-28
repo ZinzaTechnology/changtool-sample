@@ -13,7 +13,7 @@ use Yii;
  *
  * @property AnswerClone[] $answerClones
  */
-class QuestionClone extends \yii\db\ActiveRecord
+class QuestionClone extends AppActiveRecord
 {
 
     /**
@@ -65,12 +65,12 @@ class QuestionClone extends \yii\db\ActiveRecord
         foreach ($data as $elements) {
             foreach ($elements['question'] as $question) {
                 if ($question) {
-                    $dataInsert[] = [$question['q_content'], $elements['ut_id']];
+                    $dataInsert[] = [$question['q_content'], $question['q_type'], $elements['ut_id']];
                     $count++;
                 }
             }
         }
-        $db->createCommand()->batchInsert(self::tableName(), ['qc_content', 'ut_id'], $dataInsert)->execute();
+        $db->createCommand()->batchInsert(self::tableName(), ['qc_content', 'qc_type', 'ut_id'], $dataInsert)->execute();
         return [$db->getLastInsertID(), $count];
     }
 }

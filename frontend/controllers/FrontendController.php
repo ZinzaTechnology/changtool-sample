@@ -18,13 +18,10 @@ class FrontendController extends AppController
                 return true;
             } else {
                 $this->redirect(['user/login']);
+                return false;
             }
         }
 
         return true;
-    }
-    public function actionIndex()
-    {
-        return $this->render('frontend');
     }
 }

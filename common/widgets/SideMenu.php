@@ -5,7 +5,7 @@
  * @license: ZINZA Technology
  */
 
-namespace backend\widgets;
+namespace common\widgets;
 
 use Yii;
 use yii\widgets\Menu;

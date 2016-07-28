@@ -36,4 +36,15 @@ class AppController extends Controller
     {
         Yii::$app->session->setFlash($type, $message);
     }
+
+    /**
+     * force a redirect
+     * warning: this will terminate the execution of the all scripts
+     * Yii events and/or other post action processing will not work properly
+     */
+    public function forceRedirect($url, $httpCode = 302)
+    {
+        header('Location: '.$url, true, $httpCode);
+        exit;
+    }
 }

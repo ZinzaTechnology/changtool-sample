@@ -2,13 +2,9 @@
 namespace frontend\controllers;
 
 use Yii;
-use frontend\models\UserTest;
-use yii\data\ActiveDataProvider;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\data\Pagination;
 use common\lib\logic\LogicUserTest;
+use common\lib\logic\LogicTestExam;
 use common\lib\helpers\AppArrayHelper;
 
 use yii\helpers\Url;
@@ -16,7 +12,7 @@ use yii\helpers\Url;
 /**
  * UserTestController implements the CRUD actions for UserTest model.
  */
-class UserTestController extends Controller
+class UserTestController extends FrontendController
 {
     /**
      * @inheritdoc
@@ -27,201 +23,160 @@ class UserTestController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'submit' => ['POST'],
                 ],
             ],
         ];
     }
 
-    /**
-     * Lists all UserTest models.
-     * @return mixed
-     */
-    public function actionStartTest()
+    public function actionStartTest($id)
     {
-    	// return to dashboard if no parameter
-    	if (!Yii::$app->request->get('id')) {
-    		$this->redirect(Url::toRoute('/'));
-    	}
+        // return to dashboard if no parameter
+        if (!Yii::$app->request->get('id')) {
+            return $this->redirect(Url::toRoute('/'));
+        }
     
-    	$id = Yii::$app->request->get('id');
-    	$logicUserTest = new LogicUserTest();
-    	$userTest = LogicUserTest::findUserTestBySearch(['u_name' => null, 'ut_id' => $id, 'u_id' => Yii::$app->user->id])[0];
-    	// return to dashboard if no valid user test found
-    	if (!$userTest) {
-    		$this->redirect(Url::toRoute('/'));
-    	}
-    
-    	$time_count = 0;
-    	if ($userTest['ut_status'] == 'ASSIGNED') {
-    		$logicUserTest->updateUserTest($id, ['ut_status' => 'DOING', 'ut_start_at' => date('Y-m-d H:i:s')]);
-    	
-    		$time_count = $userTest['te_time'] * 60;
-    	} else {
-    		$testAllowed = $userTest['te_time'] * 60;
-    		$mustFinishedAt = strtotime($userTest['ut_start_at']) + $testAllowed;
-    		$time_access = strtotime(date('Y-m-d H:i:s'));
-    		$time_count = $mustFinishedAt - $time_access;
-    	}
-    
-    	switch ($userTest['ut_status']) {
-    		case "ASSIGNED":
-    		case "DOING":
-    			if ($request = Yii::$app->request->post()) {
-    				unset($request[Yii::$app->request->csrfParam]);
-    				$answer = serialize($request);
-    				
-    				$logicUserTest->updateUserTest($id,['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_user_answer_ids' => $answer]);
-    				$logicUserTest->setMark($id);
-    				
-    				return $this->redirect(Url::toRoute(['mark', 'id' => $id]));
-    			}
-    			$data = (new UserTest())->getTest($id);
-    			return $this->render('test/start', [
-    					'data' => $data,
-    					'time_count' => $time_count,
-    			]);
-    			break;
-    			
-    		default:
-    			$this->redirect(Url::toRoute('/'));
-    			break;
-    	}
-    
-    }
-    public function actionMark()
-    {
-    	$id = Yii::$app->request->get('id');
-    	$array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
-    	array_shift($array);
-    	if ($mark = UserTest::getMark($id)) {
-    		return $this->render('test/result', [
-    				'mark' => $mark
-    		]);
-    	} else {
-    		return $this->redirect(Url::toRoute('/'));
-    	}
-    }
-    public function actionIndex()
-    {
-    	$model = new UserTest();
-    	
-    	$current_user = Yii::$app->user->identity;
-        $dataProvider = new ActiveDataProvider([
-            'query' => UserTest::find()->where(['u_id' => $current_user->u_id]),
-        ]);
+        $ut_id = Yii::$app->request->get('id');
+        $logicUserTest = new LogicUserTest();
 
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        	'model' => $model,
-        ]);
-    }
-    
-    /**
-     * Displays a single UserTest model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionStart(){
-    	$id = Yii::$app->request->get('ut_id');
-    	if(UserTest::findOne(['ut_id' => $id, 'u_id'=>Yii::$app->user->id])){
-    		if($request = Yii::$app->request->post())
-    		$updateTest = UserTest::findOne($id);
-    		$userTest = new UserTest();
-    		$data = $userTest->getTest($id);
-    		return $this->render('start',[
-    				'data' => $data,
-    		]);
-    	}
+        $userTest = LogicUserTest::findUserTestBySearch(['ut_id' => $ut_id, 'u_id' => Yii::$app->user->id])[0];
+        // return to dashboard if no valid user test found
+        if (empty($userTest)) {
+            $this->setSessionFlash('error', 'User test not found');
+            return $this->redirect(Url::toRoute('/'));
+        }
+
+        // change the test status if not started yet
+        if ($userTest['ut_status'] === 'ASSIGNED') {
+            $logicUserTest->updateUserTest($id, ['ut_status' => 'DOING', 'ut_start_at' => date('Y-m-d H:i:s')]);
+        }
+
+        return $this->redirect(['/user-test/do', 'id' => $ut_id]);
     }
 
-    public function actionView($id)
+    public function actionDo($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+        // return to dashboard if no parameter
+        if (!Yii::$app->request->get('id')) {
+            return $this->redirect(Url::toRoute('/'));
+        }
+    
+        $logicUserTest = new LogicUserTest();
+        $logicTestExam = new LogicTestExam();
+        $userTestData = $logicUserTest->findUserTestDataByUtId($id);
+
+        // return to dashboard if no valid user test found
+        $this->_redirectIfTestNotValid($userTestData);
+
+        // if the test have not been started yet
+        $this->_redirectIfTestNotStarted($userTestData);
+
+        // if the test have been done, redirect to result page
+        $this->_redirectIfTestDone($userTestData);
+
+        $timeCount = 0;
+        $testExam = $logicTestExam->findTestExamById($userTestData['te_id']);
+        $testAllowed = $testExam['te_time'] * 60;
+        $mustFinishedAt = strtotime($userTestData['ut_start_at']) + $testAllowed;
+        $timeAccess = strtotime(date('Y-m-d H:i:s'));
+        $timeCount = $mustFinishedAt - $timeAccess;
+
+        // if time excess and not submit, score the test to 0
+        // and redirect to result page
+        if ($timeCount <= 0) {
+            $logicUserTest->updateUserTest($id, ['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_mark' => 0]);
+            return $this->redirect(Url::toRoute(['result', 'id' => $id]));
+        }
+
+        // if no exceptions, user can start doing the test
+        return $this->render('do', [
+            'userTestData' => $userTestData,
+            'timeCount' => $timeCount,
         ]);
     }
 
-    /**
-     * Creates a new UserTest model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
+    public function actionSubmit()
     {
-        $model = new UserTest();
+        $request = Yii::$app->request->post();
+        if (empty($request)) {
+            return $this->redirect(['/']);
+        }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->ut_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        $request = AppArrayHelper::filterKeys($request, ['ut_id', 'questions']);
+        $ut_id = $request['ut_id'];
+        $qaSubmit = $request['questions'];
+
+        $logicUserTest = new LogicUserTest();
+        $userTestData = $logicUserTest->findUserTestDataByUtId($ut_id);
+
+        // return to dashboard if no valid user test found
+        $this->_redirectIfTestNotValid($userTestData);
+
+        // if the test have not been started yet
+        $this->_redirectIfTestNotStarted($userTestData);
+
+        // if the test have been done, redirect to result page
+        $this->_redirectIfTestDone($userTestData);
+
+        // score the test
+        $score = $logicUserTest->scoreUserTest($userTestData, $qaSubmit);
+        $answer = serialize($qaSubmit);
+        $logicUserTest->updateUserTest($ut_id, ['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_mark' => $score, 'ut_user_answer_ids' => $answer]);
+
+        return $this->redirect(Url::toRoute(['result', 'id' => $ut_id]));
+    }
+
+    public function actionResult($id)
+    {
+        $logicUserTest = new LogicUserTest();
+        $userTestData = $logicUserTest->findUserTestDataByUtId($id);
+
+        // return to dashboard if no valid user test found
+        $this->_redirectIfTestNotValid($userTestData);
+
+        // if the test have not been started yet
+        $this->_redirectIfTestNotStarted($userTestData);
+
+        // if the test have not been scored, redirect to /do page
+        $this->_redirectIfTestDoing($userTestData);
+
+        // if no exceptions
+        return $this->render('result', [
+            'userTestData' => $userTestData,
+        ]);
+    }
+    
+    /**********************************************
+     * private helper function
+     * ********************************************/
+    private function _redirectIfTestNotValid($userTestData)
+    {
+        if (empty($userTestData) || $userTestData->u_id != Yii::$app->user->id) {
+            $this->setSessionFlash('error', 'User test not found');
+            $this->forceRedirect(Url::toRoute('/'));
         }
     }
 
-    /**
-     * Updates an existing UserTest model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
+    private function _redirectIfTestDone($userTestData)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->ut_id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        if ($userTestData['ut_status'] === 'DONE') {
+            $this->forceRedirect(Url::toRoute(['result', 'id' => $userTestData->ut_id]));
         }
     }
-    
 
-    /**
-     * Deletes an existing UserTest model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionPagination() {
-    	//preparing the query
-    	$query = UserTest::find();
-    	// get the total number of users
-    	$count = $query->count();
-    	//creating the pagination object
-    	$pagination = new Pagination(['totalCount' => $count, 'defaultPageSize' => 10]);
-    	//limit the query using the pagination and retrieve the users
-    	$models = $query->offset($pagination->offset)
-    	->limit($pagination->limit)
-    	->all();
-    	return $this->render('pagination', [
-    			'models' => $models,
-    			'pagination' => $pagination,
-    	]);
-    }
-    public function actionDelete($id)
+    private function _redirectIfTestNotStarted($userTestData)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        if ($userTestData['ut_status'] === 'ASSIGNED') {
+            $this->setSessionFlash('error', 'You have not started this test yet');
+            $this->forceRedirect(Url::toRoute('/'));
+        }
     }
 
-    /**
-     * Finds the UserTest model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return UserTest the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
+    private function _redirectIfTestDoing($userTestData)
     {
-        if (($model = UserTest::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+        if ($userTestData['ut_status'] === "DOING") {
+            $this->setSessionFlash('warning', 'Please continue to do the test');
+            $this->forceRedirect(Url::toRoute(['do', 'id' => $userTestData->ut_id]));
         }
     }
 }

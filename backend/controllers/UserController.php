@@ -29,9 +29,9 @@ class UserController extends BackendController
     public function behaviors()
     {
         return [
-                'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
+            'access' => [
+            	'class' => AccessControl::className(),
+            	'rules' => [
                     [
                         'allow' => false,
                         'roles' => ['?'],
@@ -44,13 +44,13 @@ class UserController extends BackendController
                         }
                     ],
                 ],
+            ],
+            'verbs' => [
+            	'class' => VerbFilter::className(),
+            	'actions' => [
+                	'delete' => ['post'],
                 ],
-                'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
-                ],
-                ],
+            ],
         ];
     }
 
@@ -89,6 +89,11 @@ class UserController extends BackendController
             'dataProvider' => $dataProvider,
         ]);
     }
+        
+    /**
+     * Create action.
+     *
+     */
     
     public function actionCreate()
     {
@@ -121,6 +126,7 @@ class UserController extends BackendController
         
         if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
+            
             return ActiveForm::validate($model);
         }
     }
@@ -156,87 +162,150 @@ class UserController extends BackendController
         return $this->goHome();
     }
     
+    /**
+     * View action.
+     *
+     */
+    
     public function actionView($id)
     {
         $logicUser = new LogicUser();
         
-        return $this->render('view', [
-            'model' => $logicUser->findUserById($id),
-        ]);
+        if (!empty($id)) {
+            $model = $logicUser->findUserById($id);
+            if ($model == null) {
+                $this->setSessionFlash('error', "User not found");
+            } else {
+                return $this->render('view', [
+                    'model' => $logicUser->findUserById($id),
+                ]);
+            }
+        } else {
+            $this->setSessionFlash('error', 'Invalid user'); 
+        }
+        return $this->redirect('index');
     }
+    
+    /**
+     * Delete action.
+     *
+     */
     
     public function actionDelete($id)
     {
         $logicUser = new LogicUser();
         
-        $logicUser->deleteUserById($id);
+        if (!empty($id)) {
+            $model = $logicUser->findUserById($id);
+            
+            if($model == null) {
+                $this->setSessionFlash('error', 'User not found');
+            } else {
+                $logicUser->deleteUserById($id);
+            }
+        } else {
+            $this->setSessionFlash('error', 'Invalid User');
+        }
         
         return $this->redirect('index');
     }
     
+    /**
+     * Update action.
+     *
+     */
+    
     public function actionUpdate($id)
-    {
+    {        
+        $request = Yii::$app->request->post();                
         
-        $request = Yii::$app->request->post();
-        $user = LogicUser::findUserById($id);
-        
-        if (isset($request['User'])) {
-            $updateUser = new LogicUser();
+        if (!empty($id)) {
+            $user = LogicUser::findUserById($id);
             
-            $params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
-            $updateUser->updateUserById($user, $params);
+            if (empty($user)) {
+                $this->setSessionFlash('error', 'User not found');
+                return $this->redirect('index');
+            } else {               
+                
+                if (isset($request['User'])) {
+                    $updateUser = new LogicUser();
+                    
+                    $params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
+                    $updateUser->updateUser($user, $params);
+                    
+                    return $this->redirect('index');
+                }
+            
+            return $this->render('update', [
+                    'model' => $user,
+                ]);
+            }
+        } else {
+            $this->setSessionFlash('error', 'Invalid user');
             
             return $this->redirect('index');
         }
-        
-        return $this->render('update', [
-                'model' => $user,
-            ]);
     }
+    
+    /**
+     * Change Password action.
+     *
+     */
     
     public function actionChangepassword($id)
     {
-        $request = Yii::$app->request->post();
-        $user = LogicUser::findUserById($id);
+        $request = Yii::$app->request->post();        
         
-        if (isset($request['User'])) {
-            $changePwd = new LogicUser();
+        if (!empty($id)) {
+            $user = LogicUser::findUserById($id);
             
-            $params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash']);
-            $changePwd->changePasswordUserById($user, $params);
-
-            return $this->redirect('index');
-        }
-        
-        return $this->render('changepassword', [
-            'model' => $user,
-            ]);
-    }
-    
-    protected function findModel($id)
-    {
-        if (($model = User::findOne($id)) !== null) {
-            return $model;
+            if (empty($user)) {
+                $this->setSessionFlash('error', 'User not found');
+                return $this->redirect('index');
+            } else {
+                
+                if (isset($request['User'])) {
+                    $changePwd = new LogicUser();
+                    
+                    $params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash', 'confirm_pwd_update']);
+                    $user = $changePwd->changePassword($user, $params);
+                    if($user ==  null) {
+                        $this->setSessionFlash('error', 'Confirm password incorrect!');
+                        return $this->redirect('changepassword');
+                    }
+                    
+                    return $this->redirect('index');
+                }
+            
+                return $this->render('changepassword', [
+                    'model' => $user,
+                    ]);
+            }
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            $this->setSessionFlash('error', 'Invalid user');
+            
+            return $this->redirect('index');
         }
     }
     
     /**
      * @return \yii\db\ActiveQuery
      */
+    
     public function getUsername()
     {
         return $this->hasOne(User::className(), ['id' => 'u_name']);
     }
-     
+    
     /**
      * @return \yii\db\ActiveQuery
      */
+    
     public function getFullname()
     {
         return $this->hasOne(User::className(), ['id' => 'u_fullname']);
     }
+    
     public function getEmail()
     {
         return $this->hasOne(User::className(), ['id' => 'u_mail']);

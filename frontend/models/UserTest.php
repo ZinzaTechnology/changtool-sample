@@ -3,14 +3,11 @@
 namespace frontend\models;
 
 use Yii;
-use yii\db\Query;
 use common\models\TestExam;
 use common\models\Question;
 use common\models\QuestionClone;
 use common\models\Answer;
 use common\models\AnswerClone;
-use common\lib\logic\LogicUserTest;
-use yii\db\Expression;
 
 /**
  * This is the model class for table "user_test".

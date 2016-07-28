@@ -31,6 +31,7 @@ class BackendController extends AppController
                 return true;
             } else {
                 $this->redirect(['user/login']);
+                return false;
             }
         }
 
