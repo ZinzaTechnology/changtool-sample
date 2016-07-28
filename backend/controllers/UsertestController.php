@@ -64,7 +64,7 @@ class UsertestController extends Controller {
         if ($request = Yii::$app->request->post()) {
 
             //First element of post() is '_csrf-backend => array_shift to remove it
-            $this->extend = $request;
+            $this->extend = $request; // var extend gets all data from post(), to be used for 'selected' in dropdownlist
             $this->choice['User'] = User::find()->select('u_name')->where(['u_id' => $request['User']['u_id']])->one();
 
             //Check submit type
