@@ -123,6 +123,7 @@ class UserTest extends \yii\db\ActiveRecord {
                     ], "ut_id = {$id}"
             )->execute();
         }
+        
     }
 
     public static function getMark($id) {

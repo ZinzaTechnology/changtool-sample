@@ -249,6 +249,7 @@ public static function findUserTestBySearch($params)
     		], "ut_id = {$id}"
     		)->execute();
     	}
+    	
     }
     
     public static function getMark($id) {
@@ -258,6 +259,19 @@ public static function findUserTestBySearch($params)
     		else{
     			return false;
     		}
+    }
+    public function actionMark()
+    {
+    	$id = Yii::$app->request->get('id');
+    	$array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
+    	array_shift($array);
+    	if ($mark = UserTest::getMark($id)) {
+    		return $this->render('test/result', [
+    				'mark' => $mark
+    		]);
+    	} else {
+    		return $this->redirect(Url::toRoute('/'));
+    	}
     }
   
     
