@@ -22,8 +22,8 @@ $this->title = 'Dashboard';
         	}
         	?>
         	<div class='col-md-4'>
+        	<a href='<?= $link ?>'>
        		<div class="widget yellow-bg p-lg text-center">
-       			<a href='<?= $link ?>'>
             	<div class="m-b-md">
                 	
                             <h1 class="m-xs">Test Ability</h1>
@@ -35,8 +35,9 @@ $this->title = 'Dashboard';
                             </h3>
                             <small><?= $data['ut_start_at'] ?></small>
                         </div>
-                </a>
-                    </div></div>
+                    </div>
+                    </a>	
+                    </div>
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
