@@ -2,10 +2,7 @@
 namespace backend\controllers;
 
 use Yii;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
-use common\models\LoginForm;
-
+use common\lib\components\AppConstant;
 /**
  * Dashboard controller
  */
@@ -39,6 +36,6 @@ class DashboardController extends BackendController
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->render('index',['category'=>AppConstant::$QUESTION_CATEGORY_NAME]);
     }
 }
