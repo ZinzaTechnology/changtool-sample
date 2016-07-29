@@ -8,7 +8,7 @@ $this->title = 'Dashboard';
     <?php if ($user_test_models) : ?>
         <?php foreach ($user_test_models as $data) : ?>
             <div style='width:250px;float:left'>
-                <div style='width:90%;height:140px;border: 4px solid #000'><?= $data['ut_status'] ?> </div>
+                <div style='width:90%;height:140px;border: 4px solid #163'> Test Ability </div>
                 <div style='margin:0 auto 0;'>
                     <?php
                     switch ($data['ut_status']) {
