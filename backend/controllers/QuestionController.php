@@ -367,27 +367,7 @@ class QuestionController extends BackendController
         }
     }
 
-    public function actionDeleteAnswer()
-    {
-        if (($qa_id = Yii::$app->request->get('qa_id')) != null && ($q_id = Yii::$app->request->get('q_id')) != null) {
-            $logicAnswer = new LogicAnswer();
-            if ($q_id == ($logicAnswer->findByAnswerId($qa_id)->q_id)) {
-                $result = $logicAnswer->deleteAnswerById($qa_id);
-                if ($result) {
-                    return $this->redirect([
-                        '/question/view',
-                        'q_id' => $q_id 
-                    ]);
-                } else {
-                    Yii::$app->session->setFlash('error', 'Error occurs when deleting this answer!');
-                    $this->goReferrer();
-                }
-            } else {
-                Yii::$app->session->setFlash('error', 'Error occurs when deleting this answer!');
-                $this->goReferrer();
-            }
-        }
-    }
+   
 
    
 }

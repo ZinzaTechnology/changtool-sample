@@ -14,7 +14,7 @@ CREATE TABLE `question_clone` (
   `updated_at` datetime DEFAULT NULL,
   `q_id` int(11) NOT NULL,
    PRIMARY KEY (`qc_id`),
-   FOREIGN KEY (q_id) REFERENCES question(q_id)
+   KEY `question_clone` (`q_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

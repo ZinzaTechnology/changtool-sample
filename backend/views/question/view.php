@@ -113,29 +113,7 @@ $this->params ['breadcrumbs'] [] = [
                     ],
                     'created_at',
                     'updated_at',
-                    [
-                        'class' => 'yii\grid\ActionColumn',
-                        'template' => '{edit} {delete}',
-                        'buttons' => [                            
-                            'delete' => function ($url, $model) {
-                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
-                                    'data-confirm' => 'Are you sure you want to delete this answer?',
-                                    'data-method' => 'post' 
-                                ]);
-                            } 
-                        ],
-                        
-                        'urlCreator' => function ($action, $dataProvider, $key, $index) {                       
-                            if ($action === 'delete') {
-                                return Url::to([
-                                    'question/delete-answer',
-                                    'q_id' => $dataProvider ['q_id'],
-                                    'qa_id' => $dataProvider ['qa_id'] 
-                                ]);
-                            }
-                            return $url;
-                        } 
-                    ] 
+                   
                 ] 
             ]);
             ?>  
