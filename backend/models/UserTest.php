@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "user_test".
@@ -74,53 +75,40 @@ class UserTest extends \yii\db\ActiveRecord {
         return $this->hasOne(User::className(), ['u_id' => 'u_id']);
     }
 
-    public static function getUserTestInfoWithParams($params) {
-        $sql = "SELECT ut_id as 'Id', u_name as 'Username',te_category as 'Category', te_title as 'Title', te_level as 'Level', ut_status as 'Status', ut_start_at as 'Start time', ut_finished_at as 'End time' 
-                    FROM user_test 
-                    INNER JOIN user 
-                    ON user_test.u_id = user.u_id 
-                    INNER JOIN test_exam 
-                    ON user_test.te_id = test_exam.te_id 
-		";
-        $params['a'] = null;
-        $paraFilted = array_filter($params);
-        if ($paraFilted) {
-            if (count($paraFilted)) {
-                $sql.= ' WHERE ';
-                $count = 0;
-                $keys = array_keys($paraFilted);
-                foreach ($keys as $key) {
-                    switch ($key) {
-                        case 'ut_start_at':
-                            $sql.= ' ut_start_at <= ? ';
-                            break;
-                        case 'ut_finished_at':
-                            $sql.= ' ut_finished_at >= ? ';
-                            break;
-                        default:
-                            $sql.= " {$key} = ? ";
-                            break;
-                    }
-                    if ($count < (count($paraFilted) - 1)) {
-                        $sql.= ' AND ';
-                        $count++;
-                    }
-                }
-            }
-        }
-        $sql.= ' ORDER BY ut_id DESC ';
-        if ($query = Yii::$app->db->createCommand($sql)) {
-            if ($paraFilted) {
-                $x = 1;
-                foreach ($paraFilted as $e) {
-                    if ($x <= count($paraFilted)) {
-                        $query->bindValue($x, $e);
-                        $x++;
-                    }
-                }
-            }
-        }
-        return $query->queryAll();
+    public static function getWithParams($params) {
+        $query = new Query;
+        $query->select([
+            "ut_id",
+            "u_name",
+            "te_category",
+            "te_title",
+            "te_level",
+            "ut_status",
+            "ut_start_at",
+            "ut_finished_at" ])
+        ->from('user_test')
+        ->join('INNER JOIN', 'user', 'user_test.u_id = user.u_id')
+        ->join('INNER JOIN', 'test_exam', 'user_test.te_id = test_exam.te_id')
+        ->andFilterWhere(['like', 'u_name', $params['u_name']])
+        ->andFilterWhere(['like', 'te_title', $params['te_title']])
+        ->andFilterWhere([
+            'te_category' => $params['te_category'],
+            'te_level' => $params['te_level'],
+        ])
+        ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
+        ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
+        ->addOrderBy(['ut_id' => SORT_DESC]);
+        return $query->all();
+    }
+
+    public static function assignTest($userId, $testId) {
+        // Create clone
+        
+        
+//        $userTest = new UserTest();
+//        $userTest->u_id = $userId;
+//        $userTest->te_id = $testId;
+//        $userTest->save();
     }
 
 }

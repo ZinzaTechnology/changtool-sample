@@ -73,15 +73,4 @@ class User extends \yii\db\ActiveRecord
     {
         return $this->hasMany(UserTest::className(), ['u_id' => 'u_id']);
     }
-    
-    public function dropDown(){
-        static $dropdown;
-        if($dropdown === null){
-            $element = self::find()->all();
-            foreach($element as $e){
-                $dropdown[$e->u_id] = $e->u_name;
-            }
-        }
-        return $dropdown;
-    }
 }

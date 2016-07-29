@@ -24,7 +24,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="test-exam-questions-create">
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'method' => 'post'
+        ]); ?>
 
     <?=
     $form->field($user, 'u_id')->dropDownList(ArrayHelper::map($user->find()->all(), 'u_id', 'u_name'), [
@@ -60,14 +62,14 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php
-    if($listTest)
-    echo $form->field($testExam, 'te_id')->dropDownList(ArrayHelper::map($listTest, 'te_id', 'te_title'), [
-        'prompt' => 'Select Test',
-        'options' => [
-            'te_id' => ['Selected' => true]
-        ]
-    ])->label('All Test you can choose')
-    ?>
+    if ($listTest)
+        echo $form->field($testExam, 'te_id')->dropDownList(ArrayHelper::map($listTest, 'te_id', 'te_title'), [
+            'prompt' => 'Select Test',
+            'options' => [
+                'te_id' => ['Selected' => true]
+            ]
+        ])->label('All Test you can choose')
+        ?>
 
     <?= Html::a('Add new test', Url::toRoute('test'), ['class' => 'btn btn-success']) ?>
 

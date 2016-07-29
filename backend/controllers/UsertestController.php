@@ -6,15 +6,11 @@ use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-//--- Model ---//
 use backend\models\UserTest;
-use backend\models\UserTestSearch;
 use backend\models\TestExam;
-use backend\models\TestExamQuestions;
-use backend\models\Question;
-use backend\models\Answer;
 use backend\models\User;
 use yii\data\ArrayDataProvider;
+use yii\helpers\Url;
 
 class UsertestController extends Controller {
 
@@ -32,20 +28,16 @@ class UsertestController extends Controller {
     }
 
     public function actionIndex() {
-        if ($param = Yii::$app->request->get()) {
-            if ($param['a'] == 'Search')
-                $this->params = $param;
-            else
-                $this->redirect('/ba/usertest/');
-        }
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => UserTest::getUserTestInfoWithParams($this->params),
-            'pagination' => [
-                'pageSize' => 15,]
-        ]);
-
+        if ($param = Yii::$app->request->post())
+            $this->params = $param;
         return $this->render('index', [
-                    'dataProvider' => $dataProvider,
+            'selected' => $this->params,
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => UserTest::getWithParams($this->params),
+                'pagination' => [
+                    'pageSize' => 15,
+                ]
+            ]),
         ]);
     }
 
@@ -57,15 +49,17 @@ class UsertestController extends Controller {
 
     public $extend,
             $listTest = [],
-            $choice = ['User' => '', 'TestExam' => ''],
-            $count = 0;
+            $choice = ['User' => '', 'TestExam' => ''];
 
     public function actionCreate() {
         if ($request = Yii::$app->request->post()) {
 
             //First element of post() is '_csrf-backend => array_shift to remove it
             $this->extend = $request; // var extend gets all data from post(), to be used for 'selected' in dropdownlist
-            $this->choice['User'] = User::find()->select('u_name')->where(['u_id' => $request['User']['u_id']])->one();
+            $this->choice['User'] = User::find()
+                    ->select('u_name')
+                    ->where(['u_id' => $request['User']['u_id']])
+                    ->one();
 
             //Check submit type
             switch ($request['submit']) {

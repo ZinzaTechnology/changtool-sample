@@ -2,34 +2,30 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-
+use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
 /* @var $this yii\web\View */
 /* @var $model backend\models\TestExamQuestionsSearch */
-/* @var $form yii\widgets\ActiveForm */
-$category = ['1' => 'PHP', '2' => 'C/C++', '3' => 'Java', '4' => 'SQL', '5' => 'C#'];
-$level = ['1' => 'Easy', '2' => 'Normal', '3' => 'Hard'];
+$category = [
+    ['id' => '1', 'category' => 'PHP'],
+    ['id' => '2', 'category' => 'C/C++'],
+    ['id' => '3', 'category' => 'Java'],
+    ['id' => '4', 'category' => 'SQL'],
+    ['id' => '5', 'category' => 'C#']
+];
+$level = [
+    ['id' => '1', 'level' => 'Easy'],
+    [ 'id' => '2', 'level' => 'Normal'],
+    ['id' => '3', 'level' => 'Hard']
+];
 ?>
 
-<div class="user-test-search">
-    <?php Html::beginForm('', 'get')?>
-    Username 
-        <input type="text" name="u_name" value="<?= isset($_GET['u_name']) ? $_GET['u_name'] : '' ?>" />
-        Category <select name="te_category">
-            <option value="0">--- Select Category ---</option>
-            <?php for ($i = 1; $i <= count($category); $i++) { ?>
-                <option value="<?= $i ?>" <?= (isset($_GET['te_category']) && $_GET['te_category'] == $i) ? 'selected' : '' ?>><?= $category[$i] ?></option>
-            <?php } ?>
-        </select>
-        Title <input type="text" name="te_title" value="<?= isset($_GET['te_title']) ? $_GET['te_title'] : '' ?>" />
-        Level <select name="te_level">
-            <option value="0">--- Select Level ---</option>
-            <?php for ($i = 1; $i <= count($level); $i++) { ?>
-                <option value="<?= $i ?>" <?= (isset($_GET['te_level']) && $_GET['te_level'] == $i) ? 'selected' : '' ?>><?= $level[$i] ?></option>
-            <?php } ?>
-        </select>
-        Start date<input type="date" name="ut_start_at" value="<?= isset($_GET['ut_start_at']) ? $_GET['ut_start_at'] : '' ?>"/>
-        End date<input type="date" name="ut_finished_at" value="<?= isset($_GET['ut_finished_at']) ? $_GET['ut_finished_at'] : '' ?>"/>
-        <input type="submit" value="Search" name="a" />
-        <input type="submit" value="Back" name="a" />
-    <?php Html::endForm(); ?>
-</div>
+<?php $form = Html::beginForm(); ?>
+    Username <?= Html::input('text', 'u_name') ?>
+    Category <?= Html::dropDownList('te_category', false, ArrayHelper::map($category, 'id', 'category')) ?>
+    Level <?= Html::dropDownList('te_level', false, ArrayHelper::map($level, 'id', 'level')) ?>
+    Title <?= Html::input('text', 'te_title') ?>
+    Start date <?= Html::input('date', 'ut_start_at') ?>
+    End date <?= Html::input('date', 'ut_finished_at') ?>
+    <?= Html::submitButton('Submit', ['class' => 'btn btn-primary']) ?>
+<?php Html::endForm(); ?>
