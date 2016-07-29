@@ -116,12 +116,7 @@ $this->params ['breadcrumbs'] [] = [
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'template' => '{edit} {delete}',
-                        'buttons' => [
-                            
-                            'edit' => function ($url, $model) {
-                                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url);
-                            },
-                            
+                        'buttons' => [                            
                             'delete' => function ($url, $model) {
                                 return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
                                     'data-confirm' => 'Are you sure you want to delete this answer?',
@@ -130,15 +125,7 @@ $this->params ['breadcrumbs'] [] = [
                             } 
                         ],
                         
-                        'urlCreator' => function ($action, $dataProvider, $key, $index) {
-                            
-                            if ($action === 'edit') {
-                                return Url::to([
-                                    'question/edit-answer',
-                                    'q_id' => $dataProvider ['q_id'],
-                                    'qa_id' => $dataProvider ['qa_id'] 
-                                ]);
-                            }
+                        'urlCreator' => function ($action, $dataProvider, $key, $index) {                       
                             if ($action === 'delete') {
                                 return Url::to([
                                     'question/delete-answer',
