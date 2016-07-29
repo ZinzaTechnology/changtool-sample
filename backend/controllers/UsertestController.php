@@ -42,7 +42,8 @@ class UsertestController extends Controller {
     }
 
     public function actionView($id) {
-        return $this->render('view', [
+        return $this->render('view', 
+                [
                     'model' => $this->findModel($id),
         ]);
     }
@@ -82,11 +83,11 @@ class UsertestController extends Controller {
             }
         }
         return $this->render('create', [
-                    'user' => new User,
-                    'testExam' => new TestExam,
-                    'extInfo' => $this->extend,
-                    'listTest' => $this->listTest,
-                    'choosen' => $this->choice,
+            'user' => new User,
+            'testExam' => new TestExam,
+            'extInfo' => $this->extend,
+            'listTest' => $this->listTest,
+            'choosen' => $this->choice,
         ]);
     }
 
