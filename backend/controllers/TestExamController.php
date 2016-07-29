@@ -10,6 +10,7 @@ use common\lib\components\AppConstant;
 use common\lib\logic\LogicTestExam;
 use common\lib\logic\LogicQuestion;
 use common\lib\helpers\AppArrayHelper;
+use common\lib\logic\LogicTestExamQuestions;
 
 /**
  * TestExamController implements the CRUD actions for TestExam model.
@@ -49,7 +50,7 @@ class TestExamController extends BackendController
 
         $logicTestExam = new LogicTestExam();
         $dataProvider = $logicTestExam->findTestExamBySearch($params);
-
+        
         $data = [
             'dataProvider' => $dataProvider,
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
@@ -67,16 +68,26 @@ class TestExamController extends BackendController
     public function actionView($id)
     {
         $logicTestExam = new LogicTestExam();
-        $logicQuestion = new LogicQuestion();
+        $logicTestExamQuestions = new LogicTestExamQuestions();
         $testExam = $logicTestExam->findTestExamById($id);
 
-        $testQuestions = null;
-        if ($testExam) {
-            $testQuestions = $logicQuestion->findQuestionByTestId($id);
+        if (!$testExam) {
+            // Cannot find info for this testExam id
+            $this->setSessionFlash('error', 'Can not find this testExam record in DB');
+            return $this->redirect(['index']);
         }
+        $request = Yii::$app->request->get();
+        $page = 1; // Default current page
+        if (isset($request['page'])) {
+            $page = $request['page'];
+        }
+        $question_ids = $logicTestExamQuestions->findQuestionIdByTestId($id);
+        $paging = $logicTestExam->pagingTestExam($id, 'view', $page, AppConstant::PAGING_VIEW_PAGE_SIZE, $question_ids);
         return $this->render('view', [
             'testExam' => $testExam,
-            'questions' => $testQuestions,
+            'questions' => $paging['pagging_questions'],
+            'paging_html' => $paging['html'],
+            'start' => $paging['start'],
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
             'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
         ]);
@@ -110,8 +121,8 @@ class TestExamController extends BackendController
 
         return $this->render('create', [
             'testExam' => $newTest,
-            'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-            'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
+            'test_category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+            'test_level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
         ]);
     }
 
@@ -132,25 +143,15 @@ class TestExamController extends BackendController
         if (!empty($request) && isset($request['te_update'])) {
             if ($request['te_update'] == 'add_question') {
                 $logicTestExam->updateTestExamInfoToSession($request);
-                
-                return $this->redirect('test-index');
+                return $this->redirect(['test-index']);
             } elseif ($request['te_update'] == 'add_question_complete') {
                 if (isset($request['option'])) {
                     $logicTestExam->updateTestExamQuestionsInfoToSession($request['option']);
                 }
-                
-                $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
-                
-                return $this->render('update', [
-                    'testExam' => Yii::$app->session->get('test_exam')['testExam'],
-                    'all_questions' => $all_questions,
-                    'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                    'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
-                ]);
+                return $this->redirect(['update', 'id' => $id]);
             } elseif ($request['te_update'] == 'cancel') {
                 // User cancel update, rollback original data
                 $logicTestExam->removeTestExamInfoFromSession();
-                
                 return $this->redirect(['index']);
             } else {
                 // Update new data to session
@@ -173,26 +174,13 @@ class TestExamController extends BackendController
                 }
 
                 $logicTestExam->removeTestExamInfoFromSession();
-                
                 // Get question to display on View page
-                $all_questions = $logicQuestion->findQuestionByTestId($id);
-                
-                return $this->redirect(['view',
-                    'id' => $id,
-                    'all_questions' => $all_questions,
-                    'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                    'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
-                ]);
+                return $this->redirect(['view','id' => $id]);
             }
         } elseif (isset($get['delete_question'])) {
             // User delete a question in testExam
             $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
-            return $this->render('update', [
-                'testExam' => Yii::$app->session->get('test_exam')['testExam'],
-                'all_questions' => $all_questions,
-                'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
-            ]);
+            return $this->redirect(['update', 'id' => $id]);
         } else {
             // When user click edit button
             if (isset(Yii::$app->session['test_exam'])) {
@@ -200,8 +188,8 @@ class TestExamController extends BackendController
                 $test_exam = Yii::$app->session['test_exam'];
                 if ($test_exam['testExam']['te_id'] != $id) {
                     // User cannot edit 2 testExams at the same time
-                    $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id']." Please commit edit or cancel to edit other testExam");
-                    return $this->redirect('index');
+                    $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_code'].". Please commit or cancel this to edit other testExam");
+                    return $this->redirect(['update', 'id' => $test_exam['te_id']]);
                 }
                 $testExam  = $test_exam['testExam'];
             } else {
@@ -209,18 +197,27 @@ class TestExamController extends BackendController
                 $testExam = $logicTestExam->findTestExamById($id);
                 if (!$testExam) {
                     $this->setSessionFlash('error', 'Trying to edit non-existing test');
-                    return $this->redirect('index');
+                    return $this->redirect(['index']);
                 }
                 $test_questions = $logicQuestion->findQuestionByTestId($id);
                 $logicTestExam->initTestExamInfoToSession($testExam, $id, $test_questions);
             }
-            $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
-            
+            $test_exam = Yii::$app->session['test_exam'];
+            if (isset($get['page'])) {
+                $test_exam['current_page'] = $get['page'];
+                Yii::$app->session->set('test_exam', $test_exam);
+            }
+            $page = $test_exam['current_page'];
+            $all_question_ids = Yii::$app->session->get('test_exam')['all_questions'];
+            $paging = $logicTestExam->pagingTestExam($id, 'update', $page, AppConstant::PAGING_UPDATE_PAGE_SIZE, $all_question_ids);
+
             return $this->render('update', [
                 'testExam' => $testExam,
-                'all_questions' => $all_questions,
-                'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
+                'all_questions' => $paging['pagging_questions'],
+                'paging_html' => $paging['html'],
+                'start' => $paging['start'],
+                'test_category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+                'test_level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);
         }
     }
@@ -235,6 +232,14 @@ class TestExamController extends BackendController
     {
         $logicTestExam = new LogicTestExam();
         if ($logicTestExam->deleteTestExamById($id)) {
+            if (isset(Yii::$app->session['test_exam'])) {
+                // User is editting testExam
+                $test_exam = Yii::$app->session['test_exam'];
+                if ($test_exam['testExam']['te_id'] == $id) {
+                    // User delete editting testExam, remove session of this testExam
+                    $logicTestExam->removeTestExamInfoFromSession();
+                }
+            }
             return $this->redirect(['/test-exam']);
         } else {
             $this->setSessionFlash('error', 'Error occurs when deleting this test!');
@@ -293,17 +298,8 @@ class TestExamController extends BackendController
             'type' => $type,
             'level' => $level,
             'search_param' => $params,
+            'pagging_size' => AppConstant::PAGING_ADD_QUESTION_PAGE_SIZE,
         ];
         return $this->render('test_index', $data);
-    }
-    
-    public function actionAssigntestexam()
-    {
-        if ($request = Yii::$app->request->get()) {
-            foreach ($request['selection'] as $selection) {
-                echo $selection."<br \>";
-            }
-            print_r($request['selection']);
-        }
     }
 }

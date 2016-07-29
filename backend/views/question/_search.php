@@ -19,12 +19,12 @@ use yii\helpers\Url;
     </tr>
     <tr>
         <th>Tag</th>
-        <td colspan="5"><?= Html::input('text', 'qt_content', $selected['qt_content'], Yii::$app->request->post('qt_content')) ?></td>
+        <td colspan="5"><?= Html::input('text', 'qt_content', Yii::$app->request->post('qt_content')) ?></td>
     </tr>
     <tr>
         <td colspan="6">
-            <?= Html::submitButton('Search', ['class' => 'btn btn-success', 'name' => 'sudmit', 'value' => 'search']) ?>
-            <?= Html::resetButton('Reset', ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton('Search', ['class' => 'btn btn-info', 'name' => 'sudmit', 'value' => 'search']) ?>
+            <?= Html::resetButton('Reset', ['class' => 'btn btn-warning']) ?>
         </td>
     </tr>
 </table>

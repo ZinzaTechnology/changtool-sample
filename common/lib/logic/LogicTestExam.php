@@ -17,15 +17,84 @@ use common\models\TestExamQuestions;
 use common\lib\helpers\AppArrayHelper;
 use common\lib\components\AppConstant;
 
+
 class LogicTestExam extends LogicBase
 {
     public function __construct()
     {
         parent::__construct();
     }
+     
+    private function create_link($url, $filter = [])
+    {
+        $string = '';
+        foreach ($filter as $key => $val){
+            if($val != ''){
+                $string .= "&{$key}={$val}";
+            }
+        }
+        return $url . ($string ? '?'.ltrim($string, '&') : '');
+    }
     
-    // Const variable
-     const TEST_EXAM_INDEX_PAGING_PAGE_SIZE = 10;
+    public function pagingTestExam($te_id, $base_link, $current_page, $limit, $question_ids){
+        $logicTestExamQuestions = new LogicTestExamQuestions();
+        $logicQuestion = new LogicQuestion();
+        
+        // Get number of question on this exam
+        $total_records = count($question_ids);
+        
+        // Create link for paging test exam
+        $link = $this->create_link($base_link, ['id' => $te_id, 'page' => '{page}']);
+        
+        // Paging list of questions
+        $paging = $this->paging($link, $total_records, $current_page, $limit);
+        
+        // Only query question on this page
+        $paging_question_ids = array_slice($question_ids, $paging['start'], $paging['limit']);
+        $paging_questions = $logicQuestion->findQuestionByIds($paging_question_ids);
+        
+        // Save questions on this page and return to display
+        $paging['pagging_questions'] = $paging_questions;
+        
+        return $paging;
+    }
+    
+    private function paging($link, $total_records, $current_page, $limit)
+    {
+        $total_page = ceil($total_records / $limit);
+
+        if($current_page > $total_page){
+            $current_page = $total_page;
+        }
+        else if($current_page < 1){
+            $current_page = 1;
+        }
+
+        $start = ($current_page - 1) * $limit;
+        $html = '';
+
+        // Display pre button
+        if($current_page > 1 && $total_page > 1){
+            $html .= '<a href="'.str_replace('{page}', $current_page - 1, $link).'">Prev   </a>';
+        }
+        for($i = 1; $i <= $total_page; $i++){
+           if ($i == $current_page){
+               $html .= '<span>'.$i.'   </span>';
+           }
+           else{
+               $html .= '<a href="'.str_replace('{page}', $i, $link).'">'.$i.'   </a>';
+           }
+        }
+        if ($current_page < $total_page && $total_page > 1){
+            $html .= '<a href="'.str_replace('{page}', $current_page + 1, $link).'">Next</a>';
+        }
+        return array(
+            'start' => $start,
+            'limit' => $limit,
+            'html' => $html
+        );
+     }
+     
     /**
      * Creates data provider instance with search query applied
      *
@@ -63,7 +132,7 @@ class LogicTestExam extends LogicBase
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => self::TEST_EXAM_INDEX_PAGING_PAGE_SIZE,
+                'pageSize' => AppConstant::PAGING_INDEX_PAGE_SIZE,
             ],
         ]);
 
@@ -148,13 +217,14 @@ class LogicTestExam extends LogicBase
         $testExam['te_num_of_questions'] = count($all_questions);
         
         $test_exam_info = [
-           'te_id' => $id,
-           'testExam' => $testExam,
-           'te_questions' => $test_questions,
-           'all_questions' => $all_questions,
+            'te_id' => $id,
+            'testExam' => $testExam,
+            'te_questions' => $test_questions,
+            'all_questions' => $all_questions,
+            'current_page' => 1, // Default current page
         ];
         Yii::$app->session->set('test_exam', $test_exam_info);
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     
@@ -162,7 +232,7 @@ class LogicTestExam extends LogicBase
     {
         if (!isset(Yii::$app->session['test_exam'])) {
             //throw new NotFoundHttpException('You must click edit buttion first to edit this testExam...');
-            return AppConstant::$ERROR_SESSION_EMPTY;
+            return AppConstant::ERROR_SESSION_EMPTY;
         }
         // Get testExam info from session
         $test_exam = Yii::$app->session->get('test_exam');
@@ -180,13 +250,13 @@ class LogicTestExam extends LogicBase
         $test_exam['testExam']['te_time'] = $params['te_time'];
 
         Yii::$app->session->set('test_exam', $test_exam);
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     public function updateTestExamQuestionsInfoToSession($options)
     {
         if (!isset(Yii::$app->session['test_exam'])) {
-            return AppConstant::$ERROR_SESSION_EMPTY;
+            return AppConstant::ERROR_SESSION_EMPTY;
         }
         // Get testExam info from session
         $test_exam = Yii::$app->session->get('test_exam');
@@ -206,25 +276,25 @@ class LogicTestExam extends LogicBase
         $test_exam['testExam']['te_num_of_questions'] = count($all_questions);
                     
         Yii::$app->session->set('test_exam', $test_exam);
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     public function removeTestExamInfoFromSession()
     {
         Yii::$app->session->remove('test_exam');
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     public function deleteQuestionOnSession($te_id, $q_id)
     {
         $test_exam = Yii::$app->session->get('test_exam');
         if ($test_exam['testExam']['te_id'] != $te_id) {
-            return AppConstant::$ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME;
+            return AppConstant::ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME;
         }
         $all_questions = $test_exam['all_questions'];
         
         $idx_all = array_search($q_id, $all_questions);
         if ($idx_all === false) {
-            return AppConstant::$ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM;
+            return AppConstant::ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM;
         }
         array_splice($all_questions, $idx_all, 1);
 
@@ -232,7 +302,7 @@ class LogicTestExam extends LogicBase
         $test_exam['testExam']['te_num_of_questions'] = count($all_questions);
         Yii::$app->session->set('test_exam', $test_exam);
         
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     
@@ -254,9 +324,9 @@ class LogicTestExam extends LogicBase
             try {
                 // Update info to TestExam
                 $testExam = $test_exam['testExam'];
-                if (!$testExam->save()) {
+                if (!$testExam->validate() || !$testExam->save()) {
                     $transaction->rollBack();
-                    return AppConstant::$ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB;
+                    return AppConstant::ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB;
                 }
                 
                 // Update TestExam Question
@@ -272,13 +342,13 @@ class LogicTestExam extends LogicBase
                 
                 // Insert added questions for this exam
                 $ret = $logicTestExamQuestions->insertMultiTestExamQuestion($te_id, $added_questions);
-                if (AppConstant::$ERROR_OK != $ret) {
+                if (AppConstant::ERROR_OK != $ret) {
                     $transaction->rollBack();
                     return $ret;
                 }
                 // Delete removed questions of this exam
                 $ret = $logicTestExamQuestions->deleteMultiTestExamQuestion($te_id, $removed_questions);
-                if (AppConstant::$ERROR_OK != $ret) {
+                if (AppConstant::ERROR_OK != $ret) {
                     $transaction->rollBack();
                     return $ret;
                 }
@@ -289,6 +359,6 @@ class LogicTestExam extends LogicBase
                 throw $e;
             }
         }
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
 }
