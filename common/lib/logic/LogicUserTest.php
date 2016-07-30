@@ -184,7 +184,6 @@ class LogicUserTest extends LogicBase
         if (!$updateTest) {
             return false;
         }
-        $params = AppArrayHelper::filterKeys($params, ['ut_status','ut_start_at','ut_finished_at','ut_user_answer_ids', 'ut_mark']);
         $updateTest->load(['UserTest' => $params]);
         if ($updateTest->validate()) {
             return $updateTest->save();
