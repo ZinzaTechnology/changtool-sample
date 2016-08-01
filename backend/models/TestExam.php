@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+    
 
 /**
  * This is the model class for table "test_exam".
@@ -52,16 +53,14 @@ class TestExam extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'te_id' => 'Te ID',
-            'te_code' => 'Te Code',
-            'te_category' => 'Te Category',
-            'te_level' => 'Te Level',
-            'te_title' => 'Te Title',
-            'te_time' => 'Te Time',
-            'te_num_of_questions' => 'Te Num Of Questions',
-            'te_created_at' => 'Te Created At',
-            'te_last_updated_at' => 'Te Last Updated At',
-            'te_is_deleted' => 'Te Is Deleted',
+            'te_code' => 'Test Code',
+            'te_category' => 'Test Category',
+            'te_level' => 'Test Level',
+            'te_title' => 'Test Title',
+            'te_time' => 'Time to do test',
+            'te_num_of_questions' => 'Number of Questions',
+            'te_created_at' => 'Created At',
+            'te_last_updated_at' => 'Last Updated At',
         ];
     }
 
@@ -87,5 +86,21 @@ class TestExam extends \yii\db\ActiveRecord
     public function getUserTests()
     {
         return $this->hasMany(UserTest::className(), ['te_id' => 'te_id']);
+    }
+    
+    public static function getData($param){
+//     	var_dump($param);
+//     	var_dump("<hr>");
+//     	var_dump($param);
+//     	var_dump("<hr>");
+//     	var_dump($param);
+//     	var_dump("<hr>");
+//     	var_dump($param);
+//     	var_dump("<hr>");
+    	if($param){
+    		return self::find()->where($param)->all();
+    	}else{
+    		return self::find()->all();
+    	}
     }
 }

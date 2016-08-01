@@ -24,12 +24,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
-
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'te_id',
-            'q_id',
+            'te.te_title',
+            'q.q_content',
             'not_use:boolean',
         ],
     ]) ?>
