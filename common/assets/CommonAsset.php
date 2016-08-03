@@ -20,6 +20,7 @@ class CommonAsset extends AssetBundle
         'res/css/bootstrap.min.css',
         'res/css/animate.css',
         'res/css/style.css',
+        'res/css/page.css',
         'res/font-awesome/css/font-awesome.css',
     ];
     public $js = [
