@@ -5,9 +5,10 @@
  * @license: ZINZA Technology
  */
 
-namespace common\lib\components;
+namespace common\models;
 
 use yii\db\ActiveRecord;
+use common\lib\behaviors\DateTimeBehavior;
 
 /**
  * This class is the base class for models that interact with DB
