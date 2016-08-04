@@ -1,26 +1,27 @@
 <?php
 
-namespace backend\models;
+namespace common\models;
 
 use Yii;
 
 /**
- * This is the model class for table "tag".
+ * This is the model class for table "question_tag".
  *
- * @property integer $qt_id
+ * @property integer $tag_id
  * @property integer $q_id
- * @property string $qt_content
  *
  * @property Question $q
  */
-class Tag extends \yii\db\ActiveRecord
+class QuestionTag extends \common\models\AppActiveRecord
 {
+    public static $is_logic_delete = false;
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'tag';
+        return 'question_tag';
     }
 
     /**
@@ -29,9 +30,8 @@ class Tag extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['q_id', 'qt_content'], 'required'],
+            [['q_id', 'tag_id'], 'required'],
             [['q_id'], 'integer'],
-            [['qt_content'], 'string', 'max' => 32],
             [['q_id'], 'exist', 'skipOnError' => true, 'targetClass' => Question::className(), 'targetAttribute' => ['q_id' => 'q_id']],
         ];
     }
@@ -41,11 +41,6 @@ class Tag extends \yii\db\ActiveRecord
      */
     public function attributeLabels()
     {
-        return [
-            'qt_id' => 'Qt ID',
-            'q_id' => 'Q ID',
-            'qt_content' => 'Qt Content',
-        ];
     }
 
     /**

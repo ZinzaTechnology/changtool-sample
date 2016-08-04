@@ -19,11 +19,26 @@ use common\lib\behaviors\DateTimeBehavior;
 
 class AppActiveRecord extends ActiveRecord
 {
+    public static $is_logic_delete = false;
+
     // all tables should have attribute created_at, updated_at
     public function behaviors()
     {
         return [
             DateTimeBehavior::className(),
         ];
+    }
+
+    /**
+     * replacement for default find function to generate ActiveQuery that contain checking for logic delete
+     */
+    public static function query($check_deleted = true)
+    {
+        if (self::$is_logic_delete) {
+            $is_deleted = $check_deleted ? 0 : 1;
+            return parent::find()->where(['is_deleted' => 0]);
+        } else {
+            return parent::find()->where("1 = 1");
+        }
     }
 }

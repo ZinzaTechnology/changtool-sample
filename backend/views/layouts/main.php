@@ -59,7 +59,7 @@ $current_user = Yii::$app->user->identity;
                     <a href="<?= URL::toRoute("/account-manager")?>"><i class="fa fa-users"></i> <span class="nav-label">Account Manager</span></a>
                 </li>
                 <li>
-                    <a href="<?= URL::toRoute("/question-manager")?>"><i class="fa fa-question-circle"></i> <span class="nav-label">Question Manager</span></a>
+                    <a href="<?= URL::toRoute("/question")?>"><i class="fa fa-question-circle"></i> <span class="nav-label">Question Manager</span></a>
                 </li>
                 <li>
                     <a href="<?= URL::toRoute("/test-manager")?>"><i class="fa fa-book"></i> <span class="nav-label">Test Manager</span></a>
