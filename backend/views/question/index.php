@@ -8,53 +8,44 @@ use yii\helpers\Url;
 
 <?= $this->render('/question/_search', ['level' => $level, 'category' => $category, 'type' => $type]); ?>
 
-<table border="1">
+<div class="hr-line-solid"></div>
+<table class="table table-hover">
     <caption>QUESTION</caption>
-    <thead bgcolor="#0892d0">
+    <thead>
         <tr>
-            <th>Content</th>
+            <th>ID</th>
             <th>Category</th>
             <th>Level</th>
             <th>Type</th>
+            <th>Content</th>
             <th>Created date</th>
             <th>Updated date</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th></th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
 
-    <tbody bgcolor="#7df9ff	">    
-    <?php
-    foreach ($question as $value) {
-        if ($value['q_level']==1)
-            $string_level='Trung Binh';
-        else $string_level='Kho';
-        if ($value['q_type']==1)
-            $string_type='1 cau tra loi dung';
-        else $string_type='nhieu cau tra loi dung';
-        echo '
-                    <tr>
-                        <td>'.Html::a($value['q_content'], ['/question/view','q_id'=>$value->q_id]).'</td>
-                        <td>'.$category[$value['q_category']].'</td>
-                        <td>'.$string_level.'</td>
-                        <td>'.$string_type.'</td>
-                        <td>'.$value['created_at'].'</td>
-                        <td>'.$value['updated_at'].'</td>
-                        <td>'.Html::a('Edit', ['/question/edit','q_id'=>$value->q_id], ['class'=>'btn btn-warning']).'</td>
-                        <td>'.Html::a('Delete', ['/question/delete','q_id'=>$value->q_id], ['class'=>'btn btn-danger','data' => [
-                            'confirm' => 'Are you sure you want to delete this item?',
-                            'method' => 'post', 
-                            ],]).'</td>
-                    </tr>';
-    }
-
-    ?>
+    <tbody>    
+    <?php foreach ($questions as $question): ?>
+        <tr>
+            <td><?= $question->q_id ?></td>
+            <td><?= $category[$question->q_category] ?></td>
+            <td><?= $level[$question->q_level] ?></td>
+            <td><?= $type[$question->q_type] ?></td>
+            <td><?= $question->q_content ?></td>
+            <td><?= $question->created_at ?></td>
+            <td><?= $question->updated_at ?></td>
+            <td><?= Html::a('View', ['/question/view', 'q_id' => $question->q_id], ['class' => 'btn btn-warning']) ?></td>
+            <td><?= Html::a('Edit', ['/question/edit', 'q_id' => $question->q_id], ['class' => 'btn btn-warning']) ?></td>
+            <td><?= Html::a('Delete', 
+                ['/question/delete', 'q_id' => $question->q_id], 
+                ['class' => 'btn btn-danger', 'data' => 
+                    ['confirm' => 'Are you sure you want to delete this item?', 'method' => 'post']]
+                ) ?>
+            </td>
+        </tr>
+    <?php endforeach; ?>
     </tbody>
 </table>
-
-
-<p>
-<?php echo Html::a('Back', ['/question/index'],['class'=>'btn btn-success']);?>
-</p>
-
 

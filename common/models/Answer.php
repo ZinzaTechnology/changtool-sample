@@ -1,21 +1,13 @@
 <?php
 
-namespace backend\models;
+namespace common\models;
 
 use Yii;
 
-/**
- * This is the model class for table "answer".
- *
- * @property integer $qa_id
- * @property integer $q_id
- * @property string $qa_content
- * @property boolean $qa_status
- *
- * @property Question $q
- */
-class Answer extends \yii\db\ActiveRecord
+class Answer extends \common\models\AppActiveRecord
 {
+    public static $is_logic_delete = false;
+
     /**
      * @inheritdoc
      */

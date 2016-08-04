@@ -4,13 +4,15 @@ use yii\helpers\Url;
 ?>
 
 <?= Html::beginForm(Url::toRoute('question/index'), 'post'); ?>
-    Search body: <?= Html::input('text', 'content', Yii::$app->request->post('q_content')) ?>
-    </br>
-    Category: <?= Html::dropDownList('category', [], $category, ['prompt' => '---Select---']) ?>
-    Type: <?= Html::dropDownList('type', [], $type, ['prompt' => '---Select---']) ?>
-    Level: <?= Html::dropDownList('level', [], $level, ['prompt' => '---Select---']) ?>
-    Tag: <?= Html::input('text', 'qt_content',Yii::$app->request->post('qt_content')) ?>
-    </br>
+    <table class="table table-bordered">
+        <tr><th>Search body</th><td colspan="5"><?= Html::input('text', 'content', Yii::$app->request->post('q_content')) ?></td></tr>
+        <tr>
+            <th>Category</th><td><?= Html::dropDownList('category', [], $category, ['prompt' => '---Select---']) ?></td>
+            <th>Type</th><td><?= Html::dropDownList('type', [], $type, ['prompt' => '---Select---']) ?></td>
+            <th>Level</th><td><?= Html::dropDownList('level', [], $level, ['prompt' => '---Select---']) ?></td>
+        </tr>
+        <tr><th>Tag</th><td colspan="5"><?= Html::input('text', 'qt_content',Yii::$app->request->post('qt_content')) ?></td></tr>
+    </table>
     <?= Html::submitButton('Search', ['class' => 'btn btn-lg btn-primary', 'name' => 'search']) ?>
 <?= Html::endForm() ?>
 

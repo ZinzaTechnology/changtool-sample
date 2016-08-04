@@ -19,6 +19,8 @@ use common\lib\behaviors\DateTimeBehavior;
 
 class AppActiveRecord extends ActiveRecord
 {
+
+    // for all table that has column `is_deleted`, $is_logic_delete should be set to true
     public static $is_logic_delete = false;
 
     // all tables should have attribute created_at, updated_at
@@ -30,15 +32,42 @@ class AppActiveRecord extends ActiveRecord
     }
 
     /**
-     * replacement for default find function to generate ActiveQuery that contain checking for logic delete
+     * replacement for default [[find()]] function
+     * to generate ActiveQuery that contain checking for logic delete
      */
     public static function query($check_deleted = true)
     {
-        if (self::$is_logic_delete) {
-            $is_deleted = $check_deleted ? 0 : 1;
+        if (self::$is_logic_delete && $check_deleted) {
             return parent::find()->where(['is_deleted' => 0]);
         } else {
             return parent::find()->where("1 = 1");
         }
+    }
+
+
+    /**
+     * replacement for default [[findAll()]] function
+     * to generate ActiveQuery that contain checking for logic delete
+     */
+    public static function queryAll($condition, $check_deleted = true)
+    {
+        $query = self::findByCondition($condition);
+        if (self::$is_logic_delete && $check_deleted) {
+            $query->andWhere(['is_deleted' => 0]);
+        }
+        return $query->all();
+    }
+
+    /**
+     * replacement for default [[findOne()]] function
+     * to generate ActiveQuery that contain checking for logic delete
+     */
+    public static function queryOne($condition, $check_deleted = true)
+    {
+        $query = self::findByCondition($condition);
+        if (self::$is_logic_delete && $check_deleted) {
+            $query->andWhere(['is_deleted' => 0]);
+        }
+        return $query->one();
     }
 }

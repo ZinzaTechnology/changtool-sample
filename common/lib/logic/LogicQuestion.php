@@ -64,4 +64,9 @@ class LogicQuestion extends BaseLogic
 
         return $questions;
     }
+
+    public function findQuestionById($q_id)
+    {
+        return Question::queryOne($q_id);
+    }
 }

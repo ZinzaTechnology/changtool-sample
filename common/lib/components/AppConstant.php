@@ -20,8 +20,8 @@ class AppConstant
     const MODEL_IS_DELETED_DELETED = 1;
 
     // user roles
-    const USER_ROLE_USER = "USER";
-    const USER_ROLE_ADMIN = "ADMIN";
+    const USER_ROLE_USER = 'USER';
+    const USER_ROLE_ADMIN = 'ADMIN';
 
     // question
     const QUESTION_CATEGORY_PHP = 1001;
@@ -30,26 +30,26 @@ class AppConstant
     const QUESTION_CATEGORY_CS = 1004;
 
     public static $QUESTION_CATEGORY_NAME = array(
-        self::QUESTION_CATEGORY_PHP => "PHP",
-        self::QUESTION_CATEGORY_C_CPP => "C/C++",
-        self::QUESTION_CATEGORY_JAVA => "JAVA",
-        self::QUESTION_CATEGORY_CS => "C#",
+        self::QUESTION_CATEGORY_PHP => 'PHP',
+        self::QUESTION_CATEGORY_C_CPP => 'C/C++',
+        self::QUESTION_CATEGORY_JAVA => 'JAVA',
+        self::QUESTION_CATEGORY_CS => 'C#',
     );
 
     const QUESTION_LEVEL_INTERMEDIATE = 1;
     const QUESTION_LEVEL_HARD = 2;
 
     public static $QUESTION_LEVEL_NAME = array(
-        self::QUESTION_LEVEL_INTERMEDIATE => "Intermediate",
-        self::QUESTION_LEVEL_HARD => "Hard",
+        self::QUESTION_LEVEL_INTERMEDIATE => 'Intermediate',
+        self::QUESTION_LEVEL_HARD => 'Hard',
     );
 
     const QUESTION_TYPE_SINGLE_ANSWER = 1;
     const QUESTION_TYPE_MULTIPLE_ANSWER = 2;
 
     public static $QUESTION_TYPE_NAME = array(
-        self::QUESTION_TYPE_SINGLE_ANSWER => "Single answer",
-        self::QUESTION_TYPE_MULTIPLE_ANSWER => "Multiple answer",
+        self::QUESTION_TYPE_SINGLE_ANSWER => 'Single answer',
+        self::QUESTION_TYPE_MULTIPLE_ANSWER => 'Multiple answer',
     );
 
     const QUESTION_TAG_LANGUAGE = 1101;
@@ -60,18 +60,27 @@ class AppConstant
     const QUESTION_TAG_LOGIC = 1106;
 
     public static $QUESTION_TAG_NAME = array(
-        self::QUESTION_TAG_LANGUAGE => "language",
-        self::QUESTION_TAG_DB => "db",
-        self::QUESTION_TAG_FRAMEWORK => "framework",
-        self::QUESTION_TAG_CODE_OUTPUT => "code output",
-        self::QUESTION_TAG_CODE_INPUT => "code input",
-        self::QUESTION_TAG_LOGIC => "logic",
+        self::QUESTION_TAG_LANGUAGE => 'language',
+        self::QUESTION_TAG_DB => 'db',
+        self::QUESTION_TAG_FRAMEWORK => 'framework',
+        self::QUESTION_TAG_CODE_OUTPUT => 'code output',
+        self::QUESTION_TAG_CODE_INPUT => 'code input',
+        self::QUESTION_TAG_LOGIC => 'logic',
+    );
+
+    // answer
+    const ANSWER_STATUS_WRONG = 0;
+    const ANSWER_STATUS_RIGHT = 1;
+
+    public static $ANSWER_STATUS_NAME = array(
+        self::ANSWER_STATUS_WRONG => 'Wrong',
+        self::ANSWER_STATUS_RIGHT => 'Right'
     );
 
     // test exam
     const TEST_EXAM_CATEGORY_PHP = 1;
     
-    const TEST_EXAM_CATEGORY_NAME_PHP = "PHP";
+    const TEST_EXAM_CATEGORY_NAME_PHP = 'PHP';
 
     const TEST_EXAM_LEVEL_EASY = 1;
 

@@ -9,6 +9,7 @@ use yii\helpers\ArrayHelper;
 use backend\controllers\BackendController;
 use common\lib\components\AppConstant;
 use common\lib\logic\LogicQuestion;
+use common\lib\logic\LogicAnswer;
 
 class QuestionController extends BackendController
 {
@@ -20,10 +21,10 @@ class QuestionController extends BackendController
 
         $params = Yii::$app->request->post();
         $logicQuestion = new LogicQuestion();
-        $question = $logicQuestion->getQuestionBySearch($params);
+        $questions = $logicQuestion->getQuestionBySearch($params);
 
         $data = [
-            'question' => $question,
+            'questions' => $questions,
             'category' => $category,
             'type' => $type,
             'level' => $level,
@@ -42,8 +43,6 @@ class QuestionController extends BackendController
         $tag= new Tag();
         if ($question->load(Yii::$app->request->post()))
         {	 $request =Yii::$app->request->post()['Question'];
-        //var_dump($request);exit();
-        //&& $request2 =Yii::$app->request->post()['Answer']
         $question->q_content = $request['q_content'];
         $question->q_category =$request['q_category'];
         $question->q_type =$request['q_type'];
@@ -62,15 +61,30 @@ class QuestionController extends BackendController
 
     public function actionView($q_id)
     {
+        $category = AppConstant::$QUESTION_CATEGORY_NAME;
+        $type = AppConstant::$QUESTION_TYPE_NAME;
+        $level = AppConstant::$QUESTION_LEVEL_NAME;
+        $answer_status = AppConstant::$ANSWER_STATUS_NAME;
+
         $q_id = Yii::$app->request->get('q_id');
-        $question= new Question();
-        $answer=new Answer();
-        $question = Question::findone($q_id);
-        $answer = Answer::find()->where(['q_id'=>$q_id]);
-        $answer->andWhere([ 'qa_is_deleted'=> '1']);
-        $answer=$answer->all();
-        return $this->render('view', ['answer' => $answer,'question'=>$question]);
+
+        $logicQuestion = new LogicQuestion();
+        $logicAnswer = new LogicAnswer();
+
+        $question = $logicQuestion->findQuestionById($q_id);
+        $answers = $logicAnswer->findAnswersByQuestionId($q_id);
+
+        $data = [
+            'question' => $question,
+            'answers' => $answers,
+            'category' => $category,
+            'type' => $type,
+            'level' => $level,
+            'answer_status' => $answer_status,
+        ];
+        return $this->render('view', $data);
     }
+
     public function actionDelete()
     {
         if(($q_id = Yii::$app->request->get('q_id'))!= null)
@@ -83,12 +97,10 @@ class QuestionController extends BackendController
                     $answer = Answer::find()->where(['q_id'=> $q_id])->all();
 
                     $count= Answer::find()->where(['q_id'=> $q_id])->count();
-                    //var_dump($answer);exit();
                     for($i=0 ;$i<$count ; $i++) 
                     {
                         $answer[$i]->qa_is_deleted='0';
                         $answer[$i]->save();	
-                        //return $this->redirect('index');
                     }
                     return $this->redirect('index');
                 }
