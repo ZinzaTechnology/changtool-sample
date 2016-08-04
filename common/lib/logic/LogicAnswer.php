@@ -24,11 +24,17 @@ class LogicAnswer extends BaseLogic
         parent::__construct();
     }
 
+    /**
+     * @return [Answers]|null (found ActiveRecord)
+     */
     public function findAnswersByQuestionId($q_id)
     {
         return Answer::queryAll(['q_id' => $q_id]);
     }
 
+    /**
+     * @return int (deleted answer number)
+     */
     public function deleteAnswersByQuestionId($q_id)
     {
         $answers = $this->findAnswersByQuestionId($q_id);

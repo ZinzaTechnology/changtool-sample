@@ -26,7 +26,7 @@ class LogicQuestion extends BaseLogic
     }
 
     /**
-     * @return Question (found ActiveRecord)
+     * @return Question|null (found ActiveRecord)
      */
     public function findQuestionBySearch($params)
     {
@@ -69,7 +69,7 @@ class LogicQuestion extends BaseLogic
     }
 
     /**
-     * @return Question (found ActiveRecord)
+     * @return Question|null (found ActiveRecord)
      */
     public function findQuestionById($q_id)
     {
