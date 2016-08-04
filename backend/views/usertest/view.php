@@ -13,25 +13,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="test-exam-questions-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'te_id' => $model->te_id, 'q_id' => $model->q_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'te_id' => $model->te_id, 'q_id' => $model->q_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'te_id',
-            'q_id',
-            'not_use:boolean',
-        ],
-    ]) ?>
+    <?php foreach ($info as $element) { ?>
+        <h1><?= $element['qc_content'] ?></h1>
+        <?php foreach ($element['answer'] as $answer) { ?>
+            <h3><?= $answer['ac_status']==1?'True':'False'?> - <?= $answer['ac_content']?></h3>
+        <?php } ?>
+    <?php } ?>
 
 </div>

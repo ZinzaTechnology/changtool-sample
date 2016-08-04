@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ef24d2819de3cf8c0ea30b5a2d834045",
-    "content-hash": "37672f557b227f4488857647a4b0320f",
+    "hash": "73dcb8470bd2177668d5e6e01efb286c",
+    "content-hash": "85c256f94cd2746da52382d9c878ecd2",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -323,6 +323,55 @@
                 "html"
             ],
             "time": "2015-08-05 01:03:42"
+        },
+        {
+            "name": "maksyutin/yii2-dual-list-box",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maksyutin/yii2-dual-list-box.git",
+                "reference": "d4f165d2a36024cb4e049d74b0730261cdb878dc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maksyutin/yii2-dual-list-box/zipball/d4f165d2a36024cb4e049d74b0730261cdb878dc",
+                "reference": "d4f165d2a36024cb4e049d74b0730261cdb878dc",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "~2.0"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "maksyutin\\duallistbox\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Maksyutin Dmitriy",
+                    "email": "maksyutin@yandex.ru",
+                    "homepage": "http://maksyutin.ru"
+                },
+                {
+                    "name": "Geodan B.V.",
+                    "homepage": "http://www.geodan.nl"
+                }
+            ],
+            "description": "Dual list box Widget for Yii 2",
+            "keywords": [
+                "dual listview",
+                "dual-list-box",
+                "duallistbox",
+                "widget",
+                "yii 2",
+                "yii2"
+            ],
+            "time": "2015-02-27 23:36:21"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -978,7 +1027,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "maksyutin/yii2-dual-list-box": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

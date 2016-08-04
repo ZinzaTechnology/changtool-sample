@@ -12,7 +12,7 @@ use yii\filters\VerbFilter;
 /**
  * TestExamController implements the CRUD actions for TestExam model.
  */
-class TestExamController extends Controller
+class TestexamController extends Controller
 {
     /**
      * @inheritdoc

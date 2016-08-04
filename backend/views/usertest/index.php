@@ -20,7 +20,6 @@ $level = [
     [ 'id' => '2', 'level' => 'Normal'],
     ['id' => '3', 'level' => 'Hard']
 ];
-$baseurl = Url::toRoute('/usertest');
 $this->title = 'Test Exam Questions';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -28,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= Html::beginForm($baseurl, 'post'); ?>
+    <?= Html::beginForm(Url::toRoute(__METHOD__), 'post',['class' => 'form-group']); ?>
         Username <?= Html::input('text', 'u_name',$selected['u_name']) ?>
         Category <?= Html::dropDownList('te_category', $selected['te_category'], ArrayHelper::map($category, 'id', 'category'),['prompt' => 'Select User',]) ?>
         Level <?= Html::dropDownList('te_level', $selected['te_level'], ArrayHelper::map($level, 'id', 'level'),['prompt' => 'Select User',]) ?>
@@ -86,11 +85,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{view} {delete}',
                 'buttons' => [
-                    'view' => function ($url,$model) use ($baseurl) {
-                        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', "{$baseurl}/view?id={$model['ut_id']}");
+                    'view' => function ($url,$model) {
+                        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', Url::toRoute("view?id={$model['ut_id']}"));
                     },
-                    'delete' => function ($url, $model) use ($baseurl) {
-                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', "{$baseurl}/delete?id={$model['ut_id']}");
+                    'delete' => function ($url, $model) {
+                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute("delete?id={$model['ut_id']}"));
                     }
                 ],
             ],

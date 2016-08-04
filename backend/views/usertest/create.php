@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use yii\widgets\Pjax;
 
 $category = [
     ['id' => '1', 'category' => 'PHP'],
@@ -17,76 +18,87 @@ $level = [
     [ 'id' => '2', 'level' => 'Normal'],
     ['id' => '3', 'level' => 'Hard']
 ];
-var_dump($request = Yii::$app->request->post());
-$this->title = 'Create Test Exam Questions';
-$this->params['breadcrumbs'][] = ['label' => 'Test Exam Questions', 'url' => ['index']];
+$this->title = 'Assign';
+$this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+$class = __CLASS__;
 ?>
 <div class="test-exam-questions-create">
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php $form = ActiveForm::begin([
-        'method' => 'post'
-        ]); ?>
-
-    <?=
-    $form->field($user, 'u_id')->dropDownList(ArrayHelper::map($user->find()->all(), 'u_id', 'u_name'), [
-        'prompt' => 'Select User',
-        'options' => [
-            $extInfo['User']['u_id'] => ['Selected' => true],
-        ],
-    ])->label('User')
+    <?php //Pjax::begin(); ?>
+    <?php
+    $form = ActiveForm::begin([
+                'action' => Url::toRoute(__FUNCTION__),
+                'options' => ['data-pjax' => true],
+                'enableClientValidation' => false,
+                'enableAjaxValidation' => false,
+    ]);
     ?>
 
-    <?= Html::a('Add new user', Url::toRoute('site/index'), ['class' => 'btn btn-success']) ?>
-
-    <?=
-    $form->field($testExam, 'te_category')->dropDownList(ArrayHelper::map($category, 'id', 'category'), [
-        'prompt' => 'Select Category',
-        'options' => [
-            $extInfo['TestExam']['te_category'] => ['Selected' => true]
-        ]
-    ])->label('Category')
-    ?>
-
-    <?=
-    $form->field($testExam, 'te_level')->dropDownList(ArrayHelper::map($level, 'id', 'level'), [
-        'prompt' => 'Select Level',
-        'options' => [
-            $extInfo['TestExam']['te_level'] => ['Selected' => true]
-        ]
-    ])->label('Level')
-    ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Get list Test', ['class' => 'btn btn-primary', 'name' => 'submit', 'value' => 'choose']) ?>
+    <h1>Test <?= Html::a('Add new test', Url::toRoute('test'), ['class' => 'btn btn-success']) ?></h1>
+    <div class="col-md-6">
+        <?=
+        $form->field($testExam, 'te_category')->dropDownList(ArrayHelper::map($category, 'id', 'category'), [
+            'onchange' => 'this.form.submit()',
+            'prompt' => 'Select Category',
+            'options' => [
+                $choosen['te_category'] => ['Selected' => true],
+            ],
+        ])->label('Category')
+        ?>
+    </div>
+    <div class="col-md-6">
+        <?=
+        $form->field($testExam, 'te_level')->dropDownList(ArrayHelper::map($level, 'id', 'level'), [
+            'onchange' => 'this.form.submit()',
+            'prompt' => 'Select Level',
+            'options' => [
+                $choosen['te_level'] => ['Selected' => true]
+            ],
+        ])->label('Level')
+        ?>
+    </div>
+    <div>
+        <?=
+            maksyutin\duallistbox\Widget::widget([
+                'model' => $testExam,
+                'attribute' => 'te_id',
+                'title' => 'List Test',
+                'data' => $testList,
+                'data_id' => 'te_id',
+                'data_value' => 'te_title',
+                'lngOptions' => [
+                    'search_placeholder' => 'Type whatever you want to search...',
+                    'available' => 'Test list',
+                    'selected' => 'Test selected',
+                ]
+            ]);
+        ?>
     </div>
 
-    <?php
-    if ($listTest)
-        echo $form->field($testExam, 'te_id')->dropDownList(ArrayHelper::map($listTest, 'te_id', 'te_title'), [
-            'prompt' => 'Select Test',
-            'options' => [
-                'te_id' => ['Selected' => true]
-            ]
-        ])->label('All Test you can choose')
+    <h1>User <?= Html::a('Add new user', Url::toRoute('site/index'), ['class' => 'btn btn-success']) ?></h1>
+
+    <div>
+        <?=
+            maksyutin\duallistbox\Widget::widget([
+                'model' => $user,
+                'attribute' => 'u_id',
+                'title' => 'User',
+                'data' => $user->find(),
+                'data_id' => 'u_id',
+                'data_value' => 'u_name',
+                'lngOptions' => [
+                    'search_placeholder' => 'Type whatever you want to search...',
+                    'available' => 'User list',
+                    'selected' => 'User selected',
+                ]
+            ]);
         ?>
+    </div>
 
-    <?= Html::a('Add new test', Url::toRoute('test'), ['class' => 'btn btn-success']) ?>
-
-    <h1>Information</h1>
-
-    User        <?= empty($choosen['User']) ? '' : $choosen['User']['u_name'] ?><br />
-    <?php
-    if (!empty($choosen['TestExam'])) {
-        ?>
-        Title       <?= empty($choosen['TestExam']) ? '' : $choosen['TestExam']['te_title'] ?><br />
-        Time        <?= empty($choosen['TestExam']) ? '' : $choosen['TestExam']['te_time'] . " minutes" ?><br />
-        Questions   <?= empty($choosen['TestExam']) ? '' : $choosen['TestExam']['te_num_of_questions'] ?><br />
-    <?php } ?>
-    Category    <?= isset($extInfo) ? $category[$extInfo['TestExam']['te_category'] - 1]['category'] : '' ?><br />
-    Level       <?= isset($extInfo) ? $level[$extInfo['TestExam']['te_level'] - 1]['level'] : '' ?><br />
     <div class="form-group">
-        <?= Html::submitButton('Assign', ['class' => 'btn btn-primary', 'name' => 'submit', 'value' => 'assign']) ?>
+        <?= Html::submitButton('Assign', ['class' => 'btn btn-primary']) ?>
     </div>
     <?php ActiveForm::end(); ?>
+    <?php //Pjax::end(); ?>
 </div>
