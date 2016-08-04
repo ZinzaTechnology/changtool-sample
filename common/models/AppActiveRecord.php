@@ -37,7 +37,7 @@ class AppActiveRecord extends ActiveRecord
      */
     public static function query($check_deleted = true)
     {
-        if (self::$is_logic_delete && $check_deleted) {
+        if (static::$is_logic_delete && $check_deleted) {
             return parent::find()->where(['is_deleted' => 0]);
         } else {
             return parent::find()->where("1 = 1");
@@ -51,8 +51,8 @@ class AppActiveRecord extends ActiveRecord
      */
     public static function queryAll($condition, $check_deleted = true)
     {
-        $query = self::findByCondition($condition);
-        if (self::$is_logic_delete && $check_deleted) {
+        $query = static::findByCondition($condition);
+        if (static::$is_logic_delete && $check_deleted) {
             $query->andWhere(['is_deleted' => 0]);
         }
         return $query->all();
@@ -64,8 +64,8 @@ class AppActiveRecord extends ActiveRecord
      */
     public static function queryOne($condition, $check_deleted = true)
     {
-        $query = self::findByCondition($condition);
-        if (self::$is_logic_delete && $check_deleted) {
+        $query = static::findByCondition($condition);
+        if (static::$is_logic_delete && $check_deleted) {
             $query->andWhere(['is_deleted' => 0]);
         }
         return $query->one();

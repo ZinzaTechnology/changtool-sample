@@ -6,7 +6,7 @@ use Yii;
 
 class Answer extends \common\models\AppActiveRecord
 {
-    public static $is_logic_delete = false;
+    public static $is_logic_delete = true;
 
     /**
      * @inheritdoc

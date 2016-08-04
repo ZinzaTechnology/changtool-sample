@@ -21,7 +21,7 @@ class QuestionController extends BackendController
 
         $params = Yii::$app->request->post();
         $logicQuestion = new LogicQuestion();
-        $questions = $logicQuestion->getQuestionBySearch($params);
+        $questions = $logicQuestion->findQuestionBySearch($params);
 
         $data = [
             'questions' => $questions,
@@ -87,29 +87,12 @@ class QuestionController extends BackendController
 
     public function actionDelete()
     {
-        if(($q_id = Yii::$app->request->get('q_id'))!= null)
-        {
-            if(($question = Question::findOne($q_id))!=null)
-            {
-                $question->q_is_deleted='0' ;
-                if($question->save())
-                {
-                    $answer = Answer::find()->where(['q_id'=> $q_id])->all();
+        if (($q_id = Yii::$app->request->get('q_id')) != null) {
+            $logicQuestion = new LogicQuestion();
 
-                    $count= Answer::find()->where(['q_id'=> $q_id])->count();
-                    for($i=0 ;$i<$count ; $i++) 
-                    {
-                        $answer[$i]->qa_is_deleted='0';
-                        $answer[$i]->save();	
-                    }
-                    return $this->redirect('index');
-                }
-
-
-            }
-
+            $result = $logicQuestion->deleteQuestionById($q_id);
         }
-
+        $this->redirect('index');
     }
 
 }

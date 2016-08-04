@@ -25,7 +25,10 @@ class LogicQuestion extends BaseLogic
         parent::__construct();
     }
 
-    public function getQuestionBySearch($params)
+    /**
+     * @return Question (found ActiveRecord)
+     */
+    public function findQuestionBySearch($params)
     {
         $questionQuery = Question::query();
 
@@ -65,8 +68,32 @@ class LogicQuestion extends BaseLogic
         return $questions;
     }
 
+    /**
+     * @return Question (found ActiveRecord)
+     */
     public function findQuestionById($q_id)
     {
         return Question::queryOne($q_id);
     }
+
+    /**
+     * @return int|null (deleted question_id or null if error occur)
+     */
+    public function deleteQuestionById($q_id)
+    {
+        $question = Question::queryOne($q_id);
+        if ($question) {
+            $question->is_deleted = 1;
+            if($question->save())
+            {
+                $logicAnswer = new LogicAnswer();
+                $count = $logicAnswer->deleteAnswersByQuestionId($q_id);
+
+                return $q_id;
+            }
+        }
+
+        return null;
+    }
+
 }

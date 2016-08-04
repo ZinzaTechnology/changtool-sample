@@ -28,4 +28,12 @@ class LogicAnswer extends BaseLogic
     {
         return Answer::queryAll(['q_id' => $q_id]);
     }
+
+    public function deleteAnswersByQuestionId($q_id)
+    {
+        $answers = $this->findAnswersByQuestionId($q_id);
+        $answers_ids = ArrayHelper::getColumn($answers, 'qa_id');
+
+        return Answer::updateAll(['is_deleted' => 1], ['qa_id' => $answers_ids]);
+    }
 }
