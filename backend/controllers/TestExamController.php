@@ -100,7 +100,7 @@ class TestExamController extends BackendController
             $newTest = $logicTestExam->insertTestExam(['TestExam' => $params]);
 
             if ($newTest->te_id) {
-                return $this->redirect(['view', 'id' => $newTest->te_id]);
+                return $this->redirect(['update', 'id' => $newTest->te_id]);
             } else {
                 $this->setSessionFlash('error', 'Error occur when creating new test'.Html::errorSummary($newTest));
             }
@@ -121,30 +121,35 @@ class TestExamController extends BackendController
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        $test_questions = TestExamQuestions::findAll($id);
-        $questions=array();
-        foreach($test_questions as $tq)
-        {
-            $q = Question::findOne($tq['q_id']);
-            array_push($questions, $q);
+        $logicTestExam = new LogicTestExam();
+        $logicQuestion = new LogicQuestion();
+
+        $testExam = $logicTestExam->findTestExamById($id);
+        if (!$testExam) {
+            $this->setSessionFlash('error', 'Trying to edit non-existing test');
+            $this->redirect('index');
         }
-        //$test_question = $test_questions->findModel($id);
-        if ($model->load(Yii::$app->request->post())) {
-            $model->te_last_updated_at = date('Y-m-d h:m:s');
-            $model->save();
+
+        $test_questions = $logicQuestion->findQuestionByTestId($id);
+
+        $request = Yii::$app->request->post();
+        $params = [];
+        if (!empty($request)) {
+            $params['TestExam'] = [];
+            $params['Question'] = [];
+            $logicTestExam->updateTestExam($params);
             return $this->redirect(['view', 
                 'id' => $model->te_id,
                 'questions' => $questions,
-                'category' => GlobalVariableController::$category,
-                'level' => GlobalVariableController::$level,
+                'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+                'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);
         } else {
             return $this->render('update', [
-                'model' => $model,
-                'questions' => $questions,
-                'category' => GlobalVariableController::$category,
-                'level' => GlobalVariableController::$level,
+                'testExam' => $testExam,
+                'questions' => $test_questions,
+                'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+                'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);
         }
     }

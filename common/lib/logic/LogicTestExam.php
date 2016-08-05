@@ -106,9 +106,8 @@ class LogicTestExam extends LogicBase
     public function insertTestExam($params)
     {
         $testExam = new TestExam();
-        $testExam->load($params);
 
-        if ($testExam->validate()) {
+        if ($testExam->load($params) && $testExam->validate()) {
             if ($testExam->save()) {
                 return $testExam;
             }

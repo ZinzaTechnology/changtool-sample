@@ -75,16 +75,14 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
     ?>
 
     <div class="hr-line-solid"></div>
-    <p>
-        <?= Html::a('Edit', ['update', 'id' => $testExam->te_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $testExam->te_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+    <?= Html::a('Edit', ['update', 'id' => $testExam->te_id], ['class' => 'btn btn-primary']) ?>
+    <?= Html::a('Delete', ['delete', 'id' => $testExam->te_id], [
+        'class' => 'btn btn-danger',
+        'data' => [
+            'confirm' => 'Are you sure you want to delete this item?',
+            'method' => 'post',
+        ],
+    ]) ?>
 
 <?php else: ?>
     <h3>Test not found</h3>

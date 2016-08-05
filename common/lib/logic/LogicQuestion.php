@@ -120,4 +120,13 @@ class LogicQuestion extends LogicBase
         return $questions;
     }
 
+    /**
+     * @return (Question) array (found ActiveRecord)
+     */
+    public function findQuestionByCategory($q_category)
+    {
+        $questions = Question::queryAll(['q_category' => $q_category]);
+        return $questions;
+    }
+
 }
