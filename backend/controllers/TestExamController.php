@@ -6,6 +6,7 @@ use Yii;
 use yii\filters\VerbFilter;
 use common\lib\components\AppConstant;
 use common\lib\logic\LogicTestExam;
+use common\lib\logic\LogicQuestion;
 
 /**
  * TestExamController implements the CRUD actions for TestExam model.
@@ -43,6 +44,8 @@ class TestExamController extends BackendController
             $params['te_category'] = $te_category;
 
             Yii::$app->session->set('te_search', $params);
+        } else {
+            Yii::$app->session->remove('te_search');
         }
 
         $logicTestExam = new LogicTestExam();
@@ -64,22 +67,19 @@ class TestExamController extends BackendController
      */
     public function actionView($id)
     {
-        $model = $this->findModel($id);
+        $logicTestExam = new LogicTestExam();
+        $logicQuestion = new LogicQuestion();
+        $testExam = $logicTestExam->findTestExamById($id);
 
-        $test_questions = TestExamQuestions::findAll($id);
-        $questions=array();
-        foreach($test_questions as $tq)
-        {
-            $q = Question::findOne($tq['q_id']);
-            array_push($questions, $q);
+        $testQuestions = null;
+        if ($testExam) {
+            $testQuestions = $logicQuestion->findQuestionByTestId($id);
         }
-        $category_index = array_search($model->te_category, array_column(GlobalVariableController::$category, 'id'));
-        $level_index = array_search($model->te_level, array_column(GlobalVariableController::$level, 'id'));
         return $this->render('view', [
-            'model' => $model,
-            'questions' => $questions,
-            'category_name' => GlobalVariableController::$category[$category_index]['name'],
-            'level_name' => GlobalVariableController::$level[$level_index]['name'],
+            'testExam' => $testExam,
+            'questions' => $testQuestions,
+            'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+            'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
         ]);
     }
 

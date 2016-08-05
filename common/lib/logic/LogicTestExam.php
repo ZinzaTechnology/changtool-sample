@@ -59,4 +59,12 @@ class LogicTestExam extends LogicBase
         return $dataProvider;
     }
 
+    /**
+     * @return TestExam|null (found ActiveRecord)
+     */
+    public function findTestExamById($id)
+    {
+        return TestExam::queryOne($id);
+    }
+
 }

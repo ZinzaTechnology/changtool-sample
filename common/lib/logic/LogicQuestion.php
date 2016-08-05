@@ -10,6 +10,7 @@ namespace common\lib\logic;
 use yii\helpers\ArrayHelper;
 use common\models\Question;
 use common\models\QuestionTag;
+use common\models\TestExamQuestions;
 use common\lib\components\AppConstant;
 
 class LogicQuestion extends LogicBase
@@ -87,6 +88,19 @@ class LogicQuestion extends LogicBase
         }
 
         return null;
+    }
+
+    /**
+     * @return (Question) array (found ActiveRecord)
+     */
+    public function findQuestionByTestId($te_id)
+    {
+        $question_ids = ArrayHelper::getColumn(TestExamQuestions::queryAll(['te_id' => $te_id]), 'q_id');
+        $questions = [];
+        if (!empty($question_ids)){
+            $questions = Question::queryAll(['q_id' => $question_ids]);
+        }
+        return $questions;
     }
 
 }

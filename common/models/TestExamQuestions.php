@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\models;
+namespace common\models;
 
 use Yii;
 
@@ -14,8 +14,10 @@ use Yii;
  * @property TestExam $te
  * @property Question $q
  */
-class TestExamQuestions extends \yii\db\ActiveRecord
+class TestExamQuestions extends \common\models\AppActiveRecord
 {
+    public static $is_logic_delete = false;
+
     /**
      * @inheritdoc
      */

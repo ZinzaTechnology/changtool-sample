@@ -8,12 +8,10 @@ use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\TestExamSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Test Manager';
 $this->params['breadcrumbs'][] = $this->title;
-$session = Yii::$app->session;
 ?>
 
 <h1><?= $this->title ?></h1>

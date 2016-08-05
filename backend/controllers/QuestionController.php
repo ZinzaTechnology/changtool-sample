@@ -81,10 +81,9 @@ class QuestionController extends BackendController
         $logicAnswer = new LogicAnswer();
 
         $question = $logicQuestion->findQuestionById($q_id);
-        $answers = $logicAnswer->findAnswerByQuestionId($q_id);
-
-        if (!$question) {
-            throw new NotFoundHttpException('The requested page does not exist.');
+        $answers = null;
+        if ($question) {
+            $answers = $logicAnswer->findAnswerByQuestionId($q_id);
         }
 
         $data = [

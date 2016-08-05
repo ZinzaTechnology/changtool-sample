@@ -1,6 +1,18 @@
 <?php 
 use yii\helpers\Html;
-?>		
+use yii\widgets\Breadcrumbs;
+
+$this->title = 'Question Manager';
+$this->params['breadcrumbs'][] = ['label' => 'Question Manager', 'url' => ['index']];
+($question) ? $this->params['breadcrumbs'][] = $question->q_id : null;
+?>
+
+<h1><?= $this->title ?></h1>
+<?= Breadcrumbs::widget([
+    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+]) ?>
+<br>
+<div class="hr-line-solid"></div>
 
 <?php if($question): ?>
     <table class="table table-hover">
@@ -37,7 +49,7 @@ use yii\helpers\Html;
     </div>
     <div class="hr-line-solid"></div>
 
-    <?= Html::a('Edit', ['/question/edit', 'q_id' => $question->q_id], ['class' => 'btn btn-warning'])?>
+    <?= Html::a('Edit', ['/question/edit', 'q_id' => $question->q_id], ['class' => 'btn btn-primary'])?>
     <?= Html::a('Delete', ['/question/delete', 'q_id' => $question->q_id], 
         ['class' => 'btn btn-danger','data' => [
             'confirm' => 'Are you sure you want to delete this item?',
