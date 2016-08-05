@@ -12,7 +12,7 @@ use yii\helpers\Url;
             <th>Level</th><td><?= Html::dropDownList('level', [], $level, ['prompt' => '---Select---']) ?></td>
         </tr>
         <tr><th>Tag</th><td colspan="5"><?= Html::input('text', 'qt_content',Yii::$app->request->post('qt_content')) ?></td></tr>
+        <tr><td colspan="6"><?= Html::submitButton('Search', ['class' => 'btn btn-success', 'name' => 'search']) ?></td></tr>
     </table>
-    <?= Html::submitButton('Search', ['class' => 'btn btn-lg btn-primary', 'name' => 'search']) ?>
 <?= Html::endForm() ?>
 

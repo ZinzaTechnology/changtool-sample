@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\models;
+namespace common\models;
 
 use Yii;
     
@@ -15,16 +15,15 @@ use Yii;
  * @property string $te_title
  * @property integer $te_time
  * @property integer $te_num_of_questions
- * @property string $te_created_at
- * @property string $te_last_updated_at
- * @property integer $te_is_deleted
+ * @property string $created_at
+ * @property string $updated_at
+ * @property integer $is_deleted
  *
- * @property TestExamQuestions[] $testExamQuestions
- * @property Question[] $qs
- * @property UserTest[] $userTests
  */
-class TestExam extends \yii\db\ActiveRecord
+class TestExam extends \common\models\AppActiveRecord
 {
+    public static $is_logic_delete = true;
+
     /**
      * @inheritdoc
      */
@@ -40,8 +39,8 @@ class TestExam extends \yii\db\ActiveRecord
     {
         return [
             [['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions'], 'required'],
-            [['te_category', 'te_level', 'te_time', 'te_num_of_questions', 'te_is_deleted'], 'integer'],
-            [['te_created_at', 'te_last_updated_at'], 'safe'],
+            [['te_category', 'te_level', 'te_time', 'te_num_of_questions', 'is_deleted'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
             [['te_code'], 'string', 'max' => 15],
             [['te_title'], 'string', 'max' => 32],
         ];
@@ -59,8 +58,8 @@ class TestExam extends \yii\db\ActiveRecord
             'te_title' => 'Test Title',
             'te_time' => 'Time to do test',
             'te_num_of_questions' => 'Number of Questions',
-            'te_created_at' => 'Created At',
-            'te_last_updated_at' => 'Last Updated At',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
         ];
     }
 
@@ -89,14 +88,6 @@ class TestExam extends \yii\db\ActiveRecord
     }
     
     public static function getData($param){
-//     	var_dump($param);
-//     	var_dump("<hr>");
-//     	var_dump($param);
-//     	var_dump("<hr>");
-//     	var_dump($param);
-//     	var_dump("<hr>");
-//     	var_dump($param);
-//     	var_dump("<hr>");
     	if($param){
     		return self::find()->where($param)->all();
     	}else{

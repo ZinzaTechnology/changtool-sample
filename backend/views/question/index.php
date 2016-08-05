@@ -1,7 +1,17 @@
 <?php 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\Breadcrumbs;
+
+$this->title = "Question Manager";
+$this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<h1><?= $this->title ?></h1>
+<?= Breadcrumbs::widget([
+    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+]) ?>
+<br>
 
 <p><?= Html::a('Create New Question', ['/question/create'], ['class' => 'btn btn-success']);?></p>
 <div class="hr-line-solid"></div>

@@ -5,7 +5,6 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\Breadcrumbs;
 use backend\assets\AppAsset;
 use backend\widgets\SideMenu;
 use common\widgets\Alert;
@@ -114,9 +113,6 @@ $current_user = Yii::$app->user->identity;
             </nav>
         </div>
         <div class="wrapper wrapper-content animated fadeInRight">
-            <?= Breadcrumbs::widget([
-                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-            ]) ?>
             <?= Alert::widget() ?>
             <?= $content ?>
         </div>

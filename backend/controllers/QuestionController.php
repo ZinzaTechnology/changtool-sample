@@ -19,7 +19,16 @@ class QuestionController extends BackendController
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
 
-        $params = Yii::$app->request->post();
+        $request = Yii::$app->request->post();
+        $params = [];
+        if ($request) {
+            $params['content'] = isset($request['content']) ? $request['content'] : null;
+            $params['category'] = isset($request['category']) ? $request['category'] : null;
+            $params['level'] = isset($request['level']) ? $request['level'] : null;
+            $params['type'] = isset($request['type']) ? $request['type'] : null;
+            $params['qt_content'] = isset($request['qt_content']) ? $request['qt_content'] : null;
+        }
+
         $logicQuestion = new LogicQuestion();
         $questions = $logicQuestion->findQuestionBySearch($params);
 
@@ -72,7 +81,11 @@ class QuestionController extends BackendController
         $logicAnswer = new LogicAnswer();
 
         $question = $logicQuestion->findQuestionById($q_id);
-        $answers = $logicAnswer->findAnswersByQuestionId($q_id);
+        $answers = $logicAnswer->findAnswerByQuestionId($q_id);
+
+        if (!$question) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
 
         $data = [
             'question' => $question,

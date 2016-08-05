@@ -78,10 +78,26 @@ class AppConstant
     );
 
     // test exam
-    const TEST_EXAM_CATEGORY_PHP = 1;
-    
-    const TEST_EXAM_CATEGORY_NAME_PHP = 'PHP';
+    const TEST_EXAM_CATEGORY_PHP = 1001;
+    const TEST_EXAM_CATEGORY_C_CPP = 1002;
+    const TEST_EXAM_CATEGORY_JAVA = 1003;
+    const TEST_EXAM_CATEGORY_CS = 1004;
+
+    public static $TEST_EXAM_CATEGORY_NAME = array(
+        self::TEST_EXAM_CATEGORY_PHP => 'PHP',
+        self::TEST_EXAM_CATEGORY_C_CPP => 'C/C++',
+        self::TEST_EXAM_CATEGORY_JAVA => 'JAVA',
+        self::TEST_EXAM_CATEGORY_CS => 'C#',
+    );
 
     const TEST_EXAM_LEVEL_EASY = 1;
+    const TEST_EXAM_LEVEL_INTERMEDIATE = 2;
+    const TEST_EXAM_LEVEL_HARD = 3;
 
+    public static $TEST_EXAM_LEVEL_NAME = array(
+        self::TEST_EXAM_LEVEL_EASY => 'Easy',
+        self::TEST_EXAM_LEVEL_INTERMEDIATE => 'Intermediate',
+        self::TEST_EXAM_LEVEL_HARD => 'Hard',
+    );
+    
 }

@@ -13,7 +13,7 @@ namespace common\lib\logic;
  *
  */
 
-class BaseLogic
+class LogicBase
 {
     public function __construct()
     {

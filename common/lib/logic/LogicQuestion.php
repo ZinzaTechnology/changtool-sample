@@ -12,13 +12,7 @@ use common\models\Question;
 use common\models\QuestionTag;
 use common\lib\components\AppConstant;
 
-/**
- * This is base class of Logic layer
- * all other logic class should extend this class
- *
- */
-
-class LogicQuestion extends BaseLogic
+class LogicQuestion extends LogicBase
 {
     public function __construct()
     {
@@ -32,8 +26,7 @@ class LogicQuestion extends BaseLogic
     {
         $questionQuery = Question::query();
 
-        if($params)
-        {
+        if(!empty($params)) {
             $q_content = $params['content'];
             $q_category = $params['category'];
             $q_type = $params['type'];
