@@ -28,7 +28,7 @@ $this->title = 'Admin Dashboard';
             </div>
 
             <div class="col-lg-2">
-                <a href="<?= URL::toRoute("/test-manager") ?>"><button class="btn btn-primary dim m-btn-large-dim" type="button">
+                <a href="<?= URL::toRoute("/test-exam") ?>"><button class="btn btn-primary dim m-btn-large-dim" type="button">
                         <i class="fa fa-book"></i>
                         <br><span class="m-btn-large-text">Test Manager</span>
                 </button></a>

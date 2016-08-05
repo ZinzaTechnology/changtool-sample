@@ -5,9 +5,8 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
+use yii\widgets\Menu;
 use backend\assets\AppAsset;
 use common\widgets\Alert;
 use common\assets\CommonAsset;
@@ -42,32 +41,52 @@ $current_user = Yii::$app->user->identity;
                         <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold"><?= $current_user->u_name?></strong>
                          </span> <span class="text-muted text-xs block"> <?= $current_user->u_role ?><b class="caret"></b></span> </span> </a>
                         <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                            <li><a href="<?= URL::toRoute("/user/logout") ?>">Logout</a></li>
+                            <li><a href="<?= Url::toRoute("/user/logout") ?>">Logout</a></li>
                         </ul>
                     </div>
                     <?php endif; ?>
                     <div class="logo-element">
-                        <a href="<?=URL::toRoute("/")?>">CHang</a>
+                        <a href="<?=Url::toRoute("/")?>">CHang</a>
                     </div>
                 </li>
                 <?php if (!$current_user): ?>
                 <li class="active">
-                    <a href="<?= URL::toRoute("/user/login")?>"><i class="fa fa-sign-in"></i> <span class="nav-label">Login</span></a>
+                    <a href="<?= Url::toRoute("/user/login")?>"><i class="fa fa-sign-in"></i> <span class="nav-label">Login</span></a>
                 </li>
-                <?php else: ?>
-                <li class="active">
-                    <a href="<?= URL::toRoute("/account-manager")?>"><i class="fa fa-users"></i> <span class="nav-label">Account Manager</span></a>
-                </li>
-                <li>
-                    <a href="<?= URL::toRoute("/question")?>"><i class="fa fa-question-circle"></i> <span class="nav-label">Question Manager</span></a>
-                </li>
-                <li>
-                    <a href="<?= URL::toRoute("/test-manager")?>"><i class="fa fa-book"></i> <span class="nav-label">Test Manager</span></a>
-                </li>
-                <li>
-                    <a href="<?= URL::toRoute("/usertest-manager")?>"><i class="fa fa-tasks"></i> <span class="nav-label">User Test Manager</span></a>
-                </li>
-                <?php endif; ?>
+                <?php else:
+                echo Menu::widget([
+                    'options' => [
+                        'tag' => null,
+                    ],
+                    'items' => [
+                        [
+                            'label' => 'Dashboard',
+                            'template' => '<a href="{url}"><i class="fa fa-delicious"></i> <span class="nav-label">{label}</span></a>',
+                            'url' => ["/dashboard/index"]
+                        ],
+                        [
+                            'label' => 'Account Manager',
+                            'template' => '<a href="{url}"><i class="fa fa-users"></i> <span class="nav-label">{label}</span></a>',
+                            'url' => ["/account-manager/index"]
+                        ],
+                        [
+                            'label' => 'Question Manager',
+                            'template' => '<a href="{url}"><i class="fa fa-question-circle"></i> <span class="nav-label">{label}</span></a>',
+                            'url' => ["/question/index"]
+                        ],
+                        [
+                            'label' => 'Test Manager',
+                            'template' => '<a href="{url}"><i class="fa fa-book"></i> <span class="nav-label">{label}</span></a>',
+                            'url' => ["/test-exam/index"]
+                        ],
+                        [
+                            'label' => 'User Test Manager',
+                            'template' => '<a href="{url}"><i class="fa fa-tasks"></i> <span class="nav-label">{label}</span></a>',
+                            'url' => ["/usertest/index"]
+                        ],
+                    ],
+                ]);
+                endif; ?>
             </ul>
 
         </div>
@@ -79,13 +98,13 @@ $current_user = Yii::$app->user->identity;
                 <div class="navbar-header">
                     <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
                     <ul class="nav navbar-top-links navbar-left">
-                        <li><a href="<?=URL::toRoute("/")?>"><span class="m-r-sm text-muted welcome-message">ZINZA CHangTool Backend</span></a></li>
+                        <li><a href="<?=Url::toRoute("/")?>"><span class="m-r-sm text-muted welcome-message">ZINZA CHangTool Backend</span></a></li>
                     </ul>
                 </div>
                 <?php if ($current_user): ?>
                 <ul class="nav navbar-top-links navbar-right">
                     <li>
-                        <a href="<?= URL::toRoute("/user/logout") ?>">
+                        <a href="<?= Url::toRoute("/user/logout") ?>">
                             <i class="fa fa-sign-out"></i> Log out
                         </a>
                     </li>
