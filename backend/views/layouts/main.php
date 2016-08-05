@@ -6,8 +6,8 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
-use yii\widgets\Menu;
 use backend\assets\AppAsset;
+use backend\widgets\SideMenu;
 use common\widgets\Alert;
 use common\assets\CommonAsset;
 
@@ -54,35 +54,36 @@ $current_user = Yii::$app->user->identity;
                     <a href="<?= Url::toRoute("/user/login")?>"><i class="fa fa-sign-in"></i> <span class="nav-label">Login</span></a>
                 </li>
                 <?php else:
-                echo Menu::widget([
+                echo SideMenu::widget([
                     'options' => [
                         'tag' => null,
                     ],
+                    'customTemplateOptions' => ['icon'],
                     'items' => [
                         [
                             'label' => 'Dashboard',
-                            'template' => '<a href="{url}"><i class="fa fa-delicious"></i> <span class="nav-label">{label}</span></a>',
-                            'url' => ["/dashboard/index"]
+                            'icon' => 'fa-delicious',
+                            'url' => ["/dashboard"]
                         ],
                         [
                             'label' => 'Account Manager',
-                            'template' => '<a href="{url}"><i class="fa fa-users"></i> <span class="nav-label">{label}</span></a>',
-                            'url' => ["/account-manager/index"]
+                            'icon' => 'fa-users',
+                            'url' => ["/account-manager"]
                         ],
                         [
                             'label' => 'Question Manager',
-                            'template' => '<a href="{url}"><i class="fa fa-question-circle"></i> <span class="nav-label">{label}</span></a>',
-                            'url' => ["/question/index"]
+                            'icon' => 'fa-question-circle',
+                            'url' => ["/question"]
                         ],
                         [
                             'label' => 'Test Manager',
-                            'template' => '<a href="{url}"><i class="fa fa-book"></i> <span class="nav-label">{label}</span></a>',
-                            'url' => ["/test-exam/index"]
+                            'icon' => 'fa-book',
+                            'url' => ["/test-exam"]
                         ],
                         [
                             'label' => 'User Test Manager',
-                            'template' => '<a href="{url}"><i class="fa fa-tasks"></i> <span class="nav-label">{label}</span></a>',
-                            'url' => ["/usertest/index"]
+                            'icon' => 'fa-tasks',
+                            'url' => ["/usertest"]
                         ],
                     ],
                 ]);
