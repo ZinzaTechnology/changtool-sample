@@ -12,20 +12,24 @@ $this->params['breadcrumbs'][] = ['label' => $testExam->te_id, 'url' => ['view',
 $this->params['breadcrumbs'][] = 'Edit';
 ?>
 
-<h1><?= $this->title ?></h1>
-<?= Breadcrumbs::widget([
-    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-]) ?>
-<br>
-<div class="hr-line-solid"></div>
-
-<div class="test-exam-update ibox">
-    <div class="ibox-content">
-        <?= $this->render('_edit_form', [
-            'testExam' => $testExam,
-            'questions' => $questions,
-            'testCategory' => $testCategory,
-            'testLevel' => $testLevel,
+<div class="ibox">
+    <div class="ibox-title">
+        <h1><?= $this->title ?></h1>
+        <?= Breadcrumbs::widget([
+            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
+    </div>
+
+    <div class="ibox-content">
+
+        <div class="test-exam-update">
+            <?= $this->render('_edit_form', [
+                'testExam' => $testExam,
+                'questions' => $questions,
+                'testCategory' => $testCategory,
+                'testLevel' => $testLevel,
+            ]) ?>
+        </div>
+
     </div>
 </div>
