@@ -21,6 +21,7 @@ class AppController extends Controller
 
     public function goReferrer()
     {
-        return $this->redirect(Yii::$app->request->referrer);
+        $url = Yii::$app->request->referrer || 'index';
+        return $this->redirect($url);
     }
 }

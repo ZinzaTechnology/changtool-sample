@@ -103,8 +103,13 @@ class QuestionController extends BackendController
             $logicQuestion = new LogicQuestion();
 
             $result = $logicQuestion->deleteQuestionById($q_id);
+            if ($result) {
+                $this->redirect(['/question']);
+            } else {
+                Yii::$app->session->setFlash('error', 'Error occurs when deleting this question!');
+                $this->goReferrer();
+            }
         }
-        $this->redirect('index');
     }
 
 }

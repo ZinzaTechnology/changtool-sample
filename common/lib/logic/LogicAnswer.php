@@ -31,7 +31,7 @@ class LogicAnswer extends LogicBase
      */
     public function deleteAnswersByQuestionId($q_id)
     {
-        $answers = $this->findAnswersByQuestionId($q_id);
+        $answers = $this->findAnswerByQuestionId($q_id);
         $answers_ids = ArrayHelper::getColumn($answers, 'qa_id');
 
         return Answer::updateAll(['is_deleted' => 1], ['qa_id' => $answers_ids]);

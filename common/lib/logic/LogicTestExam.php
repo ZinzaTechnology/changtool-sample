@@ -7,6 +7,7 @@
 
 namespace common\lib\logic;
 
+use Yii;
 use common\models\TestExam;
 use common\models\Question;
 use common\models\TestExamSearch;
@@ -73,12 +74,26 @@ class LogicTestExam extends LogicBase
      */
     public function deleteTestExamById($te_id)
     {
+        // must do in transaction
+        $conn = Yii::$app->db;
+
         $testExam = TestExam::queryOne($te_id);
         if ($testExam) {
-            $testExam->is_deleted = 1;
-            if($testExam->save())
-            {
-                return $te_id;
+            $transaction = $conn->beginTransaction();
+
+            try {
+                $testExam->is_deleted = 1;
+                if($testExam->save()) {
+                    // delete corresponding test exam question relationship
+                    $logicTestExamQuestions = new LogicTestExamQuestions();
+                    $count = $logicTestExamQuestions->deleteTestExamQuestionsByTestId($te_id);
+
+                    $transaction->commit();
+                    return $testExam;
+                }
+            } catch(\Exception $e) {
+                $transaction->rollBack();
+                throw $e;
             }
         }
 

@@ -7,6 +7,7 @@
 
 namespace common\lib\logic;
 
+use Yii;
 use yii\helpers\ArrayHelper;
 use common\models\Question;
 use common\models\QuestionTag;
@@ -71,19 +72,34 @@ class LogicQuestion extends LogicBase
     }
 
     /**
-     * @return int|null (deleted question_id or null if error occur)
+     * @return Question|null (deleted Question or null if error occur)
      */
     public function deleteQuestionById($q_id)
     {
+        // must do in transaction
+        $conn = Yii::$app->db;
+
         $question = Question::queryOne($q_id);
         if ($question) {
-            $question->is_deleted = 1;
-            if($question->save())
-            {
-                $logicAnswer = new LogicAnswer();
-                $count = $logicAnswer->deleteAnswersByQuestionId($q_id);
+            $transaction = $conn->beginTransaction();
 
-                return $q_id;
+            try {
+                $question->is_deleted = 1;
+                if($question->save()) {
+                    // delete corresponding answers
+                    $logicAnswer = new LogicAnswer();
+                    $count = $logicAnswer->deleteAnswersByQuestionId($q_id);
+
+                    // delete corresponding test including this question
+                    $logicTestExamQuestions = new LogicTestExamQuestions();
+                    $count = $logicTestExamQuestions->deleteTestExamQuestionsByQuestionId($q_id);
+
+                    $transaction->commit();
+                    return $question;
+                }
+            } catch(\Exception $e) {
+                $transaction->rollBack();
+                throw $e;
             }
         }
 
@@ -95,7 +111,8 @@ class LogicQuestion extends LogicBase
      */
     public function findQuestionByTestId($te_id)
     {
-        $question_ids = ArrayHelper::getColumn(TestExamQuestions::queryAll(['te_id' => $te_id]), 'q_id');
+        $logicTestExamQuestions = new LogicTestExamQuestions();
+        $question_ids = $logicTestExamQuestions->findQuestionIdByTestId($te_id);
         $questions = [];
         if (!empty($question_ids)){
             $questions = Question::queryAll(['q_id' => $question_ids]);

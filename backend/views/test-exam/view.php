@@ -61,13 +61,17 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
 
     <div class="hr-line-solid"></div>
     <?php
-    $form = ActiveForm::begin();
-    $q_count = 1;
-    foreach($questions as $q) {
-        echo $form->field($q, 'q_content')->textarea(['readonly' => true])->label("Question $q_count");
-        ++$q_count;
+    if ($questions) {
+        $form = ActiveForm::begin();
+        $q_count = 1;
+        foreach($questions as $q) {
+            echo $form->field($q, 'q_content')->textarea(['readonly' => true])->label("Question $q_count");
+            ++$q_count;
+        }
+        $form = ActiveForm::end();
+    } else {
+        echo '<h3>No question found</h3>';
     }
-    $form = ActiveForm::end();
     ?>
 
     <div class="hr-line-solid"></div>
