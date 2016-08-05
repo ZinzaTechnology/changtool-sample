@@ -19,9 +19,21 @@ class AppController extends Controller
      * define common process here
      */
 
+    /**
+     * redirect to referrer url
+     * if no referrer url, return to index action of this controller
+     */
     public function goReferrer()
     {
-        $url = Yii::$app->request->referrer || 'index';
+        $url = empty(Yii::$app->request->referrer) ? 'index' : Yii::$app->request->referrer;
         return $this->redirect($url);
+    }
+
+    /**
+     * set message to session flash
+     */
+    public function setSessionFlash($type, $message)
+    {
+        Yii::$app->session->setFlash($type, $message);
     }
 }

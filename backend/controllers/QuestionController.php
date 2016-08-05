@@ -5,11 +5,11 @@ namespace backend\controllers;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
 use backend\controllers\BackendController;
 use common\lib\components\AppConstant;
 use common\lib\logic\LogicQuestion;
 use common\lib\logic\LogicAnswer;
+use common\lib\helpers\AppArrayHelper;
 
 class QuestionController extends BackendController
 {
@@ -21,12 +21,8 @@ class QuestionController extends BackendController
 
         $request = Yii::$app->request->post();
         $params = [];
-        if ($request) {
-            $params['content'] = isset($request['content']) ? $request['content'] : null;
-            $params['category'] = isset($request['category']) ? $request['category'] : null;
-            $params['level'] = isset($request['level']) ? $request['level'] : null;
-            $params['type'] = isset($request['type']) ? $request['type'] : null;
-            $params['qt_content'] = isset($request['qt_content']) ? $request['qt_content'] : null;
+        if (!empty($request)) {
+            $params = AppArrayHelper::filterKeys($request, ['content', 'category', 'level', 'type', 'qt_content']);
         }
 
         $logicQuestion = new LogicQuestion();

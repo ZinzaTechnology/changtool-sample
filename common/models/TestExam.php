@@ -39,7 +39,7 @@ class TestExam extends \common\models\AppActiveRecord
     {
         return [
             [['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions'], 'required'],
-            [['te_category', 'te_level', 'te_time', 'te_num_of_questions', 'is_deleted'], 'integer'],
+            [['te_category', 'te_level', 'te_time', 'te_num_of_questions'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['te_code'], 'string', 'max' => 15],
             [['te_title'], 'string', 'max' => 32],

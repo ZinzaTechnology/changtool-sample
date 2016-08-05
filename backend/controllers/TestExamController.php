@@ -4,9 +4,12 @@ namespace backend\controllers;
 
 use Yii;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
+use common\models\TestExam;
 use common\lib\components\AppConstant;
 use common\lib\logic\LogicTestExam;
 use common\lib\logic\LogicQuestion;
+use common\lib\helpers\AppArrayHelper;
 
 /**
  * TestExamController implements the CRUD actions for TestExam model.
@@ -37,11 +40,7 @@ class TestExamController extends BackendController
         $request= Yii::$app->request->get();
         $params = [];
         if (!empty($request)) {
-            $te_level = isset($request['te_level']) ? $request['te_level'] : null;
-            $te_category = isset($request['te_category']) ? $request['te_category'] : null;
-
-            $params['te_level'] = $te_level;
-            $params['te_category'] = $te_category;
+            $params = AppArrayHelper::filterKeys($request, ['te_level', 'te_category']);
 
             Yii::$app->session->set('te_search', $params);
         } else {
@@ -90,20 +89,28 @@ class TestExamController extends BackendController
      */
     public function actionCreate()
     {
-        $model = new TestExam();
+        $logicTestExam = new LogicTestExam();
+        $request = Yii::$app->request->post();
+        $params = [];
+        $newTest = new TestExam();
+        if (!empty($request)) {
+            $params = AppArrayHelper::filterKeys($request['TestExam'],
+               ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']);
 
-        if ($model->load(Yii::$app->request->post())) {
-            // Date create Test is auto get by system
-            $model->te_created_at = date('Y-m-d h:m:s');
-            $model->save();
-            return $this->redirect(['view', 'id' => $model->te_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-                'category' => GlobalVariableController::$category,
-                'level' => GlobalVariableController::$level,
-            ]);
+            $newTest = $logicTestExam->insertTestExam(['TestExam' => $params]);
+
+            if ($newTest->te_id) {
+                return $this->redirect(['view', 'id' => $newTest->te_id]);
+            } else {
+                $this->setSessionFlash('error', 'Error occur when creating new test'.Html::errorSummary($newTest));
+            }
         }
+
+        return $this->render('create', [
+            'testExam' => $newTest,
+            'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+            'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
+        ]);
     }
 
     /**

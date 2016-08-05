@@ -100,4 +100,20 @@ class LogicTestExam extends LogicBase
         return null;
     }
 
+    /**
+     * @return TestExam|null (newly created ActiveRecord)
+     */
+    public function insertTestExam($params)
+    {
+        $testExam = new TestExam();
+        $testExam->load($params);
+
+        if ($testExam->validate()) {
+            if ($testExam->save()) {
+                return $testExam;
+            }
+        }
+
+        return $testExam;
+    }
 }
