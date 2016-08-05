@@ -18,4 +18,9 @@ class AppController extends Controller
     /**
      * define common process here
      */
+
+    public function goReferrer()
+    {
+        return $this->redirect(Yii::$app->request->referrer);
+    }
 }

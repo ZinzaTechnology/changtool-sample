@@ -8,6 +8,7 @@
 namespace common\lib\logic;
 
 use common\models\TestExam;
+use common\models\Question;
 use common\models\TestExamSearch;
 use yii\data\ActiveDataProvider;
 
@@ -65,6 +66,23 @@ class LogicTestExam extends LogicBase
     public function findTestExamById($id)
     {
         return TestExam::queryOne($id);
+    }
+
+    /**
+     * @return int|null (deleted question_id or null if error occur)
+     */
+    public function deleteTestExamById($te_id)
+    {
+        $testExam = TestExam::queryOne($te_id);
+        if ($testExam) {
+            $testExam->is_deleted = 1;
+            if($testExam->save())
+            {
+                return $te_id;
+            }
+        }
+
+        return null;
     }
 
 }

@@ -150,11 +150,13 @@ class TestExamController extends BackendController
      */
     public function actionDelete($id)
     {
-        $model = $this->findModel($id);
-        $model->te_is_deleted = 1;
-        $model->save();
-
-        return $this->redirect(['index']);
+        $logicTestExam = new LogicTestExam();
+        if ($logicTestExam->deleteTestExamById($id)) {
+            $this->redirect(['/test-exam']);
+        } else {
+            Yii::$app->session->setFlash('error', 'Error occurs when deleting this test!');
+            $this->goReferrer();
+        }
     }
 
     /**
@@ -188,21 +190,4 @@ class TestExamController extends BackendController
         }
     }
 
-    /**
-     * Finds the TestExam model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return TestExam the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = TestExam::findOne($id)) !== null) {
-            return $model;
-        } 
-        else 
-        {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-    }
 }
