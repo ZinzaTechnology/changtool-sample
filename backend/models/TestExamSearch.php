@@ -42,15 +42,24 @@ class TestExamSearch extends TestExam
     public function search($params)
     {
         $query = TestExam::find();
-
+		//print_r($query);
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
+        //$param_tmp = array('te_level'=>$params['te_level'],'te_category'=>$params['te_category']);
         $this->load($params);
-
+        //$this->te_level = $params['te_level'];
+        //$this->te_category = $params['te_category'];
+		//echo "<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />param<br /><br />";
+		//echo "<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />param<br /><br />";
+		//echo "abc".$this->te_category."categry <br \>";
+		//echo $this->te_level." level<br \>";
+		//echo $this->te_id."Id <br \>";
+		//echo "<br \>";
+		//print_r($this);
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
