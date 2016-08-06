@@ -12,19 +12,23 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<h1><?= $this->title ?></h1>
-<?= Breadcrumbs::widget([
-    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-]) ?>
-<br>
-<div class="hr-line-solid"></div>
+<div class="ibox">
+    <div class="ibox-title">
+        <h1><?= $this->title ?></h1>
+        <?= Breadcrumbs::widget([
+            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+        ]) ?>
+    </div>
 
-<div class="test-exam-create">
+    <div class="ibox-content">
+        <div class="test-exam-create">
 
-    <?= $this->render('_create_form', [
-        'model' => $testExam,
-    	'category' => $testCategory,
-    	'level' => $testLevel,
-    ]) ?>
+            <?= $this->render('_create_form', [
+                'model' => $testExam,
+                'category' => $testCategory,
+                'level' => $testLevel,
+            ]) ?>
 
+        </div>
+    </div>
 </div>
