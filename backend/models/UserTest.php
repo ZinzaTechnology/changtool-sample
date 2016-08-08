@@ -131,8 +131,8 @@ class UserTest extends \yii\db\ActiveRecord {
                         ->all();
 
                 //Add answer clone
-                $countAns = 0;
                 if (count($answerRand)) {
+                    $countAns = 0;
                     foreach ($questionClones as $question) {
                         $ans = $answerRand[$countAns];
                         foreach ($answerRand[$countAns] as $ans) {
