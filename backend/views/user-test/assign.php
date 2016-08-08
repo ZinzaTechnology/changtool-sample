@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-use yii\widgets\Pjax;
 
 $category = [
     ['id' => '1', 'category' => 'PHP'],
@@ -21,7 +20,6 @@ $level = [
 $this->title = 'Assign';
 $this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-$class = __CLASS__;
 if ($errors = Yii::$app->session->getFlash('assignErrors')) {
     foreach ($errors as $error) {
         ?>

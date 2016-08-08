@@ -83,16 +83,16 @@ class UserTest extends \yii\db\ActiveRecord {
     public static function getWithParams($params) {
         $query = new Query;
         $query
-                ->select(['ut_id', 'u_name', 'te_category', 'te_title', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at'])
-                ->from('user_test')
-                ->innerJoin('user', 'user_test.u_id = user.u_id')
-                ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
-                ->andFilterWhere(['like', 'u_name', $params['u_name']])
-                ->andFilterWhere(['like', 'te_title', $params['te_title']])
-                ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level'],])
-                ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
-                ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
-                ->addOrderBy(['ut_id' => SORT_DESC]);
+            ->select(['ut_id', 'u_name', 'te_category', 'te_title', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at'])
+            ->from('user_test')
+            ->innerJoin('user', 'user_test.u_id = user.u_id')
+            ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
+            ->andFilterWhere(['like', 'u_name', $params['u_name']])
+            ->andFilterWhere(['like', 'te_title', $params['te_title']])
+            ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level'],])
+            ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
+            ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
+            ->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
     }
 
@@ -154,8 +154,7 @@ class UserTest extends \yii\db\ActiveRecord {
                     }
                     $countAns++;
                 }
-            } else
-                self::setErrors(["Can not assign test id {$testId} for user id {$userId}"]);
+            } else self::setErrors(["Can not assign test id {$testId} for user id {$userId}"]);
         }
     }
 
@@ -177,10 +176,10 @@ class UserTest extends \yii\db\ActiveRecord {
         $count = 0;
         while ($count < count($question)) {
             $question[$count]['answer'] = AnswerClone::find()
-                    ->select('ac_id,ac_content,ac_status')
-                    ->where(['qc_id' => $question[$count]['qc_id']])
-                    ->asArray()
-                    ->all();
+                ->select('ac_id,ac_content,ac_status')
+                ->where(['qc_id' => $question[$count]['qc_id']])
+                ->asArray()
+                ->all();
             $count++;
         }
         return $question;

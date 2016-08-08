@@ -31,13 +31,13 @@ class UserTestController extends Controller {
         if ($param = Yii::$app->request->post())
             $this->params = $param;
         return $this->render('index', [
-                    'selected' => $this->params,
-                    'dataProvider' => new ArrayDataProvider([
-                        'allModels' => UserTest::getWithParams($this->params),
-                        'pagination' => [
-                            'pageSize' => 15,
-                        ]
-                            ]),
+            'selected' => $this->params,
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => UserTest::getWithParams($this->params),
+                'pagination' => [
+                    'pageSize' => 15,
+                ]
+            ]),
         ]);
     }
 
@@ -48,13 +48,12 @@ class UserTestController extends Controller {
             if ($userAnswer)
                 array_shift($userAnswer);
             return $this->render('detail', [
-                        'model' => $this->findModel($id),
-                        'info' => UserTest::getTest($id),
-                        'tile' => TestExam::findOne($userTest->te_id)->te_title,
-                        'userAnswer' => $userAnswer,
+                'model' => $this->findModel($id),
+                'info' => UserTest::getTest($id),
+                'tile' => TestExam::findOne($userTest->te_id)->te_title,
+                'userAnswer' => $userAnswer,
             ]);
-        } else
-            throw new \yii\web\NotFoundHttpException('This id not found');
+        } else throw new \yii\web\NotFoundHttpException('This id not found');
     }
 
     public $choice;
@@ -86,10 +85,10 @@ class UserTestController extends Controller {
             }
         }
         return $this->render('assign', [
-                    'user' => new User,
-                    'testExam' => new TestExam,
-                    'choosen' => $this->choice,
-                    'testList' => TestExam::find()->select('te_id,te_title')->where($param),
+            'user' => new User,
+            'testExam' => new TestExam,
+            'choosen' => $this->choice,
+            'testList' => TestExam::find()->select('te_id,te_title')->where($param),
         ]);
     }
 
