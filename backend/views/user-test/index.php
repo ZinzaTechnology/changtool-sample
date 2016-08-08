@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php Html::endForm() ?>
     
     <p>
-        <?= Html::a('Create Test Exam Questions', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Test Exam Questions', ['assign'], ['class' => 'btn btn-success']) ?>
     </p>
     
     <?=
@@ -86,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{view} {delete}',
                 'buttons' => [
                     'view' => function ($url,$model) {
-                        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', Url::toRoute("view?id={$model['ut_id']}"));
+                        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', Url::toRoute("detail?id={$model['ut_id']}"));
                     },
                     'delete' => function ($url, $model) {
                         return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute("delete?id={$model['ut_id']}"));

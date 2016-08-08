@@ -5,7 +5,6 @@ namespace backend\models;
 use Yii;
 use yii\db\Query;
 use backend\models\TestExam;
-use backend\models\Question;
 use backend\models\QuestionClone;
 use backend\models\Answer;
 use backend\models\AnswerClone;
@@ -41,7 +40,7 @@ class UserTest extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['u_id', 'te_id', 'ut_question_clone_ids'], 'required'],
+            [['u_id', 'te_id'], 'required'],
             [['u_id', 'te_id', 'ut_mark'], 'integer'],
             [['ut_status', 'ut_question_clone_ids', 'ut_user_answer_ids'], 'string'],
             [['ut_start_at', 'ut_finished_at'], 'safe'],
@@ -96,74 +95,80 @@ class UserTest extends \yii\db\ActiveRecord {
                 ->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
     }
-    //private $errors = [];
+
     public static function assignTest($userId, $testId) {
         /*
          * NOTE:
          *  Thay đổi database, ut_question_clone_ids => NULL
          */
         if (self::findAll(['u_id' => $userId, 'te_id' => $testId])) {
-            $user = User::findOne(['u_id'=>$userId])->u_name;
-            $test = TestExam::findOne(['te_id'=>$testId])->te_title;
-            //$this->errors = array_merge("{$test} has been assigned to {$user}",$this->errors);
+            $user = User::findOne(['u_id' => $userId])->u_name;
+            $test = TestExam::findOne(['te_id' => $testId])->te_title;
+            self::setErrors(["{$test} has been assigned to {$user}"]);
         } else {
-            $newUT = self::find();
+            $newUT = new self;
             $newUT->u_id = $userId;
             $newUT->te_id = $testId;
-            $newUT->insert();
+            if ($newUT->save()) {
+                //get Id of User Test which just added
+                $utID = self::findOne(['u_id' => $userId, 'te_id' => $testId])->ut_id;
 
-//            Yii::$app->db->createCommand()->insert('user_test', ['u_id' => $userId, 'te_id' => $testId])->execute();
-            //get Id of User Test which just added
-            $utID = self::findOne(['u_id' => $userId, 'te_id' => $testId])->ut_id;
-            
-            $questions = self::getQuestions($testId);
-            $answerRand = [];
+                $questions = self::getQuestions($testId);
+                $answerRand = [];
 
+                //DELETE QUESTION CLONE
 //            if (QuestionClone::findAll(['ut_id' => $utID]))
-//                QuestionClone::deleteAll(['ut_id' => $utID]);
-            
-            // Add to clone tables
-            foreach ($questions as $question => $content) {
-                //Add question clone
-                $qClone = new QuestionClone;
-                $qClone->qc_content = $content['q_content'];
-                $qClone->ut_id = $utID;
-                $qClone->save();
-                $answerRand[] = self::getAnswersRandom($content['q_id'], $content['q_type']);
-            }
-            
-            $answerRand = array_filter($answerRand);
-            //Get question clone id
-            $questionClones = QuestionClone::find()
-                    ->select('qc_id')
-                    ->where(['ut_id' => $utID])
-                    ->asArray()
-                    ->all();
-
-            //Update question clone to UserTest
-//            $uTest = self::findOne($utID);
-//            $uTest->ut_question_clone_ids = serialize($question);
-//            $uTest->update();
-
-            $countAns = 0;
-            foreach ($questionClones as $question) {
-//                if (AnswerClone::findAll(['qc_id' => $question['qc_id']]))
-//                    AnswerClone::deleteAll(['qc_id' => $question['qc_id']]);
-                $ans = $answerRand[$countAns];
-                foreach($answerRand[$countAns] as $ans){
-                    $ansClone = new AnswerClone;
-                    $ansClone->qc_id = $question['qc_id'];
-                    $ansClone->ac_content = $ans['qa_content'];
-                    $ansClone->ac_status = $ans['qa_status'];
-                    $ansClone->save();
+//                QuestionClone::deleteAll('ut_id = :ut_id',[':ut_id'=>$utID]);
+//                
+                // Add to clone tables
+                foreach ($questions as $question => $content) {
+                    //Add question clone
+                    $qClone = new QuestionClone;
+                    $qClone->qc_content = $content['q_content'];
+                    $qClone->ut_id = $utID;
+                    $qClone->save();
+                    $answerRand[] = self::getAnswersRandom($content['q_id'], $content['q_type']);
                 }
-                $countAns++;
-            }
+                $answerRand = array_filter($answerRand);
+
+                //Get question clone id
+                $questionClones = QuestionClone::find()
+                        ->select('qc_id')
+                        ->where(['ut_id' => $utID])
+                        ->asArray()
+                        ->all();
+
+                //Update question clone to UserTest
+                $countAns = 0;
+                foreach ($questionClones as $question) {
+                    //DELETE ANSWER CLONE
+//                if (AnswerClone::findAll(['qc_id' => $question['qc_id']]))
+//                    AnswerClone::deleteAll('qc_id = :qc_id', [':qc_id' => $question['qc_id']]);
+                    $ans = $answerRand[$countAns];
+                    foreach ($answerRand[$countAns] as $ans) {
+                        $ansClone = new AnswerClone;
+                        $ansClone->qc_id = $question['qc_id'];
+                        $ansClone->ac_content = $ans['qa_content'];
+                        $ansClone->ac_status = $ans['qa_status'];
+                        $ansClone->save();
+                    }
+                    $countAns++;
+                }
+            } else
+                self::setErrors(["Can not assign test id {$testId} for user id {$userId}"]);
         }
     }
-    public function errors(){
-        return $this->errors;
+
+    private static function setErrors($error) {
+        $session = Yii::$app->session;
+        if ($errors = $session->get('assignErrors')) {
+            $errors = array_merge($errors, $error);
+            $session->setFlash('assignErrors', $errors);
+        } else
+            $session->setFlash('assignErrors', $error);
     }
+
+    //GET DATA
     public function getTest($testID) {
         $question = QuestionClone::find()->select('qc_id,qc_content')
                 ->where(['ut_id' => $testID])
@@ -207,6 +212,52 @@ class UserTest extends \yii\db\ActiveRecord {
                 ->all();
         $result = array_merge($selectTrue, $selectFalse);
         return $result;
+    }
+
+    public function getUserAnswer($userTestID) {
+        if ($infor = self::findOne($userTestID)) {
+            return unserialize($infor->ut_user_answer_ids);
+        }
+        return null;
+    }
+
+    // MARK
+    public static function setMark($id) {
+        $testExam = self::findOne($id);
+        if ($testExam && $testExam->ut_status == "DONE") {
+            $answer = unserialize($testExam->ut_user_answer_ids);
+            array_shift($answer);
+            $amountQuestion = TestExam::findOne($testExam->te_id)->te_num_of_questions;
+            $countTrue = 0;
+            foreach ($answer as $elements) {
+                switch (count($elements)) {
+                    case 1:
+                        if (AnswerClone::findOne($elements[0])->ac_status == 1)
+                            $countTrue++;
+                        break;
+                    default:
+                        $countInside = 0;
+                        foreach ($elements as $element) {
+                            if (AnswerClone::findOne($element)->ac_status == 1)
+                                $countInside++;
+                        }
+                        if ($countInside == count($elements))
+                            $countTrue++;
+                        break;
+                }
+            }
+            Yii::$app->db->createCommand()->update('user_test', [
+                'ut_mark' => $countTrue
+                    ], "ut_id = {$id}"
+            )->execute();
+        }
+    }
+
+    public static function getMark($id) {
+        if ($userTest = self::findOne($id))
+            return [$userTest->ut_mark, TestExam::findOne($userTest->te_id)->te_num_of_questions];
+        else
+            return false;
     }
 
 }

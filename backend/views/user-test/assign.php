@@ -22,10 +22,16 @@ $this->title = 'Assign';
 $this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 $class = __CLASS__;
+if ($errors = Yii::$app->session->getFlash('assignErrors')) {
+    foreach ($errors as $error) {
+        ?>
+        <div><?= $error ?></div>
+        <?php
+    }
+}
 ?>
 <div class="test-exam-questions-create">
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php //Pjax::begin(); ?>
     <?php
     $form = ActiveForm::begin([
                 'action' => Url::toRoute(__FUNCTION__),
@@ -60,19 +66,19 @@ $class = __CLASS__;
     </div>
     <div>
         <?=
-            maksyutin\duallistbox\Widget::widget([
-                'model' => $testExam,
-                'attribute' => 'te_id',
-                'title' => 'List Test',
-                'data' => $testList,
-                'data_id' => 'te_id',
-                'data_value' => 'te_title',
-                'lngOptions' => [
-                    'search_placeholder' => 'Type whatever you want to search...',
-                    'available' => 'Test list',
-                    'selected' => 'Test selected',
-                ]
-            ]);
+        maksyutin\duallistbox\Widget::widget([
+            'model' => $testExam,
+            'attribute' => 'te_id',
+            'title' => 'List Test',
+            'data' => $testList,
+            'data_id' => 'te_id',
+            'data_value' => 'te_title',
+            'lngOptions' => [
+                'search_placeholder' => 'Type whatever you want to search...',
+                'available' => 'Test list',
+                'selected' => 'Test selected',
+            ]
+        ]);
         ?>
     </div>
 
@@ -80,19 +86,19 @@ $class = __CLASS__;
 
     <div>
         <?=
-            maksyutin\duallistbox\Widget::widget([
-                'model' => $user,
-                'attribute' => 'u_id',
-                'title' => 'User',
-                'data' => $user->find(),
-                'data_id' => 'u_id',
-                'data_value' => 'u_name',
-                'lngOptions' => [
-                    'search_placeholder' => 'Type whatever you want to search...',
-                    'available' => 'User list',
-                    'selected' => 'User selected',
-                ]
-            ]);
+        maksyutin\duallistbox\Widget::widget([
+            'model' => $user,
+            'attribute' => 'u_id',
+            'title' => 'User',
+            'data' => $user->find(),
+            'data_id' => 'u_id',
+            'data_value' => 'u_name',
+            'lngOptions' => [
+                'search_placeholder' => 'Type whatever you want to search...',
+                'available' => 'User list',
+                'selected' => 'User selected',
+            ]
+        ]);
         ?>
     </div>
 
@@ -100,5 +106,4 @@ $class = __CLASS__;
         <?= Html::submitButton('Assign', ['class' => 'btn btn-primary']) ?>
     </div>
     <?php ActiveForm::end(); ?>
-    <?php //Pjax::end(); ?>
 </div>
