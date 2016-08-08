@@ -7,10 +7,9 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use backend\models\UserTest;
-use backend\models\TestExam;
+use common\models\TestExam;
 use backend\models\User;
 use yii\data\ArrayDataProvider;
-use yii\helpers\Url;
 
 class UserTestController extends Controller {
 
@@ -58,24 +57,20 @@ class UserTestController extends Controller {
     public $choice;
 
     public function actionAssign() {
-
-        /**
-         *  REQUIRE SETUP http://www.yiiframework.com/extension/yii2-dual-list-box/
-         *  
-         * del field ut_question_clone_ids in userTest
-         */
         $param = [];
         $userTest = new UserTest;
         if ($request = Yii::$app->request->post()) {
+            $testExam = $request['TestExam'];
+            $user = $request['User'];
             array_shift($request);
-            $this->choice = array_merge($request['User'], $request['TestExam']);
-            if ($request['TestExam']['te_category'])
-                $param = array_merge($param, ['te_category' => $request['TestExam']['te_category']]);
-            if ($request['TestExam']['te_level'])
-                $param = array_merge($param, ['te_level' => $request['TestExam']['te_level']]);
-            if (!empty($request['TestExam']['te_id']) && !empty($request['User']['u_id'])) {
-                $testIDs = array_filter(str_split(preg_replace('/\D/', '', $request['TestExam']['te_id'])));
-                $userIDs = array_filter(str_split(preg_replace('/\D/', '', $request['User']['u_id'])));
+            $this->choice = array_merge($user, $testExam);
+            if ($testExam['te_category'])
+                $param = array_merge($param, ['te_category' => $testExam['te_category']]);
+            if ($testExam['te_level'])
+                $param = array_merge($param, ['te_level' => $testExam['te_level']]);
+            if (!empty($testExam['te_id']) && !empty($user['u_id'])) {
+                $testIDs = array_filter(str_split(preg_replace('/\D/', '', $testExam['te_id'])));
+                $userIDs = array_filter(str_split(preg_replace('/\D/', '', $user['u_id'])));
                 foreach ($testIDs as $test) {
                     foreach ($userIDs as $user) {
                         $userTest->assignTest($user, $test);

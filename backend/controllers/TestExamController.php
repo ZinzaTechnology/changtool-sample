@@ -3,16 +3,18 @@
 namespace backend\controllers;
 
 use Yii;
-use backend\models\TestExam;
-use backend\models\TestExamSearch;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
+use common\models\TestExam;
+use common\lib\components\AppConstant;
+use common\lib\logic\LogicTestExam;
+use common\lib\logic\LogicQuestion;
+use common\lib\helpers\AppArrayHelper;
 
 /**
  * TestExamController implements the CRUD actions for TestExam model.
  */
-class TestexamController extends Controller
+class TestExamController extends BackendController
 {
     /**
      * @inheritdoc
@@ -35,13 +37,26 @@ class TestexamController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new TestExamSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $request= Yii::$app->request->get();
+        $params = [];
+        if (!empty($request)) {
+            $params = AppArrayHelper::filterKeys($request, ['te_level', 'te_category']);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
+            Yii::$app->session->set('te_search', $params);
+        } else {
+            Yii::$app->session->remove('te_search');
+        }
+
+        $logicTestExam = new LogicTestExam();
+        $dataProvider = $logicTestExam->findTestExamBySearch($params);
+
+        $data = [
             'dataProvider' => $dataProvider,
-        ]);
+            'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+            'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
+            'te_search' => Yii::$app->session->get('te_search'),
+        ];
+        return $this->render('index', $data);
     }
 
     /**
@@ -51,8 +66,19 @@ class TestexamController extends Controller
      */
     public function actionView($id)
     {
+        $logicTestExam = new LogicTestExam();
+        $logicQuestion = new LogicQuestion();
+        $testExam = $logicTestExam->findTestExamById($id);
+
+        $testQuestions = null;
+        if ($testExam) {
+            $testQuestions = $logicQuestion->findQuestionByTestId($id);
+        }
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'testExam' => $testExam,
+            'questions' => $testQuestions,
+            'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+            'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
         ]);
     }
 
@@ -63,15 +89,28 @@ class TestexamController extends Controller
      */
     public function actionCreate()
     {
-        $model = new TestExam();
+        $logicTestExam = new LogicTestExam();
+        $request = Yii::$app->request->post();
+        $params = [];
+        $newTest = new TestExam();
+        if (!empty($request)) {
+            $params = AppArrayHelper::filterKeys($request['TestExam'],
+               ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->te_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+            $newTest = $logicTestExam->insertTestExam(['TestExam' => $params]);
+
+            if ($newTest->te_id) {
+                return $this->redirect(['update', 'id' => $newTest->te_id]);
+            } else {
+                $this->setSessionFlash('error', 'Error occur when creating new test'.Html::errorSummary($newTest));
+            }
         }
+
+        return $this->render('create', [
+            'testExam' => $newTest,
+            'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+            'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
+        ]);
     }
 
     /**
@@ -82,13 +121,35 @@ class TestexamController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $logicTestExam = new LogicTestExam();
+        $logicQuestion = new LogicQuestion();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->te_id]);
+        $testExam = $logicTestExam->findTestExamById($id);
+        if (!$testExam) {
+            $this->setSessionFlash('error', 'Trying to edit non-existing test');
+            $this->redirect('index');
+        }
+
+        $test_questions = $logicQuestion->findQuestionByTestId($id);
+
+        $request = Yii::$app->request->post();
+        $params = [];
+        if (!empty($request)) {
+            $params['TestExam'] = [];
+            $params['Question'] = [];
+            $logicTestExam->updateTestExam($params);
+            return $this->redirect(['view', 
+                'id' => $model->te_id,
+                'questions' => $questions,
+                'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+                'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
+            ]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                'testExam' => $testExam,
+                'questions' => $test_questions,
+                'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+                'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);
         }
     }
@@ -101,24 +162,44 @@ class TestexamController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        $logicTestExam = new LogicTestExam();
+        if ($logicTestExam->deleteTestExamById($id)) {
+            $this->redirect(['/test-exam']);
+        } else {
+            Yii::$app->session->setFlash('error', 'Error occurs when deleting this test!');
+            $this->goReferrer();
+        }
     }
 
     /**
-     * Finds the TestExam model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return TestExam the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
+     * Delete an existing TestExamQuestion model
+     * If the deletion is successful, the browser will not redirecte to anywhere, just reset Update display
+     * @param integer $id: the question id
+     * @param integer $id: the test exam id
+     * return mixed
      */
-    protected function findModel($id)
+    public function actionDeleteq($te_id, $q_id)
     {
-        if (($model = TestExam::findOne($id)) !== null) {
-            return $model;
-        } else {
+        if (($model = TestExamQuestions::findOne(['te_id' => $te_id, 'q_id' => $q_id])) == null) 
+        {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+        $model->delete();
+        return $this->redirect(["update?id=$te_id"]);
     }
+
+    public function actionAssigntestexam()
+    {
+        if($request= Yii::$app->request->get())
+        {
+            foreach($request['selection'] as $selection)
+            {
+                echo $selection."<br \>";
+
+
+            }
+            print_r($request['selection']);
+        }
+    }
+
 }

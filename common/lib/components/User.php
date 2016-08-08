@@ -14,7 +14,7 @@ class User extends YiiUser
     /**
      * redefine in case of configuration
      */
-    public $loginUrl = ['site/login'];
+    public $loginUrl = ['user/login'];
 
     /**
      * check admin

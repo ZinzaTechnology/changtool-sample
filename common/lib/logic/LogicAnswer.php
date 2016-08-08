@@ -1,0 +1,39 @@
+<?php
+/**
+ * @author: cuongnx
+ * @email: cuong@zinza.com.vn
+ * @license: ZINZA Technology
+ */
+
+namespace common\lib\logic;
+
+use yii\helpers\ArrayHelper;
+use common\models\Answer;
+use common\lib\components\AppConstant;
+
+class LogicAnswer extends LogicBase
+{
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * @return [Answers]|null (found ActiveRecord)
+     */
+    public function findAnswerByQuestionId($q_id)
+    {
+        return Answer::queryAll(['q_id' => $q_id]);
+    }
+
+    /**
+     * @return int (deleted answer number)
+     */
+    public function deleteAnswersByQuestionId($q_id)
+    {
+        $answers = $this->findAnswerByQuestionId($q_id);
+        $answers_ids = ArrayHelper::getColumn($answers, 'qa_id');
+
+        return Answer::updateAll(['is_deleted' => 1], ['qa_id' => $answers_ids]);
+    }
+}

@@ -4,7 +4,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-$this->title = 'My Yii Application';
+$this->title = 'Dashboard';
 ?>
 <div class="site-index">
     <?php if ($user_test_models) {

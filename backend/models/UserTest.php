@@ -26,7 +26,7 @@ use yii\db\Expression;
  * @property TestExam $te
  * @property User $u
  */
-class UserTest extends \yii\db\ActiveRecord {
+class UserTest extends \common\models\AppActiveRecord {
 
     /**
      * @inheritdoc
