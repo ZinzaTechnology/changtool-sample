@@ -74,16 +74,8 @@ class UserController extends BackendController
     	
     	$param_tmps = Yii::$app->request->queryParams;
     	$param_tmps[$searchModel->formname()]['u_is_deleted'] = 0;
-
-    	//print_r($param_tmps);
  
 		$dataProvider = $searchModel->search($param_tmps);
-
-		/*$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-		
-		$dataProvider = new ActiveDataProvider([
-            'query' => User::find()->where(['u_is_deleted' => 0]),
-        ]);*/
 	
         return $this->render('index', [
         	'searchModel' => $searchModel,
@@ -95,26 +87,28 @@ class UserController extends BackendController
     {
     	$model = new User();
     	
-    	if ($model->load(Yii::$app->request->post())){
+    	if ($model->load(Yii::$app->request->post())) {
     		$model->u_password_hash=Yii::$app->security->generatePasswordHash($model->u_password_hash);       	
-    		if ($model->save()){
+    		if ($model->save()) {
             	return $this->redirect(['index', 'id' => $model->u_id]);
         	}
-        }else 
+        } else {
             return $this->render('create', [
                 'model' => $model,
             ]);
+        }
     }
     
     public function actionLogin()
     {
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login('ADMIN')){
+        if ($model->load(Yii::$app->request->post()) && $model->login('ADMIN')) {
             return $this->redirect(['/user/index']);
-        }else
+        } else {
             return $this->render('login', [
                 'model' => $model,
             ]);
+        }
     }
     
 
@@ -139,9 +133,9 @@ class UserController extends BackendController
     public function actionSignup()
     {
         $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post())){
-            if ($user = $model->signup()){
-                if (Yii::$app->getUser()->login($user)){
+        if ($model->load(Yii::$app->request->post())) {
+            if ($user = $model->signup()) {
+                if (Yii::$app->getUser()->login($user)) {
                     return $this->goHome();
                 }
             }
@@ -169,14 +163,15 @@ class UserController extends BackendController
     public function actionUpdate($id)
     {
     	$model = $this->findModel($id);
-		if ($request = Yii::$app->request->post()){
+		if ($request = Yii::$app->request->post()) {
 			$request = $request['User'];
 			$model->u_fullname = $request['u_fullname'];
 			$model->u_mail = $request['u_mail'];
 			$model->u_role = $request['u_role'];
 			$model->u_password_hash = Yii::$app->security->generatePasswordHash($request['u_password_hash']);
-			if ($model->save())
+			if ($model->save()) {
 				return $this->redirect(['index', 'id' => $model->u_id]);
+			}
 			}
         return $this->render('update', [
                 'model' => $model,
@@ -185,10 +180,11 @@ class UserController extends BackendController
     
 	protected function findModel($id)
 	{
-		if (($model = User::findOne($id)) !== null){
+		if (($model = User::findOne($id)) !== null) {
             return $model;
-        } else
+        } else {
             throw new NotFoundHttpException('The requested page does not exist.');
+        }
 	}
 	
 	/**
