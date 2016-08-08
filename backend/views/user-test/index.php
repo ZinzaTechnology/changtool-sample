@@ -27,20 +27,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= Html::beginForm(Url::toRoute(__METHOD__), 'post',['class' => 'form-group']); ?>
-        Username <?= Html::input('text', 'u_name',$selected['u_name']) ?>
-        Category <?= Html::dropDownList('te_category', $selected['te_category'], ArrayHelper::map($category, 'id', 'category'),['prompt' => 'Select User',]) ?>
-        Level <?= Html::dropDownList('te_level', $selected['te_level'], ArrayHelper::map($level, 'id', 'level'),['prompt' => 'Select User',]) ?>
-        Title <?= Html::input('text', 'te_title',$selected['te_title']) ?>
-        Start date <?= Html::input('date', 'ut_start_at') ?>
-        End date <?= Html::input('date', 'ut_finished_at') ?>
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
+    <?= Html::beginForm(Url::toRoute(__METHOD__), 'POST', ['class' => 'form-group']); ?>
+    Username <?= Html::input('text', 'u_name', $selected['u_name']) ?>
+    Category <?= Html::dropDownList('te_category', $selected['te_category'], ArrayHelper::map($category, 'id', 'category'), ['prompt' => 'Select User',]) ?>
+    Level <?= Html::dropDownList('te_level', $selected['te_level'], ArrayHelper::map($level, 'id', 'level'), ['prompt' => 'Select User',]) ?>
+    Title <?= Html::input('text', 'te_title', $selected['te_title']) ?>
+    Start date <?= Html::input('date', 'ut_start_at') ?>
+    End date <?= Html::input('date', 'ut_finished_at') ?>
+    <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
     <?php Html::endForm() ?>
-    
+
     <p>
         <?= Html::a('Create Test Exam Questions', ['assign'], ['class' => 'btn btn-success']) ?>
     </p>
-    
+
     <?=
     GridView::widget([
         'dataProvider' => $dataProvider,
@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'Category',
                 'value' => function($model) use ($category) {
-                    return $category[$model['te_category']-1]['category'];
+                    return $category[$model['te_category'] - 1]['category'];
                 },
             ],
             [
@@ -85,15 +85,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{view} {delete}',
                 'buttons' => [
-                    'view' => function ($url,$model) {
-                        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', Url::toRoute("detail?id={$model['ut_id']}"));
+                    'view' => function ($url, $model) {
+                        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', Url::toRoute(['detail', 'id' => $model['ut_id']]));
                     },
-                    'delete' => function ($url, $model) {
-                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute("delete?id={$model['ut_id']}"));
+                            'delete' => function ($url, $model) {
+                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete', 'id' => $model['ut_id']]));
                     }
+                        ],
+                    ],
                 ],
-            ],
-        ],
-    ]);
-    ?>
+            ]);
+            ?>
 </div>

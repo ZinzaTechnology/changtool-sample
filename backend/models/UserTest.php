@@ -83,16 +83,16 @@ class UserTest extends \yii\db\ActiveRecord {
     public static function getWithParams($params) {
         $query = new Query;
         $query
-            ->select(['ut_id', 'u_name', 'te_category', 'te_title', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at'])
-            ->from('user_test')
-            ->innerJoin('user', 'user_test.u_id = user.u_id')
-            ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
-            ->andFilterWhere(['like', 'u_name', $params['u_name']])
-            ->andFilterWhere(['like', 'te_title', $params['te_title']])
-            ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level'],])
-            ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
-            ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
-            ->addOrderBy(['ut_id' => SORT_DESC]);
+                ->select(['ut_id', 'u_name', 'te_category', 'te_title', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at'])
+                ->from('user_test')
+                ->innerJoin('user', 'user_test.u_id = user.u_id')
+                ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
+                ->andFilterWhere(['like', 'u_name', $params['u_name']])
+                ->andFilterWhere(['like', 'te_title', $params['te_title']])
+                ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level'],])
+                ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
+                ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
+                ->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
     }
 
@@ -110,22 +110,14 @@ class UserTest extends \yii\db\ActiveRecord {
             $newUT->u_id = $userId;
             $newUT->te_id = $testId;
             if ($newUT->save()) {
-                //get Id of User Test which just added
-                $utID = self::findOne(['u_id' => $userId, 'te_id' => $testId])->ut_id;
-
                 $questions = self::getQuestions($testId);
                 $answerRand = [];
 
-                //DELETE QUESTION CLONE
-//            if (QuestionClone::findAll(['ut_id' => $utID]))
-//                QuestionClone::deleteAll('ut_id = :ut_id',[':ut_id'=>$utID]);
-//                
-                // Add to clone tables
                 foreach ($questions as $question => $content) {
                     //Add question clone
                     $qClone = new QuestionClone;
                     $qClone->qc_content = $content['q_content'];
-                    $qClone->ut_id = $utID;
+                    $qClone->ut_id = $newUT->ut_id;
                     $qClone->save();
                     $answerRand[] = self::getAnswersRandom($content['q_id'], $content['q_type']);
                 }
@@ -134,27 +126,27 @@ class UserTest extends \yii\db\ActiveRecord {
                 //Get question clone id
                 $questionClones = QuestionClone::find()
                         ->select('qc_id')
-                        ->where(['ut_id' => $utID])
+                        ->where(['ut_id' => $newUT->ut_id])
                         ->asArray()
                         ->all();
 
-                //Update question clone to UserTest
+                //Add answer clone
                 $countAns = 0;
-                foreach ($questionClones as $question) {
-                    //DELETE ANSWER CLONE
-//                if (AnswerClone::findAll(['qc_id' => $question['qc_id']]))
-//                    AnswerClone::deleteAll('qc_id = :qc_id', [':qc_id' => $question['qc_id']]);
-                    $ans = $answerRand[$countAns];
-                    foreach ($answerRand[$countAns] as $ans) {
-                        $ansClone = new AnswerClone;
-                        $ansClone->qc_id = $question['qc_id'];
-                        $ansClone->ac_content = $ans['qa_content'];
-                        $ansClone->ac_status = $ans['qa_status'];
-                        $ansClone->save();
+                if (count($answerRand)) {
+                    foreach ($questionClones as $question) {
+                        $ans = $answerRand[$countAns];
+                        foreach ($answerRand[$countAns] as $ans) {
+                            $ansClone = new AnswerClone;
+                            $ansClone->qc_id = $question['qc_id'];
+                            $ansClone->ac_content = $ans['qa_content'];
+                            $ansClone->ac_status = $ans['qa_status'];
+                            $ansClone->save();
+                        }
+                        $countAns++;
                     }
-                    $countAns++;
                 }
-            } else self::setErrors(["Can not assign test id {$testId} for user id {$userId}"]);
+            } else
+                self::setErrors(["Can not assign test id {$testId} for user id {$userId}"]);
         }
     }
 
@@ -176,10 +168,10 @@ class UserTest extends \yii\db\ActiveRecord {
         $count = 0;
         while ($count < count($question)) {
             $question[$count]['answer'] = AnswerClone::find()
-                ->select('ac_id,ac_content,ac_status')
-                ->where(['qc_id' => $question[$count]['qc_id']])
-                ->asArray()
-                ->all();
+                    ->select('ac_id,ac_content,ac_status')
+                    ->where(['qc_id' => $question[$count]['qc_id']])
+                    ->asArray()
+                    ->all();
             $count++;
         }
         return $question;
