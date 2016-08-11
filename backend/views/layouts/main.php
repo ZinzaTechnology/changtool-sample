@@ -67,7 +67,7 @@ $current_user = Yii::$app->user->identity;
                         [
                             'label' => 'Account Manager',
                             'icon' => 'fa-users',
-                            'url' => ["/account-manager"]
+                            'url' => ["/user/index"]
                         ],
                         [
                             'label' => 'Question Manager',
