@@ -62,27 +62,46 @@ $current_user = Yii::$app->user->identity;
                         [
                             'label' => 'Dashboard',
                             'icon' => 'fa-delicious',
-                            'url' => ["/dashboard"]
+                            'url' => ["/dashboard"],
+                            'controllers' => [
+                                'dashboard' => '*',
+                            ],
                         ],
                         [
                             'label' => 'Account Manager',
                             'icon' => 'fa-users',
-                            'url' => ["/user/index"]
+                            'url' => ["/user/index"],
+                            'controllers' => [
+                                'user' => '*',
+                            ],
+
                         ],
                         [
                             'label' => 'Question Manager',
                             'icon' => 'fa-question-circle',
-                            'url' => ["/question"]
+                            'url' => ["/question"],
+                            'controllers' => [
+                                'question' => '*',
+                            ],
+
                         ],
                         [
                             'label' => 'Test Manager',
                             'icon' => 'fa-book',
-                            'url' => ["/test-exam"]
+                            'url' => ["/test-exam"],
+                            'controllers' => [
+                                'test-exam' => '*',
+                            ],
+
                         ],
                         [
                             'label' => 'User Test Manager',
                             'icon' => 'fa-tasks',
-                            'url' => ["/usertest"]
+                            'url' => ["/usertest"],
+                            'controllers' => [
+                                'usertest' => '*',
+                            ],
+
                         ],
                     ],
                 ]);

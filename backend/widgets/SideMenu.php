@@ -75,8 +75,15 @@ class SideMenu extends Menu
             if ($route[0] !== '/' && Yii::$app->controller) {
                 $route = Yii::$app->controller->module->getUniqueId() . '/' . $route;
             }
-            if (isset($item['controller']) && in_array(Yii::$app->controller->id, $item['controller'])) {
-                return true;
+            if (isset($item['controllers'])) {
+                $target_controllers = $item['controllers'];
+                $controller_id = Yii::$app->controller->id;
+                if (array_key_exists($controller_id, $target_controllers)) {
+                    $action_id = Yii::$app->controller->action->id;
+                    if ($target_controllers[$controller_id] === '*' || in_array($action_id, $target_controllers)) {
+                        return true;
+                    }
+                }
             }
             if (ltrim($route, '/') !== $this->route) {
                 return false;
