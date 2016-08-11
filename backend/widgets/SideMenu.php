@@ -75,9 +75,10 @@ class SideMenu extends Menu
             if ($route[0] !== '/' && Yii::$app->controller) {
                 $route = Yii::$app->controller->module->getUniqueId() . '/' . $route;
             }
-
-            // same controller is ok
-            if (strpos(ltrim($route, '/'), Yii::$app->controller->id) === false) {
+            if (isset($item['controller']) && in_array(Yii::$app->controller->id, $item['controller'])) {
+                return true;
+            }
+            if (ltrim($route, '/') !== $this->route) {
                 return false;
             }
             unset($item['url']['#']);

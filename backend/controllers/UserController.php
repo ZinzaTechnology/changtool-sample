@@ -116,7 +116,7 @@ class UserController extends BackendController
     {
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login('ADMIN')) {
-            return $this->redirect(['/user/index']);
+            return $this->redirect(['/']);
         } else {
             return $this->render('login', [
                 'model' => $model,
@@ -181,7 +181,6 @@ class UserController extends BackendController
 			$model->u_fullname = $request['u_fullname'];
 			$model->u_mail = $request['u_mail'];
 			$model->u_role = $request['u_role'];
-			//$model->u_password_hash = Yii::$app->security->generatePasswordHash($request['u_password_hash']);
 			if ($model->save()) {
 				return $this->redirect(['index', 'id' => $model->u_id]);
 			}
