@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use common\models\User;
 
@@ -20,11 +21,9 @@ use common\models\User;
 
     <?= $form->field($model, 'u_role')->dropDownList([ 'ADMIN' => 'ADMIN', 'USER' => 'USER', ], ['prompt' => '']) ?> 
     
-    <hr>
-        
-    <?= $form->field($model, 'u_password_hash')->passwordInput(['maxlength' => true,'value' => ''])?>
+    <?= Html::a('Change password', Url::toRoute(['changepassword','id' => $model->u_id])) ?>
     
-    <?= $form->field($model, 'confirm_pwd_update')->passwordInput(['maxlength' => true])?>
+    <hr>
 	
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Done', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-success']) ?>

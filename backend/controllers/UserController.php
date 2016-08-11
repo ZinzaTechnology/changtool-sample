@@ -12,6 +12,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use yii\db\ActiveQuery;
 use common\models\UserSearch;
+use yii\widgets\ActiveForm;
+use yii\web\Response;
+use yii\data\Pagination;
 
 /**
  * Dashboard controller
@@ -70,13 +73,13 @@ class UserController extends BackendController
     
 	public function actionIndex()
     {
+		
     	$searchModel = new UserSearch();   	
     	
     	$param_tmps = Yii::$app->request->queryParams;
-    	$param_tmps[$searchModel->formname()]['u_is_deleted'] = 0;
- 
+    	$param_tmps[$searchModel->formname()]['is_deleted'] = 0; 
 		$dataProvider = $searchModel->search($param_tmps);
-	
+		$dataProvider->pagination->pageSize=5;
         return $this->render('index', [
         	'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -86,9 +89,19 @@ class UserController extends BackendController
 	public function actionCreate()
     {
     	$model = new User();
+  		
+	    if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+	    	Yii::$app->response->format = Response::FORMAT_JSON;
+	    	return ActiveForm::validate($model);
+		}
     	
-    	if ($model->load(Yii::$app->request->post())) {
-    		$model->u_password_hash=Yii::$app->security->generatePasswordHash($model->u_password_hash);       	
+    	if ($request = Yii::$app->request->post()) {
+    		$request = $request['User'];
+    		$model->u_name = $request['u_name'];
+    		$model->u_fullname = $request['u_fullname'];
+    		$model->u_role = $request['u_role'];
+    		$model->u_mail = $request['u_mail'];
+    		$model->u_password_hash = Yii::$app->security->generatePasswordHash($request['u_password_hash']);       	
     		if ($model->save()) {
             	return $this->redirect(['index', 'id' => $model->u_id]);
         	}
@@ -155,7 +168,7 @@ class UserController extends BackendController
     public function actionDelete($id)
     {
     	$model = $this->findModel($id);
-		$model->u_is_deleted = 1;
+		$model->is_deleted = 1;
 		$model->save();
         return $this->redirect(['index']);
     }
@@ -168,14 +181,29 @@ class UserController extends BackendController
 			$model->u_fullname = $request['u_fullname'];
 			$model->u_mail = $request['u_mail'];
 			$model->u_role = $request['u_role'];
-			$model->u_password_hash = Yii::$app->security->generatePasswordHash($request['u_password_hash']);
+			//$model->u_password_hash = Yii::$app->security->generatePasswordHash($request['u_password_hash']);
 			if ($model->save()) {
 				return $this->redirect(['index', 'id' => $model->u_id]);
 			}
-			}
+		}
         return $this->render('update', [
                 'model' => $model,
             ]);
+    }
+    
+	public function actionChangepassword($id)
+ 	{
+ 		$model = $this->findModel($id);
+ 		if ($request = Yii::$app->request->post()) {
+ 			$request = $request['User'];
+ 			$model->u_password_hash = Yii::$app->security->generatePasswordHash($request['u_password_hash']);
+ 			if($model->save()) {
+ 				return $this->redirect(['index', 'id' => $model->u_id]);
+ 			}			
+ 		}
+ 		return $this->render('changepassword', [
+ 			'model' => $model
+ 			]);
     }
     
 	protected function findModel($id)
@@ -206,4 +234,5 @@ class UserController extends BackendController
 	{
 		return $this->hasOne(User::className(), ['id' => 'u_mail']);
 	}
+	
 }

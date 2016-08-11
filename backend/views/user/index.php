@@ -7,7 +7,6 @@ use yii\widgets\ActiveForm;
 use common\models\UserSearch;
 use common\models\User;
 
-
 $this->title = 'Accounts';
 
 ?>

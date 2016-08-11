@@ -8,8 +8,7 @@ use common\models\User;
 /* @var $model app\models\Test */
 
 $this->title = $model->u_name;
-//$this->params['breadcrumbs'][] = ['label' => 'Tests', 'url' => ['index']];
-//$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="user-view">
 

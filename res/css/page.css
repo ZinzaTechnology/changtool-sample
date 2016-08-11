@@ -1,0 +1,17 @@
+/**
+ * This is the stylesheet of this application
+ *
+ */
+
+button.m-btn-large-dim {
+    width: 150px;
+    height: 150px;
+    font-size: 50px;
+    padding-left: 15px;
+    padding-top: 22px;
+}
+
+span.m-btn-large-text {
+    font-size: 12px;
+    vertical-align: top;
+}

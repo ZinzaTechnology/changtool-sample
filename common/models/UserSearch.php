@@ -19,7 +19,7 @@ class UserSearch extends User
     public function rules()
     {
         return [
-            [['u_id', 'u_is_deleted'], 'integer'],
+            [['u_id', 'is_deleted'], 'integer'],
             [['u_name', 'globalSearch', 'u_mail', 'u_fullname'], 'safe'],
         ];
     }
@@ -31,31 +31,6 @@ class UserSearch extends User
     {
         return Model::scenarios();
     }
-	
-//    public function search($params)
-//    {
-//    	
-//    	$query = User::find();
-//    	
-//    	$dataProvider = new ActiveDataProvider([
-//    			'query' => $query,
-//    			]);
-//    	
-//    	if(!($this->load($params) && $this->validate()))
-//    	{
-//    		return $dataProvider;	
-//    	}
-//    	
-//    	/*$query->andFilterWhere([
-//    		'u_id' => $this->u_id,
-//    		]);*/
-//    	//$query->andFilterWhere(['id' => $this->u_id]);
-//    	$query->orFilterWhere(['like', 'u_name', $this->globalSearch])
-//    		->orFilterWhere(['like', 'u_fullname', $this->globalSearch])
-//    		->orFilterWhere(['like', 'u_mail', $this->globalSearch]);
-//    	return $dataProvider;
-//    	
-//    }
     
     /**
      * Creates data provider instance with search query applied
@@ -86,9 +61,36 @@ class UserSearch extends User
             ->orFilterWhere(['like', 'u_mail', $this->globalSearch])
             ->orFilterWhere(['like', 'u_fullname', $this->globalSearch]);
 		$query->andFilterWhere([
-            'u_is_deleted' => $this->u_is_deleted,
+            'is_deleted' => $this->is_deleted,
         ]);
         return $dataProvider;
     }
     
 }
+
+class Changepassword extends User
+{
+    public $new_password;
+    public $confirm_pwd_update;
+    
+    public function rules()
+    {
+    	return [
+            [['u_password_hash', 'new_password', 'confirm_pwd_update'], 'required', 'on' => 'changePwd'],
+            [['u_password_hash'], 'findPasswords', 'on' => 'changepPwd'],
+            [['confirm_pwd_update'], 'compare', 'compareAttribute' => 'new_password', 'on' => 'changePwd'],
+        ];
+    }
+    
+	public function findPasswords($attribute, $params)
+    {
+        $user = User::model()->findByPk(Yii::app()->user->u_id);
+        if ($user->password != md5($this->u_password_hash))
+            $this->addError($attribute, 'Old password is incorrect.');
+    }
+}
+
+
+
+
+

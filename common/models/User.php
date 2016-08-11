@@ -4,10 +4,11 @@ namespace common\models;
 
 use Yii;
 use yii\base\NotSupportedException;
-use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use common\models\AppActiveRecord;
 use common\lib\behaviors\DateTimeBehavior;
 use yii\validators\UniqueValidator;
+use common\lib\components\AppConstant;
 
 /**
  * This is the model class for table "user".
@@ -22,16 +23,12 @@ use yii\validators\UniqueValidator;
  * @property string $u_role
  * @property string $u_created_at
  * @property string $u_updated_at
- * @property integer $u_is_deleted
+ * @property integer $is_deleted
  *
  * @property UserTest[] $userTests
  */
-class User extends ActiveRecord implements IdentityInterface {
-
-    const IS_DELETED_NOT_DELETED = 0;
-    const IS_DELETED_DELETED = 1;
-    const ROLE_ADMIN = 'ADMIN';
-    const ROLE_USER = 'USER';
+class User extends AppActiveRecord implements IdentityInterface
+{
 
     /**
      * @inheritdoc
@@ -39,37 +36,30 @@ class User extends ActiveRecord implements IdentityInterface {
     public static function tableName() {
         return 'user';
     }
+    
+	public static function model($className=__CLASS__)
+	{
+		return parent::model($className);
+	}
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
-        return [
-            [
-                'class' => DateTimeBehavior::className(),
-                'createdAtAttribute' => 'u_created_at',
-                'updatedAtAttribute' => 'u_updated_at',
-            ]
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public $confirm_pwd_create;
     public $new_password;
+    public $confirm_pwd_create;
     public $confirm_pwd_update;
-
-    public function rules() {
+    
+    public function rules()
+    {
         return [
             [['u_name', 'u_password_hash', 'u_fullname'], 'required'],
-            [['u_name'], 'unique'],
+            [['u_name'], 'unique', 'message' => 'Username already exists!'],
             [['u_role'], 'string'],
             [['u_mail'], 'email'],
-            [['u_created_at', 'u_updated_at'], 'safe'],
-//            [['confirm_pwd_create'], 'compare', 'compareAttribute' => 'u_password_hash', 'message' => 'Confirm password incorrect!'],
+            [['created_at', 'updated_at'], 'safe'],
+            [['confirm_pwd_create'], 'compare', 'compareAttribute' => 'u_password_hash', 'message' => 'Confirm password incorrect!'],
             [['confirm_pwd_update'], 'compare', 'compareAttribute' => 'u_password_hash', 'message' => 'Confirm password incorrect!'],
-            [['u_is_deleted'], 'integer'],
+            [['is_deleted'], 'integer'],
             [['u_name'], 'string', 'max' => 32],
             [['u_mail', 'u_phone', 'u_password_hash', 'u_password_reset_token', 'u_auth_key', 'u_fullname'], 'string', 'max' => 255],
         ];
@@ -90,7 +80,7 @@ class User extends ActiveRecord implements IdentityInterface {
             'u_role' => 'Role',
             'u_created_at' => 'User Created At',
             'u_updated_at' => 'User Updated At',
-            'u_is_deleted' => 'User Is Deleted',
+            'is_deleted' => 'User Is Deleted',
             'u_fullname' => 'Fullname',
             'globalSearch' => '',
             'confirm_pwd_create' => 'Confirm password',
@@ -102,20 +92,36 @@ class User extends ActiveRecord implements IdentityInterface {
     /**
      * @return \yii\db\ActiveQuery
      */
+    
     public function getUserTests() {
         return $this->hasMany(UserTest::className(), ['u_id' => 'u_id']);
     }
 
-    public static function findIdentity($id) {
-        return static::findOne(['u_id' => $id, 'u_is_deleted' => self::IS_DELETED_NOT_DELETED]);
+    
+    /**
+     * @inheritdoc
+     */
+    public static function findIdentity($id)
+    {
+        return static::findOne(['u_id' => $id, 'is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
+
     }
 
     public static function findIdentityByAccessToken($token, $type = null) {
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
 
-    public static function findByUsername($username) {
-        return static::findOne(['u_name' => $username, 'u_is_deleted' => self::IS_DELETED_NOT_DELETED]);
+
+    /**
+     * Finds user by username
+     *
+     * @param string $username
+     * @return static|null
+     */
+    public static function findByUsername($username)
+    {
+        return static::findOne(['u_name' => $username, 'is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
+
     }
 
     public static function findByPasswordResetToken($token) {
@@ -124,8 +130,10 @@ class User extends ActiveRecord implements IdentityInterface {
         }
 
         return static::findOne([
-                    'u_password_reset_token' => $token,
-                    'u_status' => self::IS_DELETED_NOT_DELETED,
+
+            'u_password_reset_token' => $token,
+            'u_status' => AppConstant::IS_DELETED_NOT_DELETED,
+
         ]);
     }
 
@@ -177,6 +185,16 @@ class User extends ActiveRecord implements IdentityInterface {
 
     public function removePasswordResetToken() {
         $this->u_password_reset_token = null;
+    }
+
+
+    /**
+     * Get user's avatar
+     * return default if not set
+     */
+    public function getAvatar()
+    {
+        return isset($current_user->u_avatar) ? $current_user->u_avatar : "/res/img/user_default.jpg";
     }
 
 }
