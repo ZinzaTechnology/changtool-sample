@@ -36,4 +36,47 @@ class LogicAnswer extends LogicBase
 
         return Answer::updateAll(['is_deleted' => 1], ['qa_id' => $answers_ids]);
     }
+    
+    public function createAnswer($params,$q_id)
+    {
+    	date_default_timezone_set("Asia/Ho_Chi_Minh");
+    	$answer = new Answer();
+    	
+    	if(!empty($params)) {
+    
+    									$answer->q_id= $q_id;
+				   	 					$answer->qa_content =$params['qa_content'];
+				   	 					$answer->qa_status = $params['qa_status']; 
+				   	 					$answer->is_deleted = 0;
+				   	 					$answer->save();
+    						}
+    	 
+    
+    	return $answer;
+    }
+    
+    public function deleteAnswerById($qa_id)
+    {
+    	// must do in transaction
+    	
+    
+    	$answer = Answer::queryOne($qa_id);
+    	if ($answer) {
+    		$answer->is_deleted = 1;
+    		$answer->save();
+    		return $answer;
+    		
+    	}
+    
+    	return null;
+    }
+    
+    public function initAnswer()
+    {
+    	return $answer = new Answer();
+    }
+    public function init2Answer()
+    {
+    	return $answer = [new Answer];
+    }
 }

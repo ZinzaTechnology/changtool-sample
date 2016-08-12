@@ -66,6 +66,33 @@ class LogicQuestion extends LogicBase
     /**
      * @return Question|null (found ActiveRecord)
      */
+    public function createQuestion($params)
+    {
+    	date_default_timezone_set("Asia/Ho_Chi_Minh");
+    	$question = new Question();
+    	if(!empty($params)) {
+    		
+    				$question->q_content = $params['q_content'];
+   	 				$question->q_category =$params['q_category'];
+   	 				$question->q_type =$params['q_type'];
+   	 				$question->q_level =$params['q_level'];
+   	 				$question->is_deleted= 0;
+   	 				$question->save();
+   	 				
+    	}
+    	
+    
+    	return $question;
+    }
+    
+    public function initQuestion()
+    {
+    	return $question = new Question();
+    }
+   
+    /**
+     * @return Question|null (found ActiveRecord)
+     */
     public function findQuestionById($q_id)
     {
         return Question::queryOne($q_id);
