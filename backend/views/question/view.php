@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = [
                             <td><?= $answer->qa_id ?></td>
                             <td><?= $answer->qa_content ?></td>
                             <td><?= $answer_status[$answer->qa_status] ?></td>
-                            <td> <?= Html::a('Edit', ['/question/editanswer','qa_id' => $answer->qa_id,'q_id' => $question->q_id], ['class' => 'btn btn-success'])?></td>
+                            <td> <?= Html::a('Edit', ['/question/edit-answer','qa_id' => $answer->qa_id,'q_id' => $question->q_id], ['class' => 'btn btn-success'])?></td>
                             <td> <?=Html::a('Delete', [ '/question/delete-answer','qa_id' => $answer->qa_id,'q_id' => $question->q_id ], [ 'class' => 'btn btn-danger','data' => [ 'confirm' => 'Are you sure you want to delete this item?','method' => 'post' ] ])?>
                                   </td>
                         </tr>

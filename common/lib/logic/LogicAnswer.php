@@ -48,13 +48,12 @@ class LogicAnswer extends LogicBase
 
     public function createAnswer($params, $q_id)
     {
-        date_default_timezone_set("Asia/Ho_Chi_Minh");
         $answer = new Answer();
         
         if (! empty($params)) {
             $answer->q_id = $q_id;
-            $answer->qa_content = $params ['qa_content'];
-            $answer->qa_status = $params ['qa_status'];
+            $answer->qa_content = $params['qa_content'];
+            $answer->qa_status = $params['qa_status'];
             $answer->is_deleted = 0;
             $answer->save();
         }
@@ -79,5 +78,4 @@ class LogicAnswer extends LogicBase
     {
         return $answer = new Answer();
     }
-
 }
