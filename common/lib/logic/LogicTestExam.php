@@ -97,16 +97,6 @@ class LogicTestExam extends LogicBase
                 $transaction->commit();
                 
                 return true;
-                // Delete logic
-//                $testExam->is_deleted = 1;
-//                if($testExam->save()) {
-//                    // delete corresponding test exam question relationship
-//                    $logicTestExamQuestions = new LogicTestExamQuestions();
-//                    $count = $logicTestExamQuestions->deleteTestExamQuestionsByTestId($te_id);
-//
-//                    $transaction->commit();
-//                    return $testExam;
-//                }
             } catch (\Exception $e) {
                 $transaction->rollBack();
                 throw $e;
@@ -183,8 +173,6 @@ class LogicTestExam extends LogicBase
         $test_exam['testExam']['te_time'] = $params['te_time'];
 
         Yii::$app->session->set('test_exam', $test_exam);
-
-        //var_dump(Yii::$app->session->get('test_exam'));
     }
     
     public function updateTestExamQuestionsInfoToSession($options)
@@ -289,14 +277,6 @@ class LogicTestExam extends LogicBase
                 $transaction->rollBack();
                 throw $e;
             }
-        }
-    }
-    public function findModel($te_id)
-    {
-        if (($model = TestExam::findOne($te_id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
 }

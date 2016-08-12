@@ -151,8 +151,6 @@ class TestExamController extends BackendController
                 }
                 
                 $all_questions = $logicQuestion->findQuestionArrayQuestionID(Yii::$app->session->get('test_exam')['all_questions']);
-                //var_dump($added_test_questions);
-                //die;
                 
                 return $this->render('update', [
                     'testExam' => Yii::$app->session->get('test_exam')['testExam'],
@@ -254,14 +252,8 @@ class TestExamController extends BackendController
      */
     public function actionDeleteq($te_id, $q_id)
     {
-//        if (($model = TestExamQuestions::findOne(['te_id' => $te_id, 'q_id' => $q_id])) == null) 
-//        {
-//            throw new NotFoundHttpException('The requested page does not exist.');
-//        }
-//        $model->delete();
         $logicTestExam = new LogicTestExam();
         $logicTestExam->deleteQuestionOnSession($q_id);
-        
         
         return $this->redirect(["update?id=$te_id&delete_question=TRUE"]);
     }
@@ -282,7 +274,6 @@ class TestExamController extends BackendController
         $logicQuestion = new LogicQuestion();
         $questions = $logicQuestion->findQuestionBySearch($params);
 
-        
         $data = [
             'id' => Yii::$app->session->get('test_exam')['te_id'],
             'all_questions' => Yii::$app->session->get('test_exam')['all_questions'],
