@@ -1,4 +1,5 @@
 <?php
+
 namespace common\models;
 
 use Yii;
@@ -6,6 +7,7 @@ use yii\base\NotSupportedException;
 use yii\web\IdentityInterface;
 use common\models\AppActiveRecord;
 use common\lib\behaviors\DateTimeBehavior;
+use yii\validators\UniqueValidator;
 use common\lib\components\AppConstant;
 
 /**
@@ -21,7 +23,7 @@ use common\lib\components\AppConstant;
  * @property string $u_role
  * @property string $u_created_at
  * @property string $u_updated_at
- * @property integer $u_is_deleted
+ * @property integer $is_deleted
  *
  * @property UserTest[] $userTests
  */
@@ -31,69 +33,84 @@ class User extends AppActiveRecord implements IdentityInterface
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'user';
     }
+    
+	public static function model($className=__CLASS__)
+	{
+		return parent::model($className);
+	}
 
     /**
      * @inheritdoc
      */
+    public $new_password;
+    public $confirm_pwd_create;
+    public $confirm_pwd_update;
+    
     public function rules()
     {
         return [
-            [['u_name', 'u_mail', 'u_phone', 'u_password_hash'], 'required'],
+            [['u_name', 'u_password_hash', 'u_fullname'], 'required'],
+            [['u_name'], 'unique', 'message' => 'Username already exists!'],
             [['u_role'], 'string'],
-            [['u_created_at', 'u_updated_at'], 'safe'],
-            [['u_is_deleted'], 'integer'],
+            [['u_mail'], 'email'],
+            [['created_at', 'updated_at'], 'safe'],
+            [['confirm_pwd_create'], 'compare', 'compareAttribute' => 'u_password_hash', 'message' => 'Confirm password incorrect!'],
+            [['confirm_pwd_update'], 'compare', 'compareAttribute' => 'u_password_hash', 'message' => 'Confirm password incorrect!'],
+            [['is_deleted'], 'integer'],
             [['u_name'], 'string', 'max' => 32],
-            [['u_mail', 'u_phone', 'u_password_hash', 'u_password_reset_token', 'u_auth_key'], 'string', 'max' => 255],
+            [['u_mail', 'u_phone', 'u_password_hash', 'u_password_reset_token', 'u_auth_key', 'u_fullname'], 'string', 'max' => 255],
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
-            'u_id' => 'U ID',
-            'u_name' => 'U Name',
-            'u_mail' => 'U Mail',
-            'u_phone' => 'U Phone',
-            'u_password_hash' => 'U Password Hash',
-            'u_password_reset_token' => 'U Password Reset Token',
-            'u_auth_key' => 'U Auth Key',
-            'u_role' => 'U Role',
-            'u_created_at' => 'U Created At',
-            'u_updated_at' => 'U Updated At',
-            'u_is_deleted' => 'U Is Deleted',
+            'u_id' => 'User ID',
+            'u_name' => 'Username',
+            'u_mail' => 'Email',
+            'u_phone' => 'Phone number',
+            'u_password_hash' => 'Password',
+            'u_password_reset_token' => 'User Password Reset Token',
+            'u_auth_key' => 'User Auth Key',
+            'u_role' => 'Role',
+            'u_created_at' => 'User Created At',
+            'u_updated_at' => 'User Updated At',
+            'is_deleted' => 'User Is Deleted',
+            'u_fullname' => 'Fullname',
+            'globalSearch' => '',
+            'confirm_pwd_create' => 'Confirm password',
+            'new_password' => 'New password',
+            'confirm_pwd_update' => 'Confirm password',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUserTests()
-    {
+    
+    public function getUserTests() {
         return $this->hasMany(UserTest::className(), ['u_id' => 'u_id']);
     }
+
     
     /**
      * @inheritdoc
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['u_id' => $id, 'u_is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
+        return static::findOne(['u_id' => $id, 'is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
+
     }
 
-    /**
-     * @inheritdoc
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
+    public static function findIdentityByAccessToken($token, $type = null) {
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
+
 
     /**
      * Finds user by username
@@ -103,35 +120,24 @@ class User extends AppActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['u_name' => $username, 'u_is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
+        return static::findOne(['u_name' => $username, 'is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
+
     }
 
-    /**
-     * Finds user by password reset token
-     *
-     * @param string $token password reset token
-     * @return static|null
-     */
-    public static function findByPasswordResetToken($token)
-    {
+    public static function findByPasswordResetToken($token) {
         if (!static::isPasswordResetTokenValid($token)) {
             return null;
         }
 
         return static::findOne([
+
             'u_password_reset_token' => $token,
             'u_status' => AppConstant::IS_DELETED_NOT_DELETED,
+
         ]);
     }
 
-    /**
-     * Finds out if password reset token is valid
-     *
-     * @param string $token password reset token
-     * @return boolean
-     */
-    public static function isPasswordResetTokenValid($token)
-    {
+    public static function isPasswordResetTokenValid($token) {
         if (empty($token)) {
             return false;
         }
@@ -141,46 +147,23 @@ class User extends AppActiveRecord implements IdentityInterface
         return $timestamp + $expire >= time();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getId()
-    {
+    public function getId() {
         return $this->getPrimaryKey();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getAuthKey()
-    {
+    public function getAuthKey() {
         return $this->u_auth_key;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function validateAuthKey($authKey)
-    {
+    public function validateAuthKey($authKey) {
         return $this->getAuthKey() === $authKey;
     }
 
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return boolean if password provided is valid for current user
-     */
-    public function validatePassword($password)
-    {
+    public function validatePassword($password) {
         return Yii::$app->security->validatePassword($password, $this->u_password_hash);
     }
 
-    /**
-     * Validate role
-     */
-    public function validateRole($role)
-    {
+    public function validateRole($role) {
         if (!$role) {
             return true;
         } else {
@@ -188,39 +171,22 @@ class User extends AppActiveRecord implements IdentityInterface
         }
     }
 
-    /**
-     * Generates password hash from password and sets it to the model
-     *
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
+    public function setPassword($password) {
         $this->u_password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
-    /**
-     * Generates "remember me" authentication key
-     */
-    public function generateAuthKey()
-    {
+    public function generateAuthKey() {
         $this->u_auth_key = Yii::$app->security->generateRandomString();
     }
 
-    /**
-     * Generates new password reset token
-     */
-    public function generatePasswordResetToken()
-    {
+    public function generatePasswordResetToken() {
         $this->u_password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
-    /**
-     * Removes password reset token
-     */
-    public function removePasswordResetToken()
-    {
+    public function removePasswordResetToken() {
         $this->u_password_reset_token = null;
     }
+
 
     /**
      * Get user's avatar
@@ -230,4 +196,5 @@ class User extends AppActiveRecord implements IdentityInterface
     {
         return isset($current_user->u_avatar) ? $current_user->u_avatar : "/res/img/user_default.jpg";
     }
+
 }
