@@ -13,21 +13,19 @@ use Yii;
  *
  * @property AnswerClone[] $answerClones
  */
-class QuestionClone extends \yii\db\ActiveRecord
-{
+class QuestionClone extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'question_clone';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['qc_content'], 'required'],
             [['qc_content'], 'string'],
@@ -38,8 +36,7 @@ class QuestionClone extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'qc_id' => 'Qc ID',
             'qc_content' => 'Qc Content',
@@ -50,8 +47,24 @@ class QuestionClone extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAnswerClones()
-    {
+    public function getAnswerClones() {
         return $this->hasMany(AnswerClone::className(), ['qc_id' => 'qc_id']);
     }
+
+    public function saveQuestionClone($data) {
+        $db = Yii::$app->db;
+        $count = 0;
+        $dataInsert = [];
+        foreach ($data as $elements) {
+            foreach ($elements['question'] as $question) {
+                if ($question) {
+                    $dataInsert[] = [$question['q_content'], $elements['ut_id']];
+                    $count++;
+                }
+            }
+        }
+        $db->createCommand()->batchInsert(self::tableName(), ['qc_content', 'ut_id'], $dataInsert)->execute();
+        return [$db->getLastInsertID(), $count];
+    }
+
 }
