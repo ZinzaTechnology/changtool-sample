@@ -84,22 +84,35 @@ class LogicTestExam extends LogicBase
             $transaction = $conn->beginTransaction();
 
             try {
-                $testExam->is_deleted = 1;
-                if($testExam->save()) {
-                    // delete corresponding test exam question relationship
-                    $logicTestExamQuestions = new LogicTestExamQuestions();
-                    $count = $logicTestExamQuestions->deleteTestExamQuestionsByTestId($te_id);
-
-                    $transaction->commit();
-                    return $testExam;
-                }
+                // Delete from DataBase
+                // Delete corresponding test exam question relationship
+                $logicTestExamQuestions = new LogicTestExamQuestions();
+                $count = $logicTestExamQuestions->deleteTestExamQuestionsByTestId($te_id);
+                
+                // Delete testExam
+                $testExam->delete();
+                
+                // Delete ok, apply to Database
+                $transaction->commit();
+                
+                return TRUE;
+                // Delete logic
+//                $testExam->is_deleted = 1;
+//                if($testExam->save()) {
+//                    // delete corresponding test exam question relationship
+//                    $logicTestExamQuestions = new LogicTestExamQuestions();
+//                    $count = $logicTestExamQuestions->deleteTestExamQuestionsByTestId($te_id);
+//
+//                    $transaction->commit();
+//                    return $testExam;
+//                }
             } catch(\Exception $e) {
                 $transaction->rollBack();
                 throw $e;
             }
         }
 
-        return null;
+        return FALSE;
     }
 
     /**
