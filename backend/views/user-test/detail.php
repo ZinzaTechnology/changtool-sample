@@ -34,11 +34,11 @@ $question_count = 1;
 //                    if ($count < count($userAnswer[$questionID]))
 //                        $count++;
 //                } else {
-//                    
 //                }
                     echo Html::textInput('answer', $answer['ac_content'], ['class' => 'form-control', 'readonly' => true]);
                 }
                 $question_count++;
+                
             }
             ?>
         </div>

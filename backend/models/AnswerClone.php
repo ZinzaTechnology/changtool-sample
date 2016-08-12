@@ -68,5 +68,5 @@ class AnswerClone extends \yii\db\ActiveRecord {
         $db->createCommand()->batchInsert(self::tableName(), ['qc_id', 'ac_content', 'ac_status'], $dataInsert)->execute();
         return [$db->getLastInsertID(), $count];
     }
-
+    
 }

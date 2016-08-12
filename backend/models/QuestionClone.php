@@ -33,6 +33,7 @@ class QuestionClone extends \yii\db\ActiveRecord {
         ];
     }
 
+    
     /**
      * @inheritdoc
      */

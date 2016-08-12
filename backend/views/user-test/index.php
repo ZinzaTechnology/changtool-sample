@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
     <?php Html::endForm() ?>
-
+    
     <?=
     GridView::widget([
         'dataProvider' => $dataProvider,

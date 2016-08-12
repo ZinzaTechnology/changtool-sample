@@ -192,7 +192,6 @@ class LogicUserTest extends LogicBase {
                         ->asArray()
                         ->all());
     }
-
     public function getAnswersRandom($questionID, $type) {
         $selectTrue = Answer::find()
                 ->select('qa_id,qa_content,qa_status')
