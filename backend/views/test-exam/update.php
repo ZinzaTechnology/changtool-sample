@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = 'Edit';
         <div class="test-exam-update">
             <?= $this->render('_edit_form', [
                 'testExam' => $testExam,
-                'questions' => $questions,
+                'all_questions' => $all_questions,
                 'testCategory' => $testCategory,
                 'testLevel' => $testLevel,
             ]) ?>

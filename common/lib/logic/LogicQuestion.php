@@ -174,6 +174,19 @@ class LogicQuestion extends LogicBase
     /**
      *
      * @return (Question) array (found ActiveRecord)
+     * param: q_ids: list of all q_id need to get record
+     */
+    public function findQuestionArrayQuestionID($q_ids)
+    {
+        $questions = [];
+        if (!empty($q_ids)){
+            $questions = Question::queryAll(['q_id' => $q_ids]);
+        }
+        return $questions;
+    }
+    
+    /**
+     * @return (Question) array (found ActiveRecord)
      */
     public function findQuestionByCategory($q_category)
     {
