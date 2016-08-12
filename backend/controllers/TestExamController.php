@@ -211,7 +211,6 @@ class TestExamController extends BackendController
             ]);
         }
         else{
-            $added_questions = [];
             if(isset(Yii::$app->session['test_exam'])){
                 Yii::$app->session->remove('test_exam');
             }

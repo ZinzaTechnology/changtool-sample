@@ -14,6 +14,7 @@ use common\models\Question;
 use common\models\TestExamSearch;
 use yii\data\ActiveDataProvider;
 use common\models\TestExamQuestions;
+use common\lib\helpers\AppArrayHelper;
 
 class LogicTestExam extends LogicBase
 {
@@ -172,11 +173,15 @@ class LogicTestExam extends LogicBase
         // Get testExam info from session
         $test_exam = Yii::$app->session->get('test_exam');
         
-        $test_exam['testExam']['te_category'] = $request['TestExam']['te_category'];
-        $test_exam['testExam']['te_level'] = $request['TestExam']['te_level'];
-        $test_exam['testExam']['te_code'] = $request['TestExam']['te_code'];
-        $test_exam['testExam']['te_title'] = $request['TestExam']['te_title'];
-        $test_exam['testExam']['te_time'] = $request['TestExam']['te_time'];
+        // Filter request
+        $params = AppArrayHelper::filterKeys($request['TestExam'],
+               ['te_code', 'te_category', 'te_level', 'te_title', 'te_time']);
+        
+        $test_exam['testExam']['te_category'] = $params['te_category'];
+        $test_exam['testExam']['te_level'] = $params['te_level'];
+        $test_exam['testExam']['te_code'] = $params['te_code'];
+        $test_exam['testExam']['te_title'] = $params['te_title'];
+        $test_exam['testExam']['te_time'] = $params['te_time'];
 
        Yii::$app->session->set('test_exam', $test_exam);
 
