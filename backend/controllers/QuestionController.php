@@ -13,55 +13,99 @@ use common\lib\helpers\AppArrayHelper;
 
 class QuestionController extends BackendController
 {
+
     public function actionIndex()
-    {	
+    {
         $category = AppConstant::$QUESTION_CATEGORY_NAME;
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
-
-        $request = Yii::$app->request->post();
-        $params = [];
-        if (!empty($request)) {
-            $params = AppArrayHelper::filterKeys($request, ['content', 'category', 'level', 'type', 'qt_content']);
+        
+        $request = Yii::$app->request->post ();
+        $params = [ ];
+        if (! empty ( $request )) {
+            $params = AppArrayHelper::filterKeys ( $request, [ 
+                'content',
+                'category',
+                'level',
+                'type',
+                'qt_content' 
+            ] );
         }
-
-        $logicQuestion = new LogicQuestion();
-        $questions = $logicQuestion->findQuestionBySearch($params);
-
-        $data = [
+        
+        $logicQuestion = new LogicQuestion ();
+        $questions = $logicQuestion->findQuestionBySearch ( $params );
+        
+        $data = [ 
             'questions' => $questions,
             'category' => $category,
             'type' => $type,
-            'level' => $level,
+            'level' => $level 
         ];
-        return $this->render('index', $data);
-
+        return $this->render ( 'index', $data );
     }
 
     public function actionCreate()
-    {	
-        date_default_timezone_set("Asia/Ho_Chi_Minh");
-        $category = array('1' => 'PHP', '2' => 'C','3'=>'Java','4'=>'SQL','5'=>'C#/C++');
-        $tagarray= array('1' => 'Language','2' => 'Database','3' => 'Framework','4' => 'Logic','5' => 'C#/C++');
-        $question= new Question();
-        $answer=new Answer();
-        $tag= new Tag();
-        if ($question->load(Yii::$app->request->post()))
-        {	 $request =Yii::$app->request->post()['Question'];
-        $question->q_content = $request['q_content'];
-        $question->q_category =$request['q_category'];
-        $question->q_type =$request['q_type'];
-        $question->q_level =$request['q_level'];
-        $question->q_created_date=  date('Y-m-d H:i:s');
-        $question->q_updated_date= null;
-        $question->q_is_deleted= 1;
-        if($question->save())
-        {
-            return $this->render('view', ['answer' => $answer,'question'=>$question]);
-            exit();
-        }else return $this->render('create', ['tag' => $tag,'question' => $question,'answer' => $answer,'category'=>$category,'tagarray'=>$tagarray]);
-        }else return $this->render('create', ['tag' => $tag,'question' => $question,'answer' => $answer,'category'=>$category,'tagarray'=>$tagarray]);
-
+    {
+        $answer_status = AppConstant::$ANSWER_STATUS_NAME;
+        $category = AppConstant::$QUESTION_CATEGORY_NAME;
+        $type = AppConstant::$QUESTION_TYPE_NAME;
+        $level = AppConstant::$QUESTION_LEVEL_NAME;
+        $tag = AppConstant::$QUESTION_TAG_NAME;
+        $request = Yii::$app->request->post ();
+        $logicQuestion = new LogicQuestion ();
+        $logicAnswer = new LogicAnswer ();
+        $question = $logicQuestion->initQuestion ();
+        $answer = $logicAnswer->init2Answer ();
+        $data = [ 
+            'answer' => $answer,
+            'question' => $question,
+            'category' => $category,
+            'type' => $type,
+            'level' => $level,
+            'answer_status' => $answer_status 
+        ];
+        $params = [ ];
+        if (! empty ( $request )) {
+            $request1 = Yii::$app->request->post () ['Question'];
+            if (! empty ( $request1 )) {
+                
+                $params = AppArrayHelper::filterKeys ( $request1, [ 
+                    'q_content',
+                    'q_category',
+                    'q_level',
+                    'q_type',
+                    'qt_content' 
+                ] );
+                
+                $question = $logicQuestion->createQuestion ( $params );
+                $q_id = $question->q_id;
+                $request2 = Yii::$app->request->post () ['Answer'];
+                $answerarray = [ ];
+                if (! empty ( $request2 )) {
+                    foreach ( $request2 as $val ) {
+                        
+                        $params = AppArrayHelper::filterKeys ( $val, [ 
+                            'qa_content',
+                            'qa_status' 
+                        ] );
+                        $answer = $logicAnswer->createAnswer ( $params, $q_id );
+                        $answerarray [] = $answer;
+                    }
+                    
+                    $data = [ 
+                        'answers' => $answerarray,
+                        'question' => $question,
+                        'category' => $category,
+                        'type' => $type,
+                        'level' => $level,
+                        'answer_status' => $answer_status 
+                    ];
+                    return $this->render ( 'view', $data );
+                }
+            } else
+                return $this->render ( 'create', $data );
+        } else
+            return $this->render ( 'create', $data );
     }
 
     public function actionView($q_id)
@@ -70,42 +114,73 @@ class QuestionController extends BackendController
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
         $answer_status = AppConstant::$ANSWER_STATUS_NAME;
-
-        $q_id = Yii::$app->request->get('q_id');
-
-        $logicQuestion = new LogicQuestion();
-        $logicAnswer = new LogicAnswer();
-
-        $question = $logicQuestion->findQuestionById($q_id);
+        
+        $q_id = Yii::$app->request->get ( 'q_id' );
+        
+        $logicQuestion = new LogicQuestion ();
+        $logicAnswer = new LogicAnswer ();
+        
+        $question = $logicQuestion->findQuestionById ( $q_id );
         $answers = null;
         if ($question) {
-            $answers = $logicAnswer->findAnswerByQuestionId($q_id);
+            $answers = $logicAnswer->findAnswerByQuestionId ( $q_id );
         }
-
-        $data = [
+        
+        $data = [ 
             'question' => $question,
             'answers' => $answers,
             'category' => $category,
             'type' => $type,
             'level' => $level,
-            'answer_status' => $answer_status,
+            'answer_status' => $answer_status 
         ];
-        return $this->render('view', $data);
+        return $this->render ( 'view', $data );
     }
 
     public function actionDelete()
     {
-        if (($q_id = Yii::$app->request->get('q_id')) != null) {
-            $logicQuestion = new LogicQuestion();
-
-            $result = $logicQuestion->deleteQuestionById($q_id);
+        if (($q_id = Yii::$app->request->get ( 'q_id' )) != null) {
+            $logicQuestion = new LogicQuestion ();
+            
+            $result = $logicQuestion->deleteQuestionById ( $q_id );
             if ($result) {
-                $this->redirect(['/question']);
+                $this->redirect ( [ 
+                    '/question' 
+                ] );
             } else {
-                Yii::$app->session->setFlash('error', 'Error occurs when deleting this question!');
-                $this->goReferrer();
+                Yii::$app->session->setFlash ( 'error', 'Error occurs when deleting this question!' );
+                $this->goReferrer ();
             }
         }
     }
 
+    public function actionDeleteAnswer()
+    {
+        if (($qa_id = Yii::$app->request->get ( 'qa_id' )) != null) {
+            $q_id = Yii::$app->request->get ( 'q_id' );
+            
+            $logicAnswer = new LogicAnswer ();
+            $result = $logicAnswer->deleteAnswerById ( $qa_id );
+            if ($result) {
+                $this->redirect ( [ 
+                    '/question/view',
+                    'q_id' => $q_id 
+                ] );
+            } else {
+                Yii::$app->session->setFlash ( 'error', 'Error occurs when deleting this answer!' );
+                $this->goReferrer ();
+            }
+        }
+    }
+
+    public function actionEditAnswer()
+    {
+        $answer_status = AppConstant::$ANSWER_STATUS_NAME;
+        $params = [ ];
+        if (($qa_id = Yii::$app->request->get ( 'qa_id' )) != null) {
+            $q_id = Yii::$app->request->get ( 'q_id' );
+            
+            $logicAnswer = new LogicAnswer ();
+        }
+    }
 }
