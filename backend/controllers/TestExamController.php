@@ -96,9 +96,6 @@ class TestExamController extends BackendController
         if (!empty($request)) {
             $params = AppArrayHelper::filterKeys($request['TestExam'],
                ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']);
-            
-            var_dump($params);
-            die;
 
             $newTest = $logicTestExam->insertTestExam(['TestExam' => $params]);
 
@@ -294,7 +291,7 @@ class TestExamController extends BackendController
         
         $data = [
             'id' => Yii::$app->session->get('test_exam')['te_id'],
-            'all_test_exam_questions' => Yii::$app->session->get('test_exam')['all_questions'],
+            'all_questions' => Yii::$app->session->get('test_exam')['all_questions'],
             'questions' => $questions,
             'category' => $category,
             'type' => $type,
