@@ -45,9 +45,9 @@ DynamicFormWidget::begin ( [
     'formFields' => [ 
         'qa_content',
         'qa_status' 
-    ]
-     
-] );
+    ] 
+]
+ );
 ?>
 
             <div class="container-items">
