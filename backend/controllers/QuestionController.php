@@ -51,11 +51,13 @@ class QuestionController extends BackendController
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
         $tag = AppConstant::$QUESTION_TAG_NAME;
+
         $request = Yii::$app->request->post();
         $logicQuestion = new LogicQuestion();
         $logicAnswer = new LogicAnswer();
         $question = $logicQuestion->initQuestion();
-        $answer = $logicAnswer->init2Answer();
+        $answer = [$logicAnswer->initAnswer()];
+
         $data = [
             'answer' => $answer,
             'question' => $question,
@@ -64,6 +66,7 @@ class QuestionController extends BackendController
             'level' => $level,
             'answer_status' => $answer_status
         ];
+
         $params = [ ];
         if (! empty($request)) {
             $request1 = Yii::$app->request->post()['Question'];

@@ -80,10 +80,4 @@ class LogicAnswer extends LogicBase
         return $answer = new Answer();
     }
 
-    public function init2Answer()
-    {
-        return $answer = [
-            new Answer()
-        ];
-    }
 }
