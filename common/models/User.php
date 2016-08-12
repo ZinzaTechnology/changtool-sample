@@ -33,14 +33,15 @@ class User extends AppActiveRecord implements IdentityInterface
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'user';
     }
     
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+    public static function model($className = __CLASS__)
+    {
+        return parent::model($className);
+    }
 
     /**
      * @inheritdoc
@@ -68,7 +69,8 @@ class User extends AppActiveRecord implements IdentityInterface
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'u_id' => 'User ID',
             'u_name' => 'Username',
@@ -93,7 +95,8 @@ class User extends AppActiveRecord implements IdentityInterface
      * @return \yii\db\ActiveQuery
      */
     
-    public function getUserTests() {
+    public function getUserTests()
+    {
         return $this->hasMany(UserTest::className(), ['u_id' => 'u_id']);
     }
 
@@ -104,10 +107,10 @@ class User extends AppActiveRecord implements IdentityInterface
     public static function findIdentity($id)
     {
         return static::findOne(['u_id' => $id, 'is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
-
     }
 
-    public static function findIdentityByAccessToken($token, $type = null) {
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
 
@@ -121,10 +124,10 @@ class User extends AppActiveRecord implements IdentityInterface
     public static function findByUsername($username)
     {
         return static::findOne(['u_name' => $username, 'is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
-
     }
 
-    public static function findByPasswordResetToken($token) {
+    public static function findByPasswordResetToken($token)
+    {
         if (!static::isPasswordResetTokenValid($token)) {
             return null;
         }
@@ -137,7 +140,8 @@ class User extends AppActiveRecord implements IdentityInterface
         ]);
     }
 
-    public static function isPasswordResetTokenValid($token) {
+    public static function isPasswordResetTokenValid($token)
+    {
         if (empty($token)) {
             return false;
         }
@@ -147,23 +151,28 @@ class User extends AppActiveRecord implements IdentityInterface
         return $timestamp + $expire >= time();
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->getPrimaryKey();
     }
 
-    public function getAuthKey() {
+    public function getAuthKey()
+    {
         return $this->u_auth_key;
     }
 
-    public function validateAuthKey($authKey) {
+    public function validateAuthKey($authKey)
+    {
         return $this->getAuthKey() === $authKey;
     }
 
-    public function validatePassword($password) {
+    public function validatePassword($password)
+    {
         return Yii::$app->security->validatePassword($password, $this->u_password_hash);
     }
 
-    public function validateRole($role) {
+    public function validateRole($role)
+    {
         if (!$role) {
             return true;
         } else {
@@ -171,19 +180,23 @@ class User extends AppActiveRecord implements IdentityInterface
         }
     }
 
-    public function setPassword($password) {
+    public function setPassword($password)
+    {
         $this->u_password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
-    public function generateAuthKey() {
+    public function generateAuthKey()
+    {
         $this->u_auth_key = Yii::$app->security->generateRandomString();
     }
 
-    public function generatePasswordResetToken() {
+    public function generatePasswordResetToken()
+    {
         $this->u_password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
-    public function removePasswordResetToken() {
+    public function removePasswordResetToken()
+    {
         $this->u_password_reset_token = null;
     }
 
@@ -196,5 +209,4 @@ class User extends AppActiveRecord implements IdentityInterface
     {
         return isset($current_user->u_avatar) ? $current_user->u_avatar : "/res/img/user_default.jpg";
     }
-
 }

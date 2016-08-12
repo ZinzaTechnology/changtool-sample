@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -11,25 +11,25 @@ $this->title = 'Accounts';
 
 ?>
 <div class="user-index">
-	<h1><?= Html::encode($this->title) ?></h1>
-	<p>
-		<?= Html::a('New Account', ['create'], ['class' => 'btn btn-success']) ?>
-		<?= $this->render('_search', ['model' => $searchModel]) ?>
-	</p>
-	<?php
-		/*foreach ($dataProvider as $data)
-		{
-	    	echo $data->u_name ."\t";
+    <h1><?= Html::encode($this->title) ?></h1>
+    <p>
+        <?= Html::a('New Account', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= $this->render('_search', ['model' => $searchModel]) ?>
+    </p>
+    <?php
+        /*foreach ($dataProvider as $data)
+        {
+            echo $data->u_name ."\t";
 		}*/
-	?>
-	<?= GridView::widget([
+    ?>
+    <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'rowOptions' => function ($model, $key, $index, $grid) 
-		{
-				return ['id' => $model['u_id'], 'style' => "cursor: pointer", 'onclick' => 'location.href="' 
-            	. Yii::$app->urlManager->createUrl('user/view') 
-            	.'?id="+(this.id);',];
-				},
+        'rowOptions' => function ($model, $key, $index, $grid) {
+        
+                return ['id' => $model['u_id'], 'style' => "cursor: pointer", 'onclick' => 'location.href="'
+                . Yii::$app->urlManager->createUrl('user/view')
+                .'?id="+(this.id);',];
+        },
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'u_id',
@@ -47,5 +47,5 @@ $this->title = 'Accounts';
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
-	
+    
 </div>

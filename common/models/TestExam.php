@@ -3,7 +3,6 @@
 namespace common\models;
 
 use Yii;
-    
 
 /**
  * This is the model class for table "test_exam".
@@ -88,11 +87,12 @@ class TestExam extends \common\models\AppActiveRecord
         return $this->hasMany(UserTest::className(), ['te_id' => 'te_id']);
     }
     
-    public static function getData($param){
-    	if($param){
-    		return self::find()->where($param)->all();
-    	}else{
-    		return self::find()->all();
-    	}
+    public static function getData($param)
+    {
+        if ($param) {
+            return self::find()->where($param)->all();
+        } else {
+            return self::find()->all();
+        }
     }
 }

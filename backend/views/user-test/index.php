@@ -76,37 +76,37 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
             [
                 'attribute' => 'Username',
-                'value' => function($model) {
+                'value' => function ($model) {
                     return $model['u_name'];
                 },
             ],
             [
                 'attribute' => 'Category',
-                'value' => function($model) use ($category) {
+                'value' => function ($model) use ($category) {
                     return $category[$model['te_category']];
                 },
             ],
             [
                 'attribute' => 'Title',
-                'value' => function($model) {
+                'value' => function ($model) {
                     return $model['te_title'];
                 },
             ],
             [
                 'attribute' => 'Status',
-                'value' => function($model) {
+                'value' => function ($model) {
                     return $model['ut_status'];
                 },
             ],
             [
                 'attribute' => 'Start Time',
-                'value' => function($model) {
+                'value' => function ($model) {
                     return $model['ut_start_at'];
                 },
             ],
             [
                 'attribute' => 'End Time',
-                'value' => function($model) {
+                'value' => function ($model) {
                     return $model['ut_finished_at'];
                 },
             ],
@@ -117,8 +117,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', Url::toRoute(['detail', 'id' => $model['ut_id']]));
                     },
                             'delete' => function ($url, $model) {
-                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete', 'id' => $model['ut_id']]));
-                    }
+                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete', 'id' => $model['ut_id']]));
+                            }
                         ],
                     ],
                 ],

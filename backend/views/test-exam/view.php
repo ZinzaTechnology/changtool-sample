@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
     <div class="ibox-content">
         <div class="hr-line-solid"></div>
 
-        <?php if ($testExam): ?>
+        <?php if ($testExam) : ?>
             <div class="row">
                 <div class="col-md-6">
                     <table class="table table-bordered">
@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
             if ($questions) {
                 $form = ActiveForm::begin();
                 $q_count = 1;
-                foreach($questions as $q) {
+                foreach ($questions as $q) {
                     echo $form->field($q, 'q_content')->textarea(['readonly' => true])->label("Question $q_count");
                     ++$q_count;
                 }
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
                 ],
             ]) ?>
 
-        <?php else: ?>
+        <?php else : ?>
             <h3>Test not found</h3>
         <?php endif; ?>
 

@@ -19,7 +19,8 @@ use common\models\TestExamQuestions;
 use backend\models\QuestionClone;
 use backend\models\AnswerClone;
 
-class LogicUserTest extends LogicBase {
+class LogicUserTest extends LogicBase
+{
 
     public $_errors = [],
             $_assignedSuccess = false,
@@ -31,20 +32,26 @@ class LogicUserTest extends LogicBase {
             $_levelID,
             $_request = [];
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function parseRequest($request) {
+    public function parseRequest($request)
+    {
         $this->_testExam = $request['TestExam'];
         $userID = explode('"', $request['User']['u_id']);
         $testID = explode('"', $this->_testExam['te_id']);
-        for ($i = 0; $i < count($userID); $i++)
-            if ($i % 2 != 0)
+        for ($i = 0; $i < count($userID); $i++) {
+            if ($i % 2 != 0) {
                 $this->_userID[] = $userID[$i];
-        for ($i = 0; $i < count($testID); $i++)
-            if ($i % 2 != 0)
+            }
+        }
+        for ($i = 0; $i < count($testID); $i++) {
+            if ($i % 2 != 0) {
                 $this->_teID[] = $testID[$i];
+            }
+        }
         $this->_categoryID = $this->_testExam['te_category'];
         $this->_levelID = $this->_testExam['te_level'];
         if (!empty($this->_testExam['te_category'])) {
@@ -61,27 +68,33 @@ class LogicUserTest extends LogicBase {
         }
     }
 
-    public function isTestEmpty() {
+    public function isTestEmpty()
+    {
         return empty($this->_teID);
     }
 
-    public function isUserEmpty() {
+    public function isUserEmpty()
+    {
         return empty($this->_userID);
     }
 
-    public function isAssignedSuccess() {
+    public function isAssignedSuccess()
+    {
         return $this->_assignedSuccess;
     }
 
-    public function getTestExamParams() {
+    public function getTestExamParams()
+    {
         return $this->_testExamParams;
     }
 
-    public function getChoice() {
+    public function getChoice()
+    {
         return [$this->_categoryID, $this->_levelID];
     }
 
-    public function assignTest() {
+    public function assignTest()
+    {
         $countProcess = 0;
         $userTest = new UserTest;
         $transaction = Yii::$app->db->beginTransaction();
@@ -107,7 +120,6 @@ class LogicUserTest extends LogicBase {
                         }
                     }
                     if ($answerCloneID = (new AnswerClone)->saveAnswerClone($answers)) {
-                        
                     }
                 }
             }
@@ -120,7 +132,8 @@ class LogicUserTest extends LogicBase {
         }
     }
 
-    public function deteleTest($id) {
+    public function deteleTest($id)
+    {
         $transaction = Yii::$app->db->beginTransaction();
         $userTest = new UserTest;
         $command = Yii::$app->db->createCommand();
@@ -129,8 +142,9 @@ class LogicUserTest extends LogicBase {
             switch ($record->ut_status) {
                 case "ASSIGNED":
                     $questionCloneID = ArrayHelper::getColumn(QuestionClone::findAll(['ut_id' => $id]), 'qc_id');
-                    if (count($questionCloneID))
+                    if (count($questionCloneID)) {
                         AnswerClone::deleteAll("qc_id in (" . implode(', ', $questionCloneID) . ")");
+                    }
                     QuestionClone::deleteAll("ut_id = {$id}");
                     $record->delete();
                     break;
@@ -144,7 +158,8 @@ class LogicUserTest extends LogicBase {
         return false;
     }
 
-    public static function getWithParams($params) {
+    public static function getWithParams($params)
+    {
         $query = new Query;
         $query
                 ->select(['ut_id', 'u_name', 'te_category', 'te_title', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at'])
@@ -160,7 +175,8 @@ class LogicUserTest extends LogicBase {
         return $query->all();
     }
 
-    public function getTest($userTestID) {
+    public function getTest($userTestID)
+    {
         $question = QuestionClone::find()->select('qc_id,qc_content')
                 ->where(['ut_id' => $userTestID])
                 ->asArray()
@@ -177,14 +193,16 @@ class LogicUserTest extends LogicBase {
         return $question;
     }
 
-    public function getUserAnswer($userTestID) {
+    public function getUserAnswer($userTestID)
+    {
         if ($infor = UserTest::findOne($userTestID)) {
             return unserialize($infor->ut_user_answer_ids);
         }
         return null;
     }
 
-    public function getQuestions($testID) {
+    public function getQuestions($testID)
+    {
         return (TestExamQuestions::find()
                         ->select('test_exam_questions.te_id,question.q_id,question.q_type,question.q_content')
                         ->innerJoin('question', 'test_exam_questions.q_id = question.q_id')
@@ -192,7 +210,8 @@ class LogicUserTest extends LogicBase {
                         ->asArray()
                         ->all());
     }
-    public function getAnswersRandom($questionID, $type) {
+    public function getAnswersRandom($questionID, $type)
+    {
         $selectTrue = Answer::find()
                 ->select('qa_id,qa_content,qa_status')
                 ->where(['q_id' => $questionID, 'qa_status' => 1])
@@ -210,5 +229,4 @@ class LogicUserTest extends LogicBase {
         $result = array_merge($selectTrue, $selectFalse);
         return $result;
     }
-
 }

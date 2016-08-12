@@ -59,10 +59,10 @@ class LogicTestExamQuestions extends LogicBase
         ];
         if ($testExamQuestion->load($params) && $testExamQuestion->validate()) {
             if ($testExamQuestion->save()) {
-                return TRUE;
+                return true;
             }
         }
 
-        return FALSE;
+        return false;
     }
 }

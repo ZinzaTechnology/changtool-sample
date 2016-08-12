@@ -25,19 +25,22 @@ use yii\db\Expression;
  * @property TestExam $te
  * @property User $u
  */
-class UserTest extends \common\models\AppActiveRecord {
+class UserTest extends \common\models\AppActiveRecord
+{
 
     /**
      * @inheritdoc
      */
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'user_test';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['u_id', 'te_id'], 'required'],
             [['u_id', 'te_id', 'ut_mark'], 'integer'],
@@ -51,7 +54,8 @@ class UserTest extends \common\models\AppActiveRecord {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'ut_id' => 'Id',
             'u_id' => 'User ID',
@@ -68,18 +72,21 @@ class UserTest extends \common\models\AppActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTe() {
+    public function getTe()
+    {
         return $this->hasOne(TestExam::className(), ['te_id' => 'te_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getU() {
+    public function getU()
+    {
         return $this->hasOne(User::className(), ['u_id' => 'u_id']);
     }
 
-    public static function saveUserTest($data) {
+    public static function saveUserTest($data)
+    {
         $db = Yii::$app->db;
         $count = 0;
         $dataInsert = [];
@@ -95,5 +102,4 @@ class UserTest extends \common\models\AppActiveRecord {
         $db->createCommand()->batchInsert(self::tableName(), ['te_id', 'u_id'], $dataInsert)->execute();
         return [$db->getLastInsertID(), $count];
     }
-
 }

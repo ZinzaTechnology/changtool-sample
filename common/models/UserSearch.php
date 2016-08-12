@@ -12,7 +12,7 @@ use common\models\User;
  */
 class UserSearch extends User
 {
-	public $globalSearch;
+    public $globalSearch;
     /**
      * @inheritdoc
      */
@@ -38,7 +38,7 @@ class UserSearch extends User
      * @param array $params
      *
      * @return ActiveDataProvider
-     */ 
+     */
     
     public function search($params)
     {
@@ -52,20 +52,18 @@ class UserSearch extends User
 
         $this->load($params);
 
-        if (!$this->validate()) 
-        {
+        if (!$this->validate()) {
             return $dataProvider;
         }
-		
+        
         $query->orFilterWhere(['like', 'u_name', $this->globalSearch])
             ->orFilterWhere(['like', 'u_mail', $this->globalSearch])
             ->orFilterWhere(['like', 'u_fullname', $this->globalSearch]);
-		$query->andFilterWhere([
+        $query->andFilterWhere([
             'is_deleted' => $this->is_deleted,
         ]);
         return $dataProvider;
     }
-    
 }
 
 class Changepassword extends User
@@ -75,22 +73,18 @@ class Changepassword extends User
     
     public function rules()
     {
-    	return [
+        return [
             [['u_password_hash', 'new_password', 'confirm_pwd_update'], 'required', 'on' => 'changePwd'],
             [['u_password_hash'], 'findPasswords', 'on' => 'changepPwd'],
             [['confirm_pwd_update'], 'compare', 'compareAttribute' => 'new_password', 'on' => 'changePwd'],
         ];
     }
     
-	public function findPasswords($attribute, $params)
+    public function findPasswords($attribute, $params)
     {
         $user = User::model()->findByPk(Yii::app()->user->u_id);
-        if ($user->password != md5($this->u_password_hash))
+        if ($user->password != md5($this->u_password_hash)) {
             $this->addError($attribute, 'Old password is incorrect.');
+        }
     }
 }
-
-
-
-
-

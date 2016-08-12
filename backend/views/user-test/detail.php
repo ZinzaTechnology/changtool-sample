@@ -38,8 +38,7 @@ $question_count = 1;
                     echo Html::textInput('answer', $answer['ac_content'], ['class' => 'form-control', 'readonly' => true]);
                 }
                 $question_count++;
-                
-            }
+}
             ?>
         </div>
     </div>

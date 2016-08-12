@@ -14,13 +14,13 @@ $this->title = $model->u_name;
 
     <h1><?= Html::encode($this->title) ?></h1>
 <div class ="row">
-	<div class="lg-col-6">
+    <div class="lg-col-6">
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             'u_id',
             'u_name',
-    		'u_fullname',
+            'u_fullname',
             'u_mail',
             //'u_phone',
             //'u_password_hash',
@@ -33,7 +33,7 @@ $this->title = $model->u_name;
         ],
     ]) ?>
 
-	<p>
+    <p>
         <?= Html::a('Update', ['update', 'id' => $model->u_id], ['class' => 'btn btn-success']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->u_id], [
             'class' => 'btn btn-danger',
@@ -42,8 +42,8 @@ $this->title = $model->u_name;
                 'method' => 'post',
             ],
         ]) ?>
-        <?= Html::a('Cancel', ['/user/index'], ['class'=>'btn btn-primary grid-button']) ?>
+        <?= Html::a('Cancel', ['/user/index'], ['class' => 'btn btn-primary grid-button']) ?>
     </p>
     </div>
-</div>	
+</div>  
 </div>

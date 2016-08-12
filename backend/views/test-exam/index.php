@@ -26,9 +26,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <p><?= Html::a('Create Test Exam', ['create'], ['class' => 'btn btn-success'])?></p>
         <div class="hr-line-solid"></div>
 
-        <?php ActiveForm::begin([ 
+        <?php ActiveForm::begin([
             'action' => Url::toRoute('/test-exam/index'),
-            'method' => 'GET' 
+            'method' => 'GET'
         ]); ?>
         <table class="table table-bordered">
             <tr>
@@ -38,27 +38,27 @@ $this->params['breadcrumbs'][] = $this->title;
                         'name' => 'te_category',
                         'data' => $category,
                         'value' => isset($te_search) ? $te_search['te_category'] : null,
-                        'options' => [ 
-                            'placeholder' => 'Select Category ...' 
+                        'options' => [
+                            'placeholder' => 'Select Category ...'
                         ],
-                        'pluginOptions' => [ 
-                            'allowClear' => true 
-                        ] 
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ]
                     ]); ?>
                 </td>
                 <th>Level</th>
                 <td>
-                    <?= Select2::widget([ 
+                    <?= Select2::widget([
                         'name' => 'te_level',
                         'data' => $level,
                         'value' => isset($te_search) ? $te_search['te_level'] : null,
-                        'options' => [ 
-                            'placeholder' => 'Select Level ...' 
+                        'options' => [
+                            'placeholder' => 'Select Level ...'
                         ],
-                        'pluginOptions' => [ 
-                            'allowClear' => true 
-                        ] 
-                    ] ); ?>
+                        'pluginOptions' => [
+                            'allowClear' => true
+                        ]
+                    ]); ?>
                 </td>
             </tr>
                 <td colspan="4">
@@ -72,38 +72,38 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="hr-line-solid"></div>
 
         <?php
-        echo GridView::widget([ 
+        echo GridView::widget([
             'dataProvider' => $dataProvider,
-            'columns' => [ 
-                [ 
-                    'class' => 'yii\grid\SerialColumn' 
+            'columns' => [
+                [
+                    'class' => 'yii\grid\SerialColumn'
                 ],
                 'te_code',
-                [ 
+                [
                     'attribute' => 'te_category',
-                    "content" => function($model, $key, $index, $column) use ($category) {
+                    "content" => function ($model, $key, $index, $column) use ($category) {
                         return $category[$model->te_category];
-                    } 
+                    }
                 ],
-                [ 
+                [
                     'attribute' => 'te_level',
-                    "content" => function($model, $key, $index, $column) use ($level) {
+                    "content" => function ($model, $key, $index, $column) use ($level) {
                         return $level[$model->te_level];
-                    } 
+                    }
                 ],
                 'te_title',
-                [ 
+                [
                     'attribute' => 'te_time',
-                    "content" => function($model, $key, $index, $column) use ($level) {
+                    "content" => function ($model, $key, $index, $column) use ($level) {
                         return $model->te_time.' mins';
-                    } 
+                    }
                 ],
                 'te_num_of_questions',
                 'created_at:datetime',
                 'updated_at:datetime',
-                [ 
-                    'class' => 'yii\grid\ActionColumn' 
-                ] 
+                [
+                    'class' => 'yii\grid\ActionColumn'
+                ]
             ]
         ]);
         ?>

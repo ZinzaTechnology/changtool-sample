@@ -26,11 +26,10 @@ class AppArrayHelper extends yii\helpers\ArrayHelper
     {
         $result = [ ];
         
-        foreach ( $keys as $key ) {
-            $result [$key] = (isset ( $array [$key] )) ? $array [$key] : null;
+        foreach ($keys as $key) {
+            $result [$key] = (isset($array [$key])) ? $array [$key] : null;
         }
         
         return $result;
     }
 }
-

@@ -19,7 +19,7 @@ class LogicQuestion extends LogicBase
 
     public function __construct()
     {
-        parent::__construct ();
+        parent::__construct();
     }
 
     /**
@@ -28,9 +28,9 @@ class LogicQuestion extends LogicBase
      */
     public function findQuestionBySearch($params)
     {
-        $questionQuery = Question::query ();
+        $questionQuery = Question::query();
         
-        if (! empty ( $params )) {
+        if (! empty($params)) {
             $q_content = $params ['content'];
             $q_category = $params ['category'];
             $q_type = $params ['type'];
@@ -38,47 +38,47 @@ class LogicQuestion extends LogicBase
             $q_level = $params ['level'];
             
             if ($q_content != null) {
-                $questionQuery->andWhere ( [ 
+                $questionQuery->andWhere([
                     'like',
                     'q_content',
-                    $q_content 
-                ] );
+                    $q_content
+                ]);
             }
             if ($q_category != null) {
-                $questionQuery->andWhere ( [ 
-                    'q_category' => $q_category 
-                ] );
+                $questionQuery->andWhere([
+                    'q_category' => $q_category
+                ]);
             }
             if ($q_type != null) {
-                $questionQuery->andWhere ( [ 
-                    'q_type' => $q_type 
-                ] );
+                $questionQuery->andWhere([
+                    'q_type' => $q_type
+                ]);
             }
             if ($q_level != null) {
-                $questionQuery->andWhere ( [ 
-                    'q_level' => $q_level 
-                ] );
+                $questionQuery->andWhere([
+                    'q_level' => $q_level
+                ]);
             }
             if ($qt_content != null) {
-                $tagNames = explode ( ',', $qt_content );
-                $tag_ids = array_keys ( array_filter ( AppConstant::$QUESTION_TAG_NAME, function ($v, $k) use ($tagNames) {
-                    return in_array ( strtolower ( $v ), $tagNames );
-                }, ARRAY_FILTER_USE_BOTH ) );
-                $qtags = QuestionTag::query ()->andWhere ( [ 
+                $tagNames = explode(',', $qt_content);
+                $tag_ids = array_keys(array_filter(AppConstant::$QUESTION_TAG_NAME, function ($v, $k) use ($tagNames) {
+                    return in_array(strtolower($v), $tagNames);
+                }, ARRAY_FILTER_USE_BOTH));
+                $qtags = QuestionTag::query()->andWhere([
                     'IN',
                     'tag_id',
-                    $tag_ids 
-                ] )->all ();
-                $q_ids = ArrayHelper::getColumn ( $qtags, 'q_id' );
+                    $tag_ids
+                ])->all();
+                $q_ids = ArrayHelper::getColumn($qtags, 'q_id');
                 
-                $questionQuery->andWhere ( [ 
+                $questionQuery->andWhere([
                     'IN',
                     'q_id',
-                    $q_ids 
-                ] );
+                    $q_ids
+                ]);
             }
         }
-        $questions = $questionQuery->all ();
+        $questions = $questionQuery->all();
         
         return $questions;
     }
@@ -89,16 +89,15 @@ class LogicQuestion extends LogicBase
      */
     public function createQuestion($params)
     {
-        date_default_timezone_set ( "Asia/Ho_Chi_Minh" );
-        $question = new Question ();
-        if (! empty ( $params )) {
-            
+        date_default_timezone_set("Asia/Ho_Chi_Minh");
+        $question = new Question();
+        if (! empty($params)) {
             $question->q_content = $params ['q_content'];
             $question->q_category = $params ['q_category'];
             $question->q_type = $params ['q_type'];
             $question->q_level = $params ['q_level'];
             $question->is_deleted = 0;
-            $question->save ();
+            $question->save();
         }
         
         return $question;
@@ -106,7 +105,7 @@ class LogicQuestion extends LogicBase
 
     public function initQuestion()
     {
-        return $question = new Question ();
+        return $question = new Question();
     }
 
     /**
@@ -115,7 +114,7 @@ class LogicQuestion extends LogicBase
      */
     public function findQuestionById($q_id)
     {
-        return Question::queryOne ( $q_id );
+        return Question::queryOne($q_id);
     }
 
     /**
@@ -127,26 +126,26 @@ class LogicQuestion extends LogicBase
         // must do in transaction
         $conn = Yii::$app->db;
         
-        $question = Question::queryOne ( $q_id );
+        $question = Question::queryOne($q_id);
         if ($question) {
-            $transaction = $conn->beginTransaction ();
+            $transaction = $conn->beginTransaction();
             
             try {
                 $question->is_deleted = 1;
-                if ($question->save ()) {
+                if ($question->save()) {
                     // delete corresponding answers
-                    $logicAnswer = new LogicAnswer ();
-                    $count = $logicAnswer->deleteAnswersByQuestionId ( $q_id );
+                    $logicAnswer = new LogicAnswer();
+                    $count = $logicAnswer->deleteAnswersByQuestionId($q_id);
                     
                     // delete corresponding test including this question
-                    $logicTestExamQuestions = new LogicTestExamQuestions ();
-                    $count = $logicTestExamQuestions->deleteTestExamQuestionsByQuestionId ( $q_id );
+                    $logicTestExamQuestions = new LogicTestExamQuestions();
+                    $count = $logicTestExamQuestions->deleteTestExamQuestionsByQuestionId($q_id);
                     
-                    $transaction->commit ();
+                    $transaction->commit();
                     return $question;
                 }
-            } catch ( \Exception $e ) {
-                $transaction->rollBack ();
+            } catch (\Exception $e) {
+                $transaction->rollBack();
                 throw $e;
             }
         }
@@ -160,13 +159,13 @@ class LogicQuestion extends LogicBase
      */
     public function findQuestionByTestId($te_id)
     {
-        $logicTestExamQuestions = new LogicTestExamQuestions ();
-        $question_ids = $logicTestExamQuestions->findQuestionIdByTestId ( $te_id );
+        $logicTestExamQuestions = new LogicTestExamQuestions();
+        $question_ids = $logicTestExamQuestions->findQuestionIdByTestId($te_id);
         $questions = [ ];
-        if (! empty ( $question_ids )) {
-            $questions = Question::queryAll ( [ 
-                'q_id' => $question_ids 
-            ] );
+        if (! empty($question_ids)) {
+            $questions = Question::queryAll([
+                'q_id' => $question_ids
+            ]);
         }
         return $questions;
     }
@@ -179,7 +178,7 @@ class LogicQuestion extends LogicBase
     public function findQuestionArrayQuestionID($q_ids)
     {
         $questions = [];
-        if (!empty($q_ids)){
+        if (!empty($q_ids)) {
             $questions = Question::queryAll(['q_id' => $q_ids]);
         }
         return $questions;
@@ -190,9 +189,9 @@ class LogicQuestion extends LogicBase
      */
     public function findQuestionByCategory($q_category)
     {
-        $questions = Question::queryAll ( [ 
-            'q_category' => $q_category 
-        ] );
+        $questions = Question::queryAll([
+            'q_category' => $q_category
+        ]);
         return $questions;
     }
 }

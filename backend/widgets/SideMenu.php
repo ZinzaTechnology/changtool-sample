@@ -19,8 +19,8 @@ use yii\helpers\ArrayHelper;
  */
 class SideMenu extends Menu
 {
-    public $items = array();
-    public $customTemplateOptions = array();
+    public $items = [];
+    public $customTemplateOptions = [];
     public $linkTemplate = '<a href="{url}">{labelTpl}</a>';
     public $labelTemplate = '<i class="fa {icon}"></i> <span class="nav-label">{label}</span>';
 

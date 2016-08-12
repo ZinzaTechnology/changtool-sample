@@ -37,9 +37,9 @@ class Question extends \common\models\AppActiveRecord
      */
     public function getAnswers()
     {
-        return $this->hasMany ( Answer::className (), [ 
-            'q_id' => 'q_id' 
-        ] );
+        return $this->hasMany(Answer::className(), [
+            'q_id' => 'q_id'
+        ]);
     }
 
     /**
@@ -48,9 +48,9 @@ class Question extends \common\models\AppActiveRecord
      */
     public function getTags()
     {
-        return $this->hasMany ( Tag::className (), [ 
-            'q_id' => 'q_id' 
-        ] );
+        return $this->hasMany(Tag::className(), [
+            'q_id' => 'q_id'
+        ]);
     }
 
     /**
@@ -59,9 +59,9 @@ class Question extends \common\models\AppActiveRecord
      */
     public function getTestExamQuestions()
     {
-        return $this->hasMany ( TestExamQuestions::className (), [ 
-            'q_id' => 'q_id' 
-        ] );
+        return $this->hasMany(TestExamQuestions::className(), [
+            'q_id' => 'q_id'
+        ]);
     }
 
     /**
@@ -70,10 +70,10 @@ class Question extends \common\models\AppActiveRecord
      */
     public function getTest()
     {
-        return $this->hasMany ( TestExam::className (), [ 
-            'te_id' => 'te_id' 
-        ] )->viaTable ( 'test_exam_questions', [ 
-            'q_id' => 'q_id' 
-        ] );
+        return $this->hasMany(TestExam::className(), [
+            'te_id' => 'te_id'
+        ])->viaTable('test_exam_questions', [
+            'q_id' => 'q_id'
+        ]);
     }
 }

@@ -37,7 +37,7 @@ class TestExamController extends BackendController
      */
     public function actionIndex()
     {
-        $request= Yii::$app->request->get();
+        $request = Yii::$app->request->get();
         $params = [];
         if (!empty($request)) {
             $params = AppArrayHelper::filterKeys($request, ['te_level', 'te_category']);
@@ -94,8 +94,10 @@ class TestExamController extends BackendController
         $params = [];
         $newTest = new TestExam();
         if (!empty($request)) {
-            $params = AppArrayHelper::filterKeys($request['TestExam'],
-               ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']);
+            $params = AppArrayHelper::filterKeys(
+                $request['TestExam'],
+                ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']
+            );
 
             $newTest = $logicTestExam->insertTestExam(['TestExam' => $params]);
 
@@ -128,12 +130,11 @@ class TestExamController extends BackendController
         $get     = Yii::$app->request->get();
         $params = [];
         if (!empty($request) && isset($request['te_update'])) {
-            if($request['te_update'] == 'add_question'){
-
-                $logicTestExam->updateTestExamInfoToSession($request); 
+            if ($request['te_update'] == 'add_question') {
+                $logicTestExam->updateTestExamInfoToSession($request);
                 
                 // Get all questions in database
-                $questions = $logicQuestion->findQuestionBySearch(array());
+                $questions = $logicQuestion->findQuestionBySearch([]);
 
                 // Redirect to Question Index site to choose question
                 return $this->render('test_index', [
@@ -144,11 +145,8 @@ class TestExamController extends BackendController
                     'level' => AppConstant::$QUESTION_LEVEL_NAME,
                     'type' => AppConstant::$QUESTION_TYPE_NAME,
                 ]);
-                
-            }
-            else if($request['te_update'] == 'add_question_complete'){
-                
-                if(isset($request['option'])){
+            } elseif ($request['te_update'] == 'add_question_complete') {
+                if (isset($request['option'])) {
                     $logicTestExam->updateTestExamQuestionsInfoToSession($request['option']);
                 }
                 
@@ -162,12 +160,11 @@ class TestExamController extends BackendController
                     'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
                     'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
                 ]);
-            }
-            else if($request['te_update'] == 'cancel'){
+            } elseif ($request['te_update'] == 'cancel') {
                 // User cancel update, rollback original data
                 $logicTestExam->removeTestExamInfoFromSession();
                 
-                if(isset(Yii::$app->session['te_search'])){
+                if (isset(Yii::$app->session['te_search'])) {
                     $params = Yii::$app->session['te_search'];
                 }
                         
@@ -181,10 +178,9 @@ class TestExamController extends BackendController
                     'te_search' => Yii::$app->session->get('te_search'),
                 ];
                 return $this->render('index', $data);
-            }
-            else{
+            } else {
                 // Update new data to session
-                $logicTestExam->updateTestExamInfoToSession($request); 
+                $logicTestExam->updateTestExamInfoToSession($request);
                 // Update new data to database
                 $logicTestExam->updateAllChangedToDB($id);
 
@@ -193,14 +189,14 @@ class TestExamController extends BackendController
                 // Get question to display on View page
                 $all_questions = $logicQuestion->findQuestionByTestId($id);
                 
-                return $this->redirect(['view', 
+                return $this->redirect(['view',
                     'id' => $id,
                     'all_questions' => $all_questions,
                     'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
                     'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
                 ]);
             }
-        } else if(isset($get['delete_question'])){
+        } elseif (isset($get['delete_question'])) {
             // User delete a question in testExam
             $all_questions = $logicQuestion->findQuestionArrayQuestionID(Yii::$app->session->get('test_exam')['all_questions']);
             return $this->render('update', [
@@ -209,9 +205,8 @@ class TestExamController extends BackendController
                 'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
                 'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);
-        }
-        else{
-            if(isset(Yii::$app->session['test_exam'])){
+        } else {
+            if (isset(Yii::$app->session['test_exam'])) {
                 Yii::$app->session->remove('test_exam');
             }
             $testExam = $logicTestExam->findTestExamById($id);
@@ -273,7 +268,7 @@ class TestExamController extends BackendController
 
     //[tho.nt] add.
     public function actionTestIndex()
-    {	
+    {
         $category = AppConstant::$QUESTION_CATEGORY_NAME;
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
@@ -297,21 +292,15 @@ class TestExamController extends BackendController
             'level' => $level,
         ];
         return $this->render('test_index', $data);
-
     }
     
     public function actionAssigntestexam()
     {
-        if($request= Yii::$app->request->get())
-        {
-            foreach($request['selection'] as $selection)
-            {
+        if ($request = Yii::$app->request->get()) {
+            foreach ($request['selection'] as $selection) {
                 echo $selection."<br \>";
-
-
             }
             print_r($request['selection']);
         }
     }
-
 }
