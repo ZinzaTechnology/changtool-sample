@@ -97,11 +97,10 @@ $current_user = Yii::$app->user->identity;
                         [
                             'label' => 'User Test Manager',
                             'icon' => 'fa-tasks',
-                            'url' => ["/usertest"],
+                            'url' => ["/user-test"],
                             'controllers' => [
                                 'usertest' => '*',
                             ],
-
                         ],
                     ],
                 ]);

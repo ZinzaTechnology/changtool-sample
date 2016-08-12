@@ -10,7 +10,7 @@ $this->title = 'Admin Dashboard';
     <div class="ibox-content">
         <div class="row">
             <div class="col-lg-2">
-                <a href="<?= URL::toRoute("/user/index") ?>"><button class="btn btn-primary dim m-btn-large-dim" type="button">
+                <a href="<?= URL::toRoute("/account-manager") ?>"><button class="btn btn-primary dim m-btn-large-dim" type="button">
                         <i class="fa fa-users"></i>
                         <br><span class="m-btn-large-text">Account Manager</span>
                 </button></a>
@@ -34,7 +34,7 @@ $this->title = 'Admin Dashboard';
                 </button></a>
             </div>
             <div class="col-lg-2">
-                <a href="<?= URL::toRoute("/usertest") ?>"><button class="btn btn-primary dim m-btn-large-dim" type="button">
+                <a href="<?= URL::toRoute("/user-test") ?>"><button class="btn btn-primary dim m-btn-large-dim" type="button">
                         <i class="fa fa-tasks"></i>
                         <br><span class="m-btn-large-text">User Test Manager</span>
                 </button></a>
