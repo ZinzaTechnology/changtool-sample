@@ -16,30 +16,30 @@ $question_count = 1;
     </div>
     <div class="ibox-content">
         <div class="form-group">
-            <?php if (count($data)): ?>
-                <?php foreach ($data as $question): ?>
+            <?php if (count($data)) : ?>
+                <?php foreach ($data as $question) : ?>
                     <label class="control-label"><?= "Question {$question_count}" ?></label>
                     <div class="alert alert-info">
                         <strong><?= $question['qc_content'] ?></strong>
                     </div>
                     <div class="m-b-md">
-                        <?php foreach ($question['answer'] as $answer): ?>
+                        <?php foreach ($question['answer'] as $answer) : ?>
                             <div class="i-checks">
                                 <input type="radio" disabled 
-                                    <?php 
-                                        if (isset($userAnswer["question-{$answer['qc_id']}"]) && in_array($answer['ac_id'], $userAnswer["question-{$answer['qc_id']}"])){
-                                            echo "checked";
-                                        }
+                                    <?php
+                                    if (isset($userAnswer["question-{$answer['qc_id']}"]) && in_array($answer['ac_id'], $userAnswer["question-{$answer['qc_id']}"])) {
+                                        echo "checked";
+                                    }
                                     ?>
                                 >
                                 <?= $answer['ac_content'] ?>
-                                <?= ($answer['ac_status']==1)?"<span class='label label-primary'>True</span>":'' ?>
+                                <?= ($answer['ac_status'] == 1) ? "<span class='label label-primary'>True</span>" : '' ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
                     <?php $question_count++; ?>
                 <?php endforeach; ?>
-            <?php else: ?>
+            <?php else : ?>
                 <?= "<strong>No question found</strong>" ?>
             <?php endif; ?>
         </div>

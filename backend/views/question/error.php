@@ -1,5 +1,6 @@
-<?php 
+<?php
 use yii\widgets\Breadcrumbs;
+
 $this->title = "Error Manager";
 $this->params['breadcrumbs'][] = $this->title;
 ?>

@@ -31,11 +31,11 @@ class LogicQuestion extends LogicBase
         $questionQuery = Question::query();
         
         if (! empty($params)) {
-            $q_content = $params ['content'];
-            $q_category = $params ['category'];
-            $q_type = $params ['type'];
-            $qt_content = $params ['qt_content'];
-            $q_level = $params ['level'];
+            $q_content = $params['content'];
+            $q_category = $params['category'];
+            $q_type = $params['type'];
+            $qt_content = $params['qt_content'];
+            $q_level = $params['level'];
             
             if ($q_content != null) {
                 $questionQuery->andWhere([
@@ -51,7 +51,7 @@ class LogicQuestion extends LogicBase
             }
             if ($q_type != null) {
                 $questionQuery->andWhere([
-                    'q_type' => $q_type 
+                    'q_type' => $q_type
                 ]);
             }
             if ($q_level != null) {
@@ -91,10 +91,10 @@ class LogicQuestion extends LogicBase
     {
         $question = new Question();
         if (! empty($params)) {
-            $question->q_content = $params ['q_content'];
-            $question->q_category = $params ['q_category'];
-            $question->q_type = $params ['q_type'];
-            $question->q_level = $params ['q_level'];
+            $question->q_content = $params['q_content'];
+            $question->q_category = $params['q_category'];
+            $question->q_type = $params['q_type'];
+            $question->q_level = $params['q_level'];
             $question->is_deleted = 0;
             $question->validate();
             $question->save();
@@ -175,7 +175,7 @@ class LogicQuestion extends LogicBase
         $questions = [];
         if (! empty($question_ids)) {
             $questions = Question::queryAll([
-                'q_id' => $question_ids 
+                'q_id' => $question_ids
             ]);
         }
         return $questions;

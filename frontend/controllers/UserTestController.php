@@ -1,11 +1,6 @@
 <?php
-<<<<<<< HEAD
-
 namespace frontend\controllers;
 
-=======
-namespace frontend\controllers;
->>>>>>> dev/anhlt/frontend
 use Yii;
 use frontend\models\UserTest;
 use yii\data\ActiveDataProvider;

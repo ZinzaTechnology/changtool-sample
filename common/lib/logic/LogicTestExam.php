@@ -195,7 +195,7 @@ class LogicTestExam extends LogicBase
                
         // Save new question id to session
         foreach ($options as $option) {
-            if(!in_array($option, $all_questions)){
+            if (!in_array($option, $all_questions)) {
                 $all_questions[] = $option;
             }
         }
@@ -217,7 +217,7 @@ class LogicTestExam extends LogicBase
     public function deleteQuestionOnSession($te_id, $q_id)
     {
         $test_exam = Yii::$app->session->get('test_exam');
-        if($test_exam['testExam']['te_id'] != $te_id){
+        if ($test_exam['testExam']['te_id'] != $te_id) {
             return AppConstant::$ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME;
         }
         $all_questions = $test_exam['all_questions'];
@@ -260,7 +260,7 @@ class LogicTestExam extends LogicBase
                 }
                 
                 // Update TestExam Question
-                // List all old questions id 
+                // List all old questions id
                 $questions = [];
                 foreach ($te_questions as $te_question) {
                     $questions[] = $te_question['q_id'];
@@ -272,13 +272,13 @@ class LogicTestExam extends LogicBase
                 
                 // Insert added questions for this exam
                 $ret = $logicTestExamQuestions->insertMultiTestExamQuestion($te_id, $added_questions);
-                if(AppConstant::$ERROR_OK != $ret){
+                if (AppConstant::$ERROR_OK != $ret) {
                     $transaction->rollBack();
                     return $ret;
                 }
                 // Delete removed questions of this exam
                 $ret = $logicTestExamQuestions->deleteMultiTestExamQuestion($te_id, $removed_questions);
-                if(AppConstant::$ERROR_OK != $ret){
+                if (AppConstant::$ERROR_OK != $ret) {
                     $transaction->rollBack();
                     return $ret;
                 }

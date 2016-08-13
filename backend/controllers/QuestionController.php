@@ -22,13 +22,13 @@ class QuestionController extends BackendController
         $request = Yii::$app->request->post();
         
         $params = [];
-        $selected = array(
+        $selected = [
             "content" => "",
             "category" => "",
             "level" => "",
             "type" => "",
-            "qt_content" => "" 
-        );
+            "qt_content" => ""
+        ];
         
         if (! empty($request)) {
             $params = AppArrayHelper::filterKeys($request, [
@@ -36,7 +36,7 @@ class QuestionController extends BackendController
                 'category',
                 'level',
                 'type',
-                'qt_content' 
+                'qt_content'
             ]);
             $selected = $params;
         }
@@ -47,8 +47,8 @@ class QuestionController extends BackendController
         $dataProvider = new ArrayDataProvider([
             'allModels' => $questions,
             'pagination' => [
-                'pagesize' => 15 
-            ] 
+                'pagesize' => 15
+            ]
         ]);
         
         $data = [
@@ -86,32 +86,30 @@ class QuestionController extends BackendController
 
         $params = [];
         if (! empty($request)) {
-            $request1 = Yii::$app->request->post() ['Question'];
+            $request1 = Yii::$app->request->post()['Question'];
             if (! empty($request1)) {
-                
                 $params = AppArrayHelper::filterKeys($request1, [
                     'q_content',
                     'q_category',
                     'q_level',
                     'q_type',
-                    'qt_content' 
+                    'qt_content'
                 ]);
                 
                 $question = $logicQuestion->createQuestion($params);
                 if ($question != null) {
                     $q_id = $question->q_id;
-                    $request2 = Yii::$app->request->post() ['Answer'];
+                    $request2 = Yii::$app->request->post()['Answer'];
                     
                     $answerarray = [];
                     if (! empty($request2)) {
                         foreach ($request2 as $val) {
-                            
                             $params = AppArrayHelper::filterKeys($val, [
                                 'qa_content',
-                                'qa_status' 
+                                'qa_status'
                             ]);
                             $answer = $logicAnswer->createAnswerByQuesion($params, $q_id);
-                            $answerarray [] = $answer;
+                            $answerarray[] = $answer;
                         }
                         
                         $data = [
@@ -120,7 +118,7 @@ class QuestionController extends BackendController
                             'category' => $category,
                             'type' => $type,
                             'level' => $level,
-                            'answer_status' => $answer_status 
+                            'answer_status' => $answer_status
                         ];
                         return $this->render('view', $data);
                     } else {
@@ -131,10 +129,12 @@ class QuestionController extends BackendController
                     Yii::$app->session->setFlash('error', 'Error occurs when creating this question!');
                     return $this->goReferrer();
                 }
-            } else
+            } else {
                 return $this->render('insert-question', $data);
-        } else
+            }
+        } else {
             return $this->render('insert-question', $data);
+        }
     }
 
     public function actionEditQuestion()
@@ -147,7 +147,6 @@ class QuestionController extends BackendController
         $logicQuestion = new LogicQuestion();
         $logicAnswer = new LogicAnswer();
         if (($q_id = Yii::$app->request->get('q_id')) != null) {
-            
             if (($question = $logicQuestion->findById($q_id)) != null) {
                 $answer = $logicAnswer->init2Answer();
                 $data = [
@@ -157,10 +156,9 @@ class QuestionController extends BackendController
                     'type' => $type,
                     'level' => $level,
                     'answer_status' => $answer_status,
-                    'q_id' => $q_id 
+                    'q_id' => $q_id
                 ];
                 if (($answer = $logicAnswer->findAnswerByQuesionId2($q_id)) != null) {
-                    
                     $data = [
                         'question' => $question,
                         'answer' => $answer,
@@ -168,12 +166,11 @@ class QuestionController extends BackendController
                         'type' => $type,
                         'level' => $level,
                         'answer_status' => $answer_status,
-                        'q_id' => $q_id 
+                        'q_id' => $q_id
                     ];
                 }
                 return $this->render('edit-question', $data);
             } else {
-                
                 Yii::$app->session->setFlash('error', 'Error occurs when editting this answer!');
                 return $this->goReferrer();
             }
@@ -182,35 +179,30 @@ class QuestionController extends BackendController
         $request = Yii::$app->request->post();
         $params = [];
         if (! empty($request)) {
-            
-            $request1 = Yii::$app->request->post() ['Question'];
+            $request1 = Yii::$app->request->post()['Question'];
             if (! empty($request1)) {
-                
                 $params = AppArrayHelper::filterKeys($request1, [
                     'q_content',
                     'q_category',
                     'q_level',
                     'q_type',
-                    'qt_content' 
+                    'qt_content'
                 ]);
                 
                 $question = $logicQuestion->createQuestion($params);
                 
                 if ($question != null) {
-                    
-                    $request2 = Yii::$app->request->post() ['Answer'];
+                    $request2 = Yii::$app->request->post()['Answer'];
                     
                     $answerarray = [];
                     if (! empty($request2)) {
-                        
                         foreach ($request2 as $val) {
-                            
                             $params = AppArrayHelper::filterKeys($val, [
                                 'qa_content',
-                                'qa_status' 
+                                'qa_status'
                             ]);
                             $answer = $logicAnswer->createAnswerByQuesion($params, $q_id);
-                            $answerarray [] = $answer;
+                            $answerarray[] = $answer;
                         }
                         
                         $data = [
@@ -219,7 +211,7 @@ class QuestionController extends BackendController
                             'category' => $category,
                             'type' => $type,
                             'level' => $level,
-                            'answer_status' => $answer_status 
+                            'answer_status' => $answer_status
                         ];
                         return $this->render('view', $data);
                     } else {
@@ -227,7 +219,6 @@ class QuestionController extends BackendController
                         return $this->goReferrer();
                     }
                 } else {
-                    
                     Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
                     return $this->goReferrer();
                 }
@@ -284,14 +275,13 @@ class QuestionController extends BackendController
     public function actionDeleteAnswer()
     {
         if (($qa_id = Yii::$app->request->get('qa_id')) != null && ($q_id = Yii::$app->request->get('q_id')) != null) {
-            
             $logicAnswer = new LogicAnswer();
             if ($q_id == ($checkid = $logicAnswer->findByAnswerId($qa_id))) {
                 $result = $logicAnswer->deleteAnswerById($qa_id);
                 if ($result) {
                     $this->redirect([
                         '/question/view',
-                        'q_id' => $q_id 
+                        'q_id' => $q_id
                     ]);
                 } else {
                     Yii::$app->session->setFlash('error', 'Error occurs when deleting this answer!');
@@ -314,42 +304,36 @@ class QuestionController extends BackendController
         $params = [];
         $logicAnswer = new LogicAnswer();
         if (($qa_id = Yii::$app->request->get('qa_id')) != null && ($q_id = Yii::$app->request->get('q_id')) != null) {
-            
             if ($q_id == ($checkid = $logicAnswer->findByAnswerId($qa_id))) {
-                
                 if (($answer = $logicAnswer->findById($qa_id)) != null) {
-                    
                     $data = [
                         'answer' => $answer,
-                        'q_id' => $q_id 
+                        'q_id' => $q_id
                     ];
                     return $this->render('edit-answer', $data);
                 } else {
-                    
                     Yii::$app->session->setFlash('error', 'Error occurs when editting this answer!');
                     return $this->goReferrer();
                 }
             } else {
-                
                 Yii::$app->session->setFlash('error', 'Error occurs when edittting this answer!');
                 return $this->goReferrer();
             }
         }
         
-        $request = Yii::$app->request->post() ['Answer'];
+        $request = Yii::$app->request->post()['Answer'];
         
         if (! empty($request)) {
-            
             $params = AppArrayHelper::filterKeys($request, [
                 'qa_content',
                 'qa_status',
-                'q_id' 
+                'q_id'
             ]);
             $answer = $logicAnswer->createAnswer($params);
             
             return $this->redirect([
                 '/question/view',
-                'q_id' => $params ['q_id'] 
+                'q_id' => $params['q_id']
             ]);
         }
     }

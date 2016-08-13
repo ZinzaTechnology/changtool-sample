@@ -1,5 +1,6 @@
 <?php
 namespace frontend\controllers;
+
 use yii\data\ActiveData\ActiveDataProvider;
 use Yii;
 use yii\filters\VerbFilter;
@@ -29,7 +30,7 @@ class UserController extends FrontendController
     }
     public function actionIndex()
     {
-    	return $this->render('user');
+        return $this->render('user');
     }
 
     public function actionLogin()
@@ -46,10 +47,10 @@ class UserController extends FrontendController
     
     public function actionIndexx()
     {
-    	$dataProvider = User::find()->all();
-    	return $this->render('user', [
-    			'dataProvider' => $dataProvider,
-    	]);
+        $dataProvider = User::find()->all();
+        return $this->render('user', [
+                'dataProvider' => $dataProvider,
+        ]);
     }
 
     public function actionLogout()
@@ -58,7 +59,7 @@ class UserController extends FrontendController
 
         return $this->goHome();
     }
-    public function actionChoose(){
-    	
+    public function actionChoose()
+    {
     }
 }

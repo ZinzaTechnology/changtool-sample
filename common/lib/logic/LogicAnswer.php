@@ -52,7 +52,6 @@ class LogicAnswer extends LogicBase
         $answer = new Answer();
         
         if (! empty($params)) {
-            
             $answer->q_id = $q_id;
             $answer->qa_content = $params['qa_content'];
             $answer->qa_status = $params['qa_status'];
@@ -69,10 +68,9 @@ class LogicAnswer extends LogicBase
         $answer = new Answer();
         
         if (! empty($params)) {
-            
-            $answer->q_id = $params ['q_id'];
-            $answer->qa_content = $params ['qa_content'];
-            $answer->qa_status = $params ['qa_status'];
+            $answer->q_id = $params['q_id'];
+            $answer->qa_content = $params['qa_content'];
+            $answer->qa_status = $params['qa_status'];
             $answer->is_deleted = 0;
             $answer->save();
         }
@@ -107,10 +105,10 @@ class LogicAnswer extends LogicBase
     {
         $answer = [];
         $answer = Answer::find()->where([
-            'q_id' => $q_id 
+            'q_id' => $q_id
         ]);
         $answer->andWhere([
-            'is_deleted' => '0' 
+            'is_deleted' => '0'
         ]);
         $answer = $answer->all();
         if ($answer) {
@@ -139,7 +137,7 @@ class LogicAnswer extends LogicBase
     public function init2Answer()
     {
         return $answer = [
-            new Answer() 
+            new Answer()
         ];
     }
 }

@@ -50,15 +50,15 @@ class LogicTestExamQuestions extends LogicBase
     
     public function insertMultiTestExamQuestion($te_id, $q_ids)
     {
-        if(!empty($q_ids)){
+        if (!empty($q_ids)) {
             $created_at = date('Y:m:d h:m:s');
             $teqs = [];
-            foreach($q_ids as $q_id){
+            foreach ($q_ids as $q_id) {
                 $teqs[] = [$te_id, $q_id, $created_at];
             }
             $q_count = count($q_ids);
-            $q_inserted_count = Yii::$app->db->createCommand()->batchInsert(TestExamQuestions::tableName(),['te_id', 'q_id', 'created_at'], $teqs)->execute();
-            if($q_count != $q_inserted_count){
+            $q_inserted_count = Yii::$app->db->createCommand()->batchInsert(TestExamQuestions::tableName(), ['te_id', 'q_id', 'created_at'], $teqs)->execute();
+            if ($q_count != $q_inserted_count) {
                 return AppConstant::$ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB;
             }
         }
@@ -67,14 +67,14 @@ class LogicTestExamQuestions extends LogicBase
     
     public function deleteMultiTestExamQuestion($te_id, $q_ids)
     {
-        if(!empty($q_ids)){
+        if (!empty($q_ids)) {
             $te_ids = [];
-            foreach($q_ids as $q_id){
+            foreach ($q_ids as $q_id) {
                 $te_ids[] = (int)$te_id;
             }
             $q_count = count($q_ids);
-            $q_deleted_count = Yii::$app->db->createCommand()->delete(TestExamQuestions::tableName(),['te_id' => $te_ids, 'q_id' => $q_ids])->execute();
-            if($q_count != $q_deleted_count){
+            $q_deleted_count = Yii::$app->db->createCommand()->delete(TestExamQuestions::tableName(), ['te_id' => $te_ids, 'q_id' => $q_ids])->execute();
+            if ($q_count != $q_deleted_count) {
                 return AppConstant::$ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB;
             }
         }

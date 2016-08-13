@@ -1,5 +1,6 @@
 <?php
 namespace frontend\controllers;
+
 use Yii;
 use common\controllers\AppController;
 
@@ -22,8 +23,8 @@ class FrontendController extends AppController
 
         return true;
     }
-    public function actionIndex(){
-    	return $this->render('frontend');
+    public function actionIndex()
+    {
+        return $this->render('frontend');
     }
-    
 }

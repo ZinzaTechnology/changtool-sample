@@ -134,7 +134,6 @@ class TestExamController extends BackendController
                 $logicTestExam->updateTestExamInfoToSession($request);
                 
                 return $this->redirect('test-index');
-                
             } elseif ($request['te_update'] == 'add_question_complete') {
                 if (isset($request['option'])) {
                     $logicTestExam->updateTestExamQuestionsInfoToSession($request['option']);
@@ -156,21 +155,19 @@ class TestExamController extends BackendController
             } else {
                 // Update new data to session
                 $ret = $logicTestExam->updateTestExamInfoToSession($request);
-                if(AppConstant::$ERROR_SESSION_EMPTY == $ret){
+                if (AppConstant::$ERROR_SESSION_EMPTY == $ret) {
                     $this->setSessionFlash('error', 'Cannot update becasue session is not setted');
                     $this->redirect(['update', 'id' => $id]);
                 }
                 // Update new data to database
                 $ret = $logicTestExam->updateChangesFromSessionToDB($this);
-                if(AppConstant::$ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB == $ret){
+                if (AppConstant::$ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB == $ret) {
                     $this->setSessionFlash('error', 'Error occur when save Test Exam info');
                     $this->redirect(['update', 'id' => $id]);
-                }
-                else if(AppConstant::$ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB == $ret){
+                } elseif (AppConstant::$ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB == $ret) {
                     $this->setSessionFlash('error', 'Error occur when insert questions to test exam');
                     $this->redirect(['update', 'id' => $id]);
-                }
-                else if(AppConstant::$ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB == $ret){
+                } elseif (AppConstant::$ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB == $ret) {
                     $this->setSessionFlash('error', 'Error occur when delete questions from test exam');
                     $this->redirect(['update', 'id' => $id]);
                 }
@@ -197,18 +194,17 @@ class TestExamController extends BackendController
                 'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);
         } else {
-            // When user click edit button 
+            // When user click edit button
             if (isset(Yii::$app->session['test_exam'])) {
                 // User is editting testExam
                 $test_exam = Yii::$app->session['test_exam'];
-                if($test_exam['testExam']['te_id'] != $id){
+                if ($test_exam['testExam']['te_id'] != $id) {
                     // User cannot edit 2 testExams at the same time
                     $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id']." Please commit edit or cancel to edit other testExam");
                     return $this->redirect('index');
                 }
                 $testExam  = $test_exam['testExam'];
-            }
-            else{
+            } else {
                 // User start editting testExam
                 $testExam = $logicTestExam->findTestExamById($id);
                 if (!$testExam) {
@@ -259,11 +255,10 @@ class TestExamController extends BackendController
         
         $logicTestExam = new LogicTestExam();
         $ret = $logicTestExam->deleteQuestionOnSession($te_id, $q_id);
-        if(AppConstant::$ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME == $ret){
+        if (AppConstant::$ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME == $ret) {
             $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id']." Please commit edit or cancel to edit other testExam");
             return $this->redirect('index');
-        }
-        else if(AppConstant::$ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM == $ret){
+        } elseif (AppConstant::$ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM == $ret) {
             $this->setSessionFlash('error', 'Question does not exist in this testExan');
             $this->redirect(['update', 'id' => $id]);
         }

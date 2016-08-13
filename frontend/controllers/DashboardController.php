@@ -14,12 +14,14 @@ use yii\helpers\Url;
 /**
  * Dashboard controller
  */
-class DashboardController extends FrontendController {
+class DashboardController extends FrontendController
+{
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -33,7 +35,8 @@ class DashboardController extends FrontendController {
     /**
      * @inheritdoc
      */
-    public function actions() {
+    public function actions()
+    {
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
@@ -46,7 +49,8 @@ class DashboardController extends FrontendController {
      *
      * @return mixed
      */
-    public function actionStartTest() {
+    public function actionStartTest()
+    {
         if ($id = Yii::$app->request->get('id')) {
             if ($userTest = UserTest::findOne($id)) {
                 $time_count = 0;
@@ -71,42 +75,48 @@ class DashboardController extends FrontendController {
                             goto home;
                             break;
                     }
-                } else
+                } else {
                     goto home;
-            } else
+                }
+            } else {
                 goto home;
-        } else
+            }
+        } else {
             goto home;
+        }
 
         home: {
             return $this->redirect(Url::toRoute('/'));
         }
         action: {
-            if ($request = Yii::$app->request->post()) {
-                UserTest::updateEnd($id, serialize($request));
-                return $this->redirect(Url::toRoute(['mark', 'id' => $id]));
-            }
+        if ($request = Yii::$app->request->post()) {
+            UserTest::updateEnd($id, serialize($request));
+            return $this->redirect(Url::toRoute(['mark', 'id' => $id]));
+        }
             $data = (new UserTest())->getTest($id);
             return $this->render('test/start', [
                         'data' => $data,
                         'time_count' => $time_count,
             ]);
-        }
+            }
     }
 
-    public function actionMark() {
+    public function actionMark()
+    {
         $id = Yii::$app->request->get('id');
         $array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
-        array_shift($array);	
-        if ($mark = UserTest::getMark($id))
+        array_shift($array);
+        if ($mark = UserTest::getMark($id)) {
             return $this->render('test/result', [
                         'mark' => $mark
             ]);
-        else
+        } else {
             return $this->redirect(Url::toRoute('/'));
+        }
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $user_test_models = UserTest::find()->where(['u_id' => Yii::$app->user->id])->asArray()->all();
         $test_exams = [];
         foreach ($user_test_models as $user_test) {
@@ -123,7 +133,8 @@ class DashboardController extends FrontendController {
         ]);
     }
     
-    public function actionContact() {
+    public function actionContact()
+    {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
@@ -145,8 +156,8 @@ class DashboardController extends FrontendController {
      *
      * @return mixed
      */
-    public function actionAbout() {
+    public function actionAbout()
+    {
         return $this->render('about');
     }
-
 }

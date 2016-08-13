@@ -25,39 +25,39 @@ class Answer extends \common\models\AppActiveRecord
             [
                 [
                     'q_id',
-                    'qa_content' 
+                    'qa_content'
                 ],
-                'required' 
+                'required'
             ],
             [
                 [
-                    'q_id' 
+                    'q_id'
                 ],
-                'integer' 
+                'integer'
             ],
             [
                 [
-                    'qa_content' 
+                    'qa_content'
                 ],
-                'string' 
+                'string'
             ],
             [
                 [
-                    'qa_status' 
+                    'qa_status'
                 ],
-                'boolean' 
+                'boolean'
             ],
             [
                 [
-                    'q_id' 
+                    'q_id'
                 ],
                 'exist',
                 'skipOnError' => true,
                 'targetClass' => Question::className(),
                 'targetAttribute' => [
-                    'q_id' => 'q_id' 
-                ] 
-            ] 
+                    'q_id' => 'q_id'
+                ]
+            ]
         ];
     }
 
@@ -70,7 +70,7 @@ class Answer extends \common\models\AppActiveRecord
             'qa_id' => 'ID',
             'q_id' => 'ID',
             'qa_content' => 'Content Answer',
-            'qa_status' => 'Right' 
+            'qa_status' => 'Right'
         ];
     }
 
@@ -81,7 +81,7 @@ class Answer extends \common\models\AppActiveRecord
     public function getQ()
     {
         return $this->hasOne(Question::className(), [
-            'q_id' => 'q_id' 
+            'q_id' => 'q_id'
         ]);
     }
 }

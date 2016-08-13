@@ -12,9 +12,11 @@ use common\models\User;
 use common\lib\components\AppConstant;
 use common\lib\logic\LogicUserTest;
 
-class UserTestController extends BackendController {
+class UserTestController extends BackendController
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -22,7 +24,8 @@ class UserTestController extends BackendController {
         ];
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $params = null;
         if ($param = Yii::$app->request->post()) {
             if ($param['submit'] == 'search') {
@@ -39,11 +42,12 @@ class UserTestController extends BackendController {
                     'pagination' => [
                         'pageSize' => 5,
                     ]
-            ]),
+                ]),
         ]);
     }
 
-    public function actionDetail($id) {
+    public function actionDetail($id)
+    {
         $userTest = UserTest::find()->where(['ut_id' => $id]);
         $logicUserTest = new LogicUserTest;
         if ($userTest->exists()) {
@@ -60,7 +64,8 @@ class UserTestController extends BackendController {
         }
     }
 
-    public function actionAssign() {
+    public function actionAssign()
+    {
         $userTest = new UserTest;
         $logicUserTest = new LogicUserTest();
         if ($request = Yii::$app->request->post()) {
@@ -83,7 +88,8 @@ class UserTestController extends BackendController {
         ]);
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (UserTest::find()->where(['ut_id' => $id])->exists()) {
             if ((new LogicUserTest)->deleteTestByUtId($id)) {
                 $this->goReferrer();
@@ -92,5 +98,4 @@ class UserTestController extends BackendController {
             throw new NotFoundHttpException('User Test ID does not exists!');
         }
     }
-
 }
