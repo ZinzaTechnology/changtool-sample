@@ -7,10 +7,13 @@ $this->title = 'Change Password for: ' . $model->u_name;
 
 ?>
 
+<style>
+    
+</style>
+
 <div class="site-changepassword">
     <h1><?= Html::encode($this->title) ?></h1>
-   
-    
+     
     <?php $form = ActiveForm::begin([
         'id' => 'changepassword-form',
         'options' => ['class' => 'form-horizontal'],
@@ -21,6 +24,7 @@ $this->title = 'Change Password for: ' . $model->u_name;
             'labelOptions' => ['class' => 'col-lg-2 control-label'],
         ],
     ]); ?>
+    
             <?= $form->field($model, 'u_password_hash', ['inputOptions' => [
             'placeholder' => 'New Password'
         ]])->passwordInput(['value' => '']) ?>

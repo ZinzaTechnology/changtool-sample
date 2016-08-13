@@ -3,16 +3,14 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Test */
-/* @var $form yii\widgets\ActiveForm */
 ?>
 
 <div class="user-form">
     <div class="row">
         <div class="col-lg-6">
             <?php $form = ActiveForm::begin([
-                'enableAjaxValidation' => true
+                'enableAjaxValidation' => true,
+                'validationUrl' => 'validate',
             ]); ?>
 
             <?= $form->field($model, 'u_name')->textInput(['maxlength' => true]) ?>
@@ -26,11 +24,11 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'u_mail')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($model, 'u_role')->dropDownList(
-                [ 'ADMIN' => 'ADMIN', 'USER' => 'USER',],
+                ['ADMIN' => 'ADMIN', 'USER' => 'USER',],
                 ['prompt' => '',
-                'options' => [
-                    'USER' => ['Selected' => true]
-                ]
+                        'options' => [
+                            'USER' => ['Selected' => true]
+                        ]
                     ]
             )
             ?>
