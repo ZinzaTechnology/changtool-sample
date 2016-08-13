@@ -51,7 +51,7 @@ class LogicQuestion extends LogicBase
             }
             if ($q_type != null) {
                 $questionQuery->andWhere([
-                    'q_type' => $q_type
+                    'q_type' => $q_type 
                 ]);
             }
             if ($q_level != null) {
@@ -89,7 +89,6 @@ class LogicQuestion extends LogicBase
      */
     public function createQuestion($params)
     {
-        date_default_timezone_set("Asia/Ho_Chi_Minh");
         $question = new Question();
         if (! empty($params)) {
             $question->q_content = $params ['q_content'];
@@ -97,6 +96,7 @@ class LogicQuestion extends LogicBase
             $question->q_type = $params ['q_type'];
             $question->q_level = $params ['q_level'];
             $question->is_deleted = 0;
+            $question->validate();
             $question->save();
         }
         
@@ -153,6 +153,17 @@ class LogicQuestion extends LogicBase
         return null;
     }
 
+    public function findById($q_id)
+    {
+        $question = Question::queryOne($q_id);
+        
+        if ($question) {
+            return $question;
+        }
+        
+        return null;
+    }
+
     /**
      *
      * @return (Question) array (found ActiveRecord)
@@ -161,10 +172,10 @@ class LogicQuestion extends LogicBase
     {
         $logicTestExamQuestions = new LogicTestExamQuestions();
         $question_ids = $logicTestExamQuestions->findQuestionIdByTestId($te_id);
-        $questions = [ ];
+        $questions = [];
         if (! empty($question_ids)) {
             $questions = Question::queryAll([
-                'q_id' => $question_ids
+                'q_id' => $question_ids 
             ]);
         }
         return $questions;

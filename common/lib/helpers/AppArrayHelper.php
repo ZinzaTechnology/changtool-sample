@@ -24,10 +24,10 @@ class AppArrayHelper extends yii\helpers\ArrayHelper
      */
     public static function filterKeys($array, $keys)
     {
-        $result = [ ];
+        $result = [];
         
         foreach ($keys as $key) {
-            $result [$key] = (isset($array [$key])) ? $array [$key] : null;
+            $result [$key] = (isset($array[$key])) ? $array[$key] : null;
         }
         
         return $result;

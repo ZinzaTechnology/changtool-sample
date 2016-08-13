@@ -46,14 +46,33 @@ class LogicAnswer extends LogicBase
         ]);
     }
 
-    public function createAnswer($params, $q_id)
+    public function createAnswerByQuesion($params, $q_id)
     {
+        date_default_timezone_set("Asia/Ho_Chi_Minh");
         $answer = new Answer();
         
         if (! empty($params)) {
+            
             $answer->q_id = $q_id;
             $answer->qa_content = $params['qa_content'];
             $answer->qa_status = $params['qa_status'];
+            $answer->is_deleted = 0;
+            $answer->save();
+        }
+        
+        return $answer;
+    }
+
+    public function createAnswer($params)
+    {
+        date_default_timezone_set("Asia/Ho_Chi_Minh");
+        $answer = new Answer();
+        
+        if (! empty($params)) {
+            
+            $answer->q_id = $params ['q_id'];
+            $answer->qa_content = $params ['qa_content'];
+            $answer->qa_status = $params ['qa_status'];
             $answer->is_deleted = 0;
             $answer->save();
         }
@@ -74,8 +93,53 @@ class LogicAnswer extends LogicBase
         return null;
     }
 
+    public function findByAnswerId($qa_id)
+    {
+        $answer = Answer::queryOne($qa_id);
+        if ($answer) {
+            return $answer->q_id;
+        }
+        
+        return null;
+    }
+
+    public function findAnswerByQuesionId2($q_id)
+    {
+        $answer = [];
+        $answer = Answer::find()->where([
+            'q_id' => $q_id 
+        ]);
+        $answer->andWhere([
+            'is_deleted' => '0' 
+        ]);
+        $answer = $answer->all();
+        if ($answer) {
+            return $answer;
+        }
+        
+        return null;
+    }
+
+    public function findById($qa_id)
+    {
+        $answer = Answer::queryOne($qa_id);
+        
+        if ($answer) {
+            return $answer;
+        }
+        
+        return null;
+    }
+
     public function initAnswer()
     {
         return $answer = new Answer();
+    }
+
+    public function init2Answer()
+    {
+        return $answer = [
+            new Answer() 
+        ];
     }
 }
