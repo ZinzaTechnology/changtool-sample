@@ -186,7 +186,7 @@ class LogicQuestion extends LogicBase
      * @return (Question) array (found ActiveRecord)
      * param: q_ids: list of all q_id need to get record
      */
-    public function findQuestionArrayQuestionID($q_ids)
+    public function findQuestionByIds($q_ids)
     {
         $questions = [];
         if (!empty($q_ids)) {

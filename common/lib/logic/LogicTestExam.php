@@ -15,6 +15,7 @@ use common\models\TestExamSearch;
 use yii\data\ActiveDataProvider;
 use common\models\TestExamQuestions;
 use common\lib\helpers\AppArrayHelper;
+use common\lib\components\AppConstant;
 
 class LogicTestExam extends LogicBase
 {
@@ -22,7 +23,9 @@ class LogicTestExam extends LogicBase
     {
         parent::__construct();
     }
-
+    
+    // Const variable
+     const TEST_EXAM_INDEX_PAGING_PAGE_SIZE = 10;
     /**
      * Creates data provider instance with search query applied
      *
@@ -59,6 +62,9 @@ class LogicTestExam extends LogicBase
         // add conditions that should always apply here
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => self::TEST_EXAM_INDEX_PAGING_PAGE_SIZE,
+            ],
         ]);
 
         return $dataProvider;
@@ -145,17 +151,18 @@ class LogicTestExam extends LogicBase
            'te_id' => $id,
            'testExam' => $testExam,
            'te_questions' => $test_questions,
-           'added_questions' => [],
            'all_questions' => $all_questions,
         ];
         Yii::$app->session->set('test_exam', $test_exam_info);
+        return AppConstant::$ERROR_OK;
     }
     
     
     public function updateTestExamInfoToSession($request)
     {
         if (!isset(Yii::$app->session['test_exam'])) {
-            throw new NotFoundHttpException('You must click edit buttion first to edit this testExam...');
+            //throw new NotFoundHttpException('You must click edit buttion first to edit this testExam...');
+            return AppConstant::$ERROR_SESSION_EMPTY;
         }
         // Get testExam info from session
         $test_exam = Yii::$app->session->get('test_exam');
@@ -173,67 +180,68 @@ class LogicTestExam extends LogicBase
         $test_exam['testExam']['te_time'] = $params['te_time'];
 
         Yii::$app->session->set('test_exam', $test_exam);
+        return AppConstant::$ERROR_OK;
     }
     
     public function updateTestExamQuestionsInfoToSession($options)
     {
         if (!isset(Yii::$app->session['test_exam'])) {
-            throw new NotFoundHttpException('You must click edit buttion first to edit this testExam...');
+            return AppConstant::$ERROR_SESSION_EMPTY;
         }
         // Get testExam info from session
         $test_exam = Yii::$app->session->get('test_exam');
         
         $all_questions = $test_exam['all_questions'];
-        $added_questions = $test_exam['added_questions'];
                
         // Save new question id to session
         foreach ($options as $option) {
-            $added_questions[] = $option;
-            $all_questions[] = $option;
+            if(!in_array($option, $all_questions)){
+                $all_questions[] = $option;
+            }
         }
-                    
-        $test_exam['added_questions'] = $added_questions;
+        // Sort $all_question
+        sort($all_questions);
+        
         $test_exam['all_questions'] = $all_questions;
         $test_exam['testExam']['te_num_of_questions'] = count($all_questions);
                     
         Yii::$app->session->set('test_exam', $test_exam);
+        return AppConstant::$ERROR_OK;
     }
     public function removeTestExamInfoFromSession()
     {
         Yii::$app->session->remove('test_exam');
+        return AppConstant::$ERROR_OK;
     }
     
-    public function deleteQuestionOnSession($q_id)
+    public function deleteQuestionOnSession($te_id, $q_id)
     {
         $test_exam = Yii::$app->session->get('test_exam');
-        $all_questions = $test_exam['all_questions'];
-        $added_questions = $test_exam['added_questions'];
-        
-        $idx_added = array_search($q_id, $added_questions);
-        if ($idx_added !== false) {
-            array_splice($added_questions, $idx_added, 1);
+        if($test_exam['testExam']['te_id'] != $te_id){
+            return AppConstant::$ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME;
         }
+        $all_questions = $test_exam['all_questions'];
         
         $idx_all = array_search($q_id, $all_questions);
         if ($idx_all === false) {
-            throw new NotFoundHttpException('This question do NOT exist in this TestExam...');
+            return AppConstant::$ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM;
         }
         array_splice($all_questions, $idx_all, 1);
 
-        $test_exam['added_questions'] = $added_questions;
         $test_exam['all_questions'] = $all_questions;
         $test_exam['testExam']['te_num_of_questions'] = count($all_questions);
         Yii::$app->session->set('test_exam', $test_exam);
+        
+        return AppConstant::$ERROR_OK;
     }
     
     
-    public function updateAllChangedToDB($te_id)
+    public function updateChangesFromSessionToDB()
     {
         if (isset(Yii::$app->session['test_exam'])) {
             $test_exam = Yii::$app->session->get('test_exam');
             $te_questions = $test_exam['te_questions'];
             $all_questions = $test_exam['all_questions'];
-            $added_questions = $test_exam['added_questions'];
             $te_id = $test_exam['te_id'];
             // Update info for test exam question.
             //1. Search all questions in TestExamQuestion and delete which is deleted by user
@@ -244,39 +252,43 @@ class LogicTestExam extends LogicBase
             $transaction = $conn->beginTransaction();
 
             try {
-                $update_ok = true;
                 // Update info to TestExam
                 $testExam = $test_exam['testExam'];
                 if (!$testExam->save()) {
-                    $update_ok = false;
+                    $transaction->rollBack();
+                    return AppConstant::$ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB;
                 }
                 
                 // Update TestExam Question
-                // Remove old questions which are removed by user.
+                // List all old questions id 
+                $questions = [];
                 foreach ($te_questions as $te_question) {
-                    $q_id = $te_question['q_id'];
-                    if (!in_array($q_id, $all_questions)) {
-                        if (!$logicTestExamQuestions->deleteTestExamQuestions($te_id, $q_id)) {
-                            $update_ok = false;
-                            break;
-                        }
-                    }
+                    $questions[] = $te_question['q_id'];
                 }
-
-                // Add new questions to DB which are added by user
-                foreach ($added_questions as $added_question) {
-                    if (!$logicTestExamQuestions->insertTestExamQuestion($te_id, $added_question)) {
-                        $update_ok = false;
-                        break;
-                    }
+                $removed_questions = array_diff($questions, $all_questions);
+                $removed_questions = array_values($removed_questions);
+                $added_questions = array_diff($all_questions, $questions);
+                $added_questions = array_values($added_questions);
+                
+                // Insert added questions for this exam
+                $ret = $logicTestExamQuestions->insertMultiTestExamQuestion($te_id, $added_questions);
+                if(AppConstant::$ERROR_OK != $ret){
+                    $transaction->rollBack();
+                    return $ret;
                 }
-                if ($update_ok) {
-                    $transaction->commit();
+                // Delete removed questions of this exam
+                $ret = $logicTestExamQuestions->deleteMultiTestExamQuestion($te_id, $removed_questions);
+                if(AppConstant::$ERROR_OK != $ret){
+                    $transaction->rollBack();
+                    return $ret;
                 }
+                
+                $transaction->commit();
             } catch (\Exception $e) {
                 $transaction->rollBack();
                 throw $e;
             }
         }
+        return AppConstant::$ERROR_OK;
     }
 }

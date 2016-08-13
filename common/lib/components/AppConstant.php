@@ -111,4 +111,16 @@ class AppConstant
         self::USER_TEST_DOING => self::USER_TEST_DOING,
         self::USER_TEST_DONE => self::USER_TEST_DONE
     ];
+
+    /*
+      * Define error
+      */
+     public static $ERROR_OK = 0;
+     public static $ERROR_SESSION_EMPTY = 1;
+     public static $ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB = 2;
+     public static $ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM = 3;
+     public static $ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB = 4;
+     public static $ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB = 5;
+     public static $ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME = 6;
+     
 }

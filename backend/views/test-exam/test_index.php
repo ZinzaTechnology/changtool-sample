@@ -4,7 +4,7 @@ use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use yii\widgets\ActiveForm;
 
-$this->title = "Question Manager";
+$this->title = "TestExam $te_code: add questions";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="ibox-content">
         <div class="hr-line-solid"></div>
 
-        <?= $this->render('test_search', ['level' => $level, 'category' => $category, 'type' => $type]); ?>
+        <?= $this->render('test_search', ['level' => $level, 'category' => $category, 'type' => $type, 'search_param' => $search_param]); ?>
 
         <div class="hr-line-solid"></div>
 
@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php foreach ($questions as $question) : ?>
                     <tr>
                         <td><?= '<input type="checkbox" name="option[]" value="'.$question->q_id.'" '.(in_array($question->q_id, $all_questions) ? 'checked disabled readonly' : '').' />'; ?></td>
-                        <td><?= $category[$question->q_category] ?></td>
+                        <td><?= $category ?></td>
                         <td><?= $level[$question->q_level] ?></td>
                         <td><?= $type[$question->q_type] ?></td>
                         <td><?= $question->q_content ?></td>
