@@ -96,17 +96,14 @@ class DashboardController extends FrontendController {
 
     public function actionMark() {
         $id = Yii::$app->request->get('id');
-//        if ($id) {
+        $array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
+        array_shift($array);	
         if ($mark = UserTest::getMark($id))
-//            if ($mark) {
             return $this->render('test/result', [
                         'mark' => $mark
             ]);
-//            } 
         else
             return $this->redirect(Url::toRoute('/'));
-//        }
-//        else return $this->redirect(Url::toRoute('/'));
     }
 
     public function actionIndex() {
@@ -125,12 +122,7 @@ class DashboardController extends FrontendController {
                     'data' => $test_exams,
         ]);
     }
-
-    /**
-     * Displays contact page.
-     *
-     * @return mixed
-     */
+    
     public function actionContact() {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {

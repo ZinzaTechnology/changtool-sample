@@ -105,22 +105,18 @@ class UserTest extends \yii\db\ActiveRecord {
             array_shift($answer);
             $amountQuestion = TestExam::findOne($testExam->te_id)->te_num_of_questions;
             $countTrue = 0;
+            $keys = array_keys($answer);
+            $parent = 0;
             foreach ($answer as $elements) {
-                switch (count($elements)) {
-                    case 1:
-                        if (AnswerClone::findOne($elements[0])->ac_status == 1)
-                            $countTrue++;
-                        break;
-                    default:
                         $countInside = 0;
                         foreach ($elements as $element) {
                             if (AnswerClone::findOne($element)->ac_status == 1)
                                 $countInside++;
+                            else $countInside--;
                         }
-                        if ($countInside == count($elements))
+                        if ($countInside == count(AnswerClone::find()->where(['qc_id'=>str_replace('question-','',$keys[$parent]),'ac_status'=>1])->asArray()->all()))
                             $countTrue++;
-                        break;
-                }
+                        $parent++;
             }
             Yii::$app->db->createCommand()->update('user_test', [
                 'ut_mark' => $countTrue
@@ -133,8 +129,9 @@ class UserTest extends \yii\db\ActiveRecord {
         $userTest = UserTest::findOne($id);
         if ($userTest)
             return [$userTest->ut_mark, TestExam::findOne($userTest->te_id)->te_num_of_questions];
-        else
+        else{
             return false;
+        }
     }
 
     public static function updateStart($id) {

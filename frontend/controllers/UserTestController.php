@@ -1,7 +1,11 @@
 <?php
+<<<<<<< HEAD
 
 namespace frontend\controllers;
 
+=======
+namespace frontend\controllers;
+>>>>>>> dev/anhlt/frontend
 use Yii;
 use frontend\models\UserTest;
 use yii\data\ActiveDataProvider;
@@ -53,6 +57,19 @@ class UserTestController extends Controller
      * @param integer $id
      * @return mixed
      */
+    public function actionStart(){
+    	$id = Yii::$app->request->get('ut_id');
+    	if(UserTest::findOne(['ut_id' => $id, 'u_id'=>Yii::$app->user->id])){
+    		if($request = Yii::$app->request->post())
+    		$updateTest = UserTest::findOne($id);
+    		$userTest = new UserTest();
+    		$data = $userTest->getTest($id);
+    		return $this->render('start',[
+    				'data' => $data,
+    		]);
+    	}
+    }
+
     public function actionView($id)
     {
         return $this->render('view', [
