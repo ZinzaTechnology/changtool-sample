@@ -40,7 +40,7 @@ class UserTestController extends BackendController
                 'dataProvider' => new ArrayDataProvider([
                     'allModels' => (new LogicUserTest)->findUserTestBySearch($params),
                     'pagination' => [
-                        'pageSize' => 5,
+                        'pageSize' => 10,
                     ]
                 ]),
         ]);
@@ -50,14 +50,19 @@ class UserTestController extends BackendController
     {
         $userTest = UserTest::find()->where(['ut_id' => $id]);
         $logicUserTest = new LogicUserTest;
+        $data = null;
         if ($userTest->exists()) {
             $theUserTest = $userTest->one();
+            $data = $logicUserTest->getTestDataByPageParam($id, Yii::$app->request->get('page'));
             $userAnswer = empty($theUserTest->ut_user_answer_ids) ? '' : unserialize($theUserTest->ut_user_answer_ids);
             return $this->render('detail', [
-                'data' => $logicUserTest->findTestDataByUtID($id),
+                'data' => $data,
                 'userAnswer' => $logicUserTest->findUserAnswerByUtId($id),
                 'tile' => TestExam::findOne($theUserTest->te_id)->te_title,
                 'userAnswer' => $userAnswer,
+                'page' => $logicUserTest->getPage(),
+                'pageMax' => $logicUserTest->getPageMax(),
+                'limitQuestion' => AppConstant::USER_TEST_QUESTION_LIMIT_PER_PAGE,
             ]);
         } else {
             throw new NotFoundHttpException('This id not found');
@@ -77,10 +82,13 @@ class UserTestController extends BackendController
                 }
             }
         }
+        $user = new User;
+        $testExam = new TestExam;
         return $this->render('assign', [
-            'user' => new User,
-            'testExam' => new TestExam,
-            'testList' => TestExam::find()->where($logicUserTest->getTestExamParams()),
+            'userModel' => $user,
+            'userData' => $user->find()->where(['is_deleted'=>0]),
+            'testExam' => $testExam,
+            'testList' => $testExam->find()->where($logicUserTest->getTestExamParams()),
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
             'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             'category_choice' => $logicUserTest->getChoice()[0],

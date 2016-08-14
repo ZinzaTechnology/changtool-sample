@@ -9,6 +9,7 @@
 namespace common\lib\logic;
 
 use Yii;
+use yii\web\BadRequestHttpException;
 use yii\helpers\ArrayHelper;
 use yii\db\Expression;
 use yii\db\Query;
@@ -25,7 +26,9 @@ class LogicUserTest extends LogicBase
     private $_assignedSuccess = false;
     private $_testExam;
     private $_testExamParams = [];
-
+    private $_pageMax = 0;
+    private $_page = 0;
+    
     public function __construct()
     {
         parent::__construct();
@@ -68,7 +71,33 @@ class LogicUserTest extends LogicBase
     {
         return [$this->_testExam['te_category'], $this->_testExam['te_level']];
     }
-
+    
+    public function getPageMax()
+    {
+        return $this->_pageMax;
+    }
+    
+    public function getPage()
+    {
+        return $this->_page;
+    }
+    
+    public function getTestDataByPageParam($id, $page = null)
+    {
+        $data = $this->findTestDataByUtID($id);
+        $limitPerPage = AppConstant::USER_TEST_QUESTION_LIMIT_PER_PAGE;
+        $this->_pageMax = round((count($data)/$limitPerPage));
+        if(count($data)%$limitPerPage)
+            $this->_pageMax++;
+        if ($page > $this->_pageMax)
+            throw new BadRequestHttpException('Page is larger than page max!');
+        if (isset($page)) {
+            if (is_numeric($page) && $page>0){
+                    $this->_page = $page;
+            } else throw new BadRequestHttpException('Page must be a number and more than 0!');
+        } else $this->_page = 1;
+        return array_slice($data, ($this->_page-1) * $limitPerPage, $limitPerPage);
+    }
     public function assignTest()
     {
         $userTest = new UserTest;
@@ -141,14 +170,23 @@ class LogicUserTest extends LogicBase
     {
         $query = new Query;
         $query->from('user_test')
-                ->innerJoin('user', 'user_test.u_id = user.u_id')
-                ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
-                ->andFilterWhere(['like', 'u_name', $params['u_name']])
-                ->andFilterWhere(['like', 'te_title', $params['te_title']])
-                ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level'], 'ut_status' => $params['ut_status']])
-                ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
-                ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
-                ->addOrderBy(['ut_id' => SORT_DESC]);
+            ->innerJoin('user', 'user_test.u_id = user.u_id')
+            ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id');
+        if(isset($params['u_name']))
+            $query->andFilterWhere(['like', 'u_name', $params['u_name']]);
+        if(isset($params['te_title']))
+            $query->andFilterWhere(['like', 'te_title', $params['te_title']]);
+        if(isset($params['te_category']))
+            $query->andFilterWhere(['te_category' => $params['te_category']]);
+        if(isset($params['te_level']))
+            $query->andFilterWhere(['te_level' => $params['te_level']]);
+        if(isset($params['ut_status']))
+            $query->andFilterWhere(['ut_status' => $params['ut_status']]);
+        if(isset($params['ut_start_at']))
+            $query->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']]);
+        if(isset($params['ut_finished_at']))
+            $query->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']]);
+        $query->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
     }
 

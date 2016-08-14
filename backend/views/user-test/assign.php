@@ -74,10 +74,10 @@ $this->params['breadcrumbs'][] = ['label' => 'Assign test to user', 'url' => ['i
             <div>
                 <?=
                 maksyutin\duallistbox\Widget::widget([
-                    'model' => $user,
+                    'model' => $userModel,
                     'attribute' => 'u_id',
                     'title' => 'User',
-                    'data' => $user->find(),
+                    'data' => $userData,
                     'data_id' => 'u_id',
                     'data_value' => 'u_name',
                     'lngOptions' => [
