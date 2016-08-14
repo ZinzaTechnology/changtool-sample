@@ -1,13 +1,10 @@
 <?php
-
 /* @var $this \yii\web\View */
 /* @var $content string */
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
-use yii\widgets\Breadcrumbs;
+use common\widgets\SideMenu;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
 use common\assets\CommonAsset;
@@ -36,7 +33,7 @@ $current_user = Yii::$app->user->identity;
         <div class="sidebar-collapse">
             <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
-                    <?php if ($current_user): ?>
+                    <?php if ($current_user) : ?>
                     <div class="dropdown profile-element">
                         <img alt="user image" class="image-circle" src="<?= $current_user->getAvatar()?>" />
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -51,15 +48,28 @@ $current_user = Yii::$app->user->identity;
                         <a href="/">CHang</a>
                     </div>
                 </li>
-                <?php if (!$current_user): ?>
+                <?php if (!$current_user) : ?>
                 <li class="active">
                     <a href="<?= URL::toRoute("/user/login")?>"><i class="fa fa-sign-in"></i><span class="nav-label">Login</span></a>
                 </li>
-                <?php else: ?>
-                <li class="active">
-                    <a href="<?= URL::toRoute("/")?>"><i class="fa fa-th-large"></i> <span class="nav-label">My Tests</span></a>
-                </li>
-                <?php endif; ?>
+                <?php else :
+                echo SideMenu::widget([
+                    'options' => [
+                        'tag' => null,
+                    ],
+                    'customTemplateOptions' => ['icon'],
+                    'items' => [
+                        [
+                            'label' => 'Dashboard',
+                            'icon' => 'fa-th-large',
+                            'url' => ["/dashboard"],
+                            'controllers' => [
+                                'dashboard' => '*',
+                            ],
+                        ],
+                    ],
+                ]);
+                endif; ?>
             </ul>
 
         </div>
@@ -74,7 +84,7 @@ $current_user = Yii::$app->user->identity;
                         <li><a href="<?= URL::toRoute("/")?>"><span class="m-r-sm text-muted welcome-message">ZINZA CHangTool</span></a></li>
                     </ul>
                 </div>
-                <?php if ($current_user): ?>
+                <?php if ($current_user) : ?>
                 <ul class="nav navbar-top-links navbar-right">
                     <li>
                         <a href="<?= URL::toRoute("/user/logout") ?>">
@@ -86,9 +96,6 @@ $current_user = Yii::$app->user->identity;
             </nav>
         </div>
         <div class="wrapper wrapper-content animated fadeInRight">
-            <?= Breadcrumbs::widget([
-                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-            ]) ?>
             <?= Alert::widget() ?>
             <?= $content ?>
         </div>
@@ -108,4 +115,3 @@ $current_user = Yii::$app->user->identity;
 </body>
 </html>
 <?php $this->endPage() ?>
->>>>>>> develop
