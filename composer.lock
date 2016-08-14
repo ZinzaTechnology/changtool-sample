@@ -377,16 +377,16 @@
         },
         {
             "name": "kartik-v/yii2-widget-select2",
-            "version": "v2.0.8",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-select2.git",
-                "reference": "4d03239c1e28ef8d3b96ab7fe360f5cbda34fb69"
+                "reference": "39f98b178c75189ce0c781f96eef3ee356e73964"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-select2/zipball/4d03239c1e28ef8d3b96ab7fe360f5cbda34fb69",
-                "reference": "4d03239c1e28ef8d3b96ab7fe360f5cbda34fb69",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-select2/zipball/39f98b178c75189ce0c781f96eef3ee356e73964",
+                "reference": "39f98b178c75189ce0c781f96eef3ee356e73964",
                 "shasum": ""
             },
             "require": {
@@ -426,7 +426,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2016-02-17 11:49:30"
+            "time": "2016-08-07 04:51:06"
         },
         {
             "name": "maksyutin/yii2-dual-list-box",
@@ -1346,7 +1346,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "maksyutin/yii2-dual-list-box": 20
+        "maksyutin/yii2-dual-list-box": 20,
+        "kartik-v/yii2-widget-select2": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
