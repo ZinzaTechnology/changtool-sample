@@ -30,8 +30,8 @@ class UserController extends BackendController
     {
         return [
             'access' => [
-            	'class' => AccessControl::className(),
-            	'rules' => [
+                'class' => AccessControl::className(),
+                'rules' => [
                     [
                         'allow' => false,
                         'roles' => ['?'],
@@ -46,9 +46,9 @@ class UserController extends BackendController
                 ],
             ],
             'verbs' => [
-            	'class' => VerbFilter::className(),
-            	'actions' => [
-                	'delete' => ['post'],
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['post'],
                 ],
             ],
         ];
@@ -168,8 +168,8 @@ class UserController extends BackendController
     
     public function actionDelete($id)
     {
-        $logicUser = new LogicUser();        
-        $logicUser->deleteUserById($id);        
+        $logicUser = new LogicUser();
+        $logicUser->deleteUserById($id);
         return $this->redirect('index');
     }
     

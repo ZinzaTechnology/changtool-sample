@@ -24,11 +24,11 @@ $this->title = 'Change Password for: ' . $model->u_name;
         ]); ?>
         
         <?= $form->field($model, 'u_password_hash', ['inputOptions' => [
-        	'placeholder' => 'New Password']])->passwordInput(['value' => '']) 
+            'placeholder' => 'New Password']])->passwordInput(['value' => ''])
         ?>
             
         <?= $form->field($model, 'confirm_pwd_update', ['inputOptions' => [
-        	'placeholder' => 'Repeat New Password']])->passwordInput(['required' => true]) 
+            'placeholder' => 'Repeat New Password']])->passwordInput(['required' => true])
         ?>
             
         <div class="form-group">
