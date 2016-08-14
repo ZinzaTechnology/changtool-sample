@@ -6,6 +6,7 @@ use yii\helpers\Html;
 /* @var $model app\models\Test */
 
 $this->title = 'New Account';
+
 ?>
 <div class="user-create">
 

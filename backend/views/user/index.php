@@ -22,7 +22,6 @@ $this->title = 'Accounts';
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'rowOptions' => function ($model, $key, $index, $grid) {
-            
                 return ['id' => $model['u_id'], 'style' => "cursor: pointer", 'onclick' => 'location.href="'
                     . Yii::$app->urlManager->createUrl('user/view')
                     .'?id="+(this.id);',];

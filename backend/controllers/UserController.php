@@ -29,7 +29,7 @@ class UserController extends BackendController
     public function behaviors()
     {
         return [
-                'access' => [
+            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -44,13 +44,13 @@ class UserController extends BackendController
                         }
                     ],
                 ],
-                ],
-                'verbs' => [
+            ],
+            'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
                 ],
-                ],
+            ],
         ];
     }
 
@@ -121,6 +121,7 @@ class UserController extends BackendController
         
         if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
+            
             return ActiveForm::validate($model);
         }
     }
@@ -168,9 +169,7 @@ class UserController extends BackendController
     public function actionDelete($id)
     {
         $logicUser = new LogicUser();
-        
         $logicUser->deleteUserById($id);
-        
         return $this->redirect('index');
     }
     
