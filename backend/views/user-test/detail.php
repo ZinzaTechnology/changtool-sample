@@ -23,32 +23,25 @@ $question_count = 1;
                     <?php
                     foreach ($question['answer'] as $answer) {
                         $count = 0;
-                        $classExtend = '';
+                        $classExtend = 'panel-heading ';
                         if (!empty($userAnswer)) {
                             if ($userAnswer["question-{$question['qc_id']}"][$count] == $answer['ac_status']) {
                                 if ($answer['ac_status'] == 1) {
-                                    $classExtend = 'panel-heading panel-primary';
-                                } else
-                                    $classExtend = 'panel-heading panel-danger';
-                            } else
-                                $classExtend = 'panel-heading panel-default';
-                        }else
-                                $classExtend = 'panel-heading panel-default';
-                        ?>
-
-                        <li class="<?= $classExtend ?>" style="list-style-type: upper-alpha">
-                            <?= $answer['ac_content'] ?>
-                        </li>
-                        <?php $count++;
-                    } ?>
-
+                                    $classExtend.= 'panel-primary';
+                                } else $classExtend.= 'panel-danger';
+                            } else $classExtend.= 'panel-default';
+                        }else $classExtend.= 'panel-default';
+                    ?>
+                    <li class="<?= $classExtend ?>" style="list-style-type: upper-alpha">
+                        <?= $answer['ac_content'] ?>
+                    </li>
+                    <?php $count++; } ?>
                 </ul>
                 <div class="panel panel-primary m-t-md">
                     <div class="panel-heading">True answer</div>
                     <?= Html::ul($trueAnswer[$question_count - 1], ['class' => 'panel-body list-unstyled']) ?>
                 </div>
-    <?php $question_count++;
-} ?>
+            <?php $question_count++; } ?>
         </div>
     </div>
 </div>
