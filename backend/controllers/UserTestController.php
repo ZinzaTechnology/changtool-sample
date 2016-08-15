@@ -13,11 +13,9 @@ use common\lib\components\AppConstant;
 use common\lib\logic\LogicUserTest;
 use common\lib\helpers\AppArrayHelper;
 
-class UserTestController extends BackendController
-{
+class UserTestController extends BackendController {
 
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -30,13 +28,10 @@ class UserTestController extends BackendController
 
     public $params;
 
-    public function actionIndex()
-    {
-        if ($param = Yii::$app->request->post()) {
-            if ($param['submit'] == 'search') {
+    public function actionIndex() {
+        if ($param = Yii::$app->request->post())
+            if ($param['submit'] == 'search')
                 $this->params = $param;
-            }
-        }
         return $this->render('index', [
             'selected' => $this->params,
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
@@ -44,31 +39,30 @@ class UserTestController extends BackendController
             'dataProvider' => new ArrayDataProvider([
                 'allModels' => (new LogicUserTest)->getWithParams($this->params),
                 'pagination' => [
-                    'pageSize' => 10,
+                    'pageSize' => 5,
                 ]
             ]),
         ]);
     }
 
-    public function actionDetail($id)
-    {
+    public function actionDetail($id) {
         $userTest = UserTest::find()->where(['ut_id' => $id]);
+        $logicUserTest = new LogicUserTest;
         if ($userTest->exists()) {
             $theUserTest = $userTest->one();
             $userAnswer = empty($theUserTest->ut_user_answer_ids) ? '' : unserialize($theUserTest->ut_user_answer_ids);
-            return $this->render('detail', [
+            return $this->render('detail',[
                 'model' => $this->findModel($id),
-                'data' => (new LogicUserTest)->getTest($id),
+                'data' => $logicUserTest->getTest($id),
+                'trueAnswer' => $logicUserTest->getTrueAnswer(),
                 'tile' => TestExam::findOne($theUserTest->te_id)->te_title,
                 'userAnswer' => $userAnswer,
             ]);
-        } else {
+        } else
             throw new NotFoundHttpException('This id not found');
-        }
     }
 
-    public function actionAssign()
-    {
+    public function actionAssign() {
         $userTest = new UserTest;
         $logicUserTest = new LogicUserTest();
         if ($request = Yii::$app->request->post()) {
@@ -80,7 +74,7 @@ class UserTestController extends BackendController
         return $this->render('assign', [
             'user' => new User,
             'testExam' => new TestExam,
-            'testList' => TestExam::find()->select('te_id,te_title')->where($logicUserTest->getTestExamParams()),
+            'testList' => TestExam::find()->where($logicUserTest->getTestExamParams()),
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
             'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             'category_choice' => $logicUserTest->getChoice()[0],
@@ -88,23 +82,19 @@ class UserTestController extends BackendController
         ]);
     }
 
-    public function actionDelete($id)
-    {
+    public function actionDelete($id) {
         if (UserTest::find()->where(['ut_id' => $id])->exists()) {
-            if ((new LogicUserTest)->deteleTest($id)) {
+            if ((new LogicUserTest)->deteleTest($id))
                 $this->goReferrer();
-            }
-        } else {
+        } else
             throw new NotFoundHttpException('User Test ID does not exists!');
-        }
     }
 
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = UserTest::findOne($id)) !== null) {
             return $model;
-        } else {
+        } else
             throw new NotFoundHttpException('The requested page does not exist.');
-        }
     }
+
 }
