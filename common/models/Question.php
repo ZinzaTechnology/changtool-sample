@@ -29,6 +29,15 @@ class Question extends \common\models\AppActiveRecord
      */
     public function attributeLabels()
     {
+        return [
+            'q_id' => 'ID',
+            'q_category' => 'Category',
+            'q_level' => 'Level',
+            'q_type' => 'Type',
+            'q_content' => 'Content',
+            'create_at' => 'Create at',
+            'update_at' => 'Update_at',
+        ];
     }
 
     /**

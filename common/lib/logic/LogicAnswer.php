@@ -76,6 +76,28 @@ class LogicAnswer extends LogicBase
         return null;
     }
 
+    public function findByAnswerId($qa_id)
+    {
+        
+        $answer = Answer::queryOne ( $qa_id );
+        if ($answer) {
+            return $answer->q_id;
+        }
+    
+        return null;
+    }
+    public function findById($qa_id)
+    {
+      
+        $answer = Answer::queryOne ( $qa_id );
+       
+        if ($answer) {
+            return $answer;
+        }
+    
+        return null;
+    }
+    
     public function initAnswer()
     {
         return $answer = new Answer ();

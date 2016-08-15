@@ -36,10 +36,10 @@ class Answer extends \common\models\AppActiveRecord
     public function attributeLabels()
     {
         return [
-            'qa_id' => 'Qa ID',
-            'q_id' => 'Q ID',
-            'qa_content' => 'Qa Content',
-            'qa_status' => 'Qa Status',
+            'qa_id' => 'ID',
+            'q_id' => 'ID',
+            'qa_content' => 'Content Answer',
+            'qa_status' => 'Right',
         ];
     }
 

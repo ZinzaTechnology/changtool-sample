@@ -81,7 +81,7 @@ DynamicFormWidget::begin ( [
 
 
 
-<?php // echo $form->field($tag, 'qt_content')->checkboxList($tagarray); ?>
+
 
 <hr width=300px align="left" />
 
