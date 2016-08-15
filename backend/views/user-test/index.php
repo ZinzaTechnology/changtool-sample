@@ -2,13 +2,13 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-use common\lib\components\AppConstant;
+use yii\widgets\Pjax;
 
 $this->title = 'User Test';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?php Pjax::begin(); ?>
 <div class="ibox">
 
     <h1>
@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
     <?php Html::endForm() ?>
-    
+
     <?=
     GridView::widget([
         'dataProvider' => $dataProvider,
@@ -117,11 +117,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', Url::toRoute(['detail', 'id' => $model['ut_id']]));
                     },
                             'delete' => function ($url, $model) {
-                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete', 'id' => $model['ut_id']]));
-                            }
+                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete', 'id' => $model['ut_id']]));
+                    }
                         ],
                     ],
                 ],
             ]);
             ?>
-</div>
+        </div>
+        <?php Pjax::end(); ?>
