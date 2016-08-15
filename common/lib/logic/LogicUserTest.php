@@ -13,12 +13,14 @@ use yii\web\BadRequestHttpException;
 use yii\helpers\ArrayHelper;
 use yii\db\Expression;
 use yii\db\Query;
+use common\lib\helpers\AppArrayHelper;
 use common\models\UserTest;
 use common\models\Answer;
 use common\models\QuestionClone;
 use common\models\AnswerClone;
 use common\lib\logic\LogicQuestion;
 use common\lib\components\AppConstant;
+use common\models\TestExam;
 
 class LogicUserTest extends LogicBase
 {
@@ -173,7 +175,7 @@ class LogicUserTest extends LogicBase
         return false;
     }
 
-    public static function findUserTestBySearch($params)
+public static function findUserTestBySearch($params)
     {
         $query = new Query;
         $query->from('user_test')
@@ -231,6 +233,18 @@ class LogicUserTest extends LogicBase
     {
         return AnswerClone::find()->where(['qc_id' => $qc_id])->asArray()->all();
     }
+  public function  updateUserTest($id, $params){
+    	$updateTest = UserTest::findOne($id);
+    
+    	if (!$updateTest) {
+    		return false;
+    	}	
+    	$params = AppArrayHelper::filterKeys($params,['ut_status','ut_start_at','ut_finished_at','ut_user_answer_ids']);
+    		$updateTest->load(['UserTest' => $params]);
+    	if ($updateTest->validate()) {
+    		return $updateTest->save();
+    	}
+     }
 
     public function findUserAnswerByUtId($ut_id)
     {
@@ -255,4 +269,40 @@ class LogicUserTest extends LogicBase
         shuffle($result);
         return $result;
     }
+    public function setMark($id) {
+    	$testExam = UserTest::findOne($id);
+    	if ($testExam && $testExam->ut_status == "DONE") {
+    		$answer = unserialize($testExam->ut_user_answer_ids);
+    		$amountQuestion = TestExam::findOne($testExam->te_id)->te_num_of_questions;
+    		$countTrue = 0;
+    		$keys = array_keys($answer);
+    		$parent = 0;
+    		foreach ($answer as $elements) {
+    			$countInside = 0;
+    			foreach ($elements as $element) {
+    				if (AnswerClone::findOne($element)->ac_status == 1)
+    					$countInside++;
+    					else $countInside--;
+    			}
+    			if ($countInside == count(AnswerClone::find()->where(['qc_id'=>str_replace('question-','',$keys[$parent]),'ac_status'=>1])->asArray()->all()))
+    				$countTrue++;
+    				$parent++;
+    		}
+    		Yii::$app->db->createCommand()->update('user_test', [
+    				'ut_mark' => $countTrue
+    		], "ut_id = {$id}"
+    		)->execute();
+    	}
+    }
+    
+    public static function getMark($id) {
+    	$userTest = UserTest::findOne($id);
+    	if ($userTest)
+    		return [$userTest->ut_mark, TestExam::findOne($userTest->te_id)->te_num_of_questions];
+    		else{
+    			return false;
+    		}
+    }
+  
+    
 }

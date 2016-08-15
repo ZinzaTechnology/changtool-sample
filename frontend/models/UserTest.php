@@ -9,6 +9,7 @@ use common\models\Question;
 use common\models\QuestionClone;
 use common\models\Answer;
 use common\models\AnswerClone;
+use common\lib\logic\LogicUserTest;
 use yii\db\Expression;
 
 /**
@@ -102,7 +103,6 @@ class UserTest extends \yii\db\ActiveRecord {
         $testExam = UserTest::findOne($id);
         if ($testExam && $testExam->ut_status == "DONE") {
             $answer = unserialize($testExam->ut_user_answer_ids);
-            array_shift($answer);
             $amountQuestion = TestExam::findOne($testExam->te_id)->te_num_of_questions;
             $countTrue = 0;
             $keys = array_keys($answer);
@@ -134,23 +134,20 @@ class UserTest extends \yii\db\ActiveRecord {
         }
     }
 
-    public static function updateStart($id) {
-        Yii::$app->db->createCommand()->update('user_test', [
-            'ut_status' => 'DOING',
-            'ut_start_at' => date('Y-m-d H:i:s')
-                ], "ut_id = {$id}"
-        )->execute();
-    }
-
-    public static function updateEnd($id, $answer) {
-        $updateTest = UserTest::findOne($id);
-        Yii::$app->db->createCommand()->update('user_test', [
-            'ut_status' => 'DONE',
-            'ut_finished_at' => date('Y-m-d H:i:s'),
-            'ut_user_answer_ids' => $answer
-                ], "ut_id = {$id}"
-        )->execute();
-        self::setMark($id);
-    }
+   
+    public function  updateUserTest($id, $params){
+    	$updateTest = UserTest::findOne($id);
+    
+    	if (!$updateTest) {
+    		return false;
+    	}	
+    	$params = AppArrayHelper::filterKeys($params );
+    		$updateTest->load(['UserTest' => $params]);
+    		var_dump('<prev>',$params);
+    	if ($updateTest->validate()) {
+    		return $updateTest->save();
+    	}
+     }
+    
 
 }

@@ -8,6 +8,11 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\data\Pagination;
+use common\lib\logic\LogicUserTest;
+use common\lib\helpers\AppArrayHelper;
+
+use yii\helpers\Url;
+
 /**
  * UserTestController implements the CRUD actions for UserTest model.
  */
@@ -32,6 +37,71 @@ class UserTestController extends Controller
      * Lists all UserTest models.
      * @return mixed
      */
+    public function actionStartTest()
+    {
+    	// return to dashboard if no parameter
+    	if (!Yii::$app->request->get('id')) {
+    		$this->redirect(Url::toRoute('/'));
+    	}
+    
+    	$id = Yii::$app->request->get('id');
+    	$logicUserTest = new LogicUserTest();
+    	$userTest = LogicUserTest::findUserTestBySearch(['u_name' => null, 'ut_id' => $id, 'u_id' => Yii::$app->user->id])[0];
+    	// return to dashboard if no valid user test found
+    	if (!$userTest) {
+    		$this->redirect(Url::toRoute('/'));
+    	}
+    
+    	$time_count = 0;
+    	if ($userTest['ut_status'] == 'ASSIGNED') {
+    		$logicUserTest->updateUserTest($id, ['ut_status' => 'DOING', 'ut_start_at' => date('Y-m-d H:i:s')]);
+    	
+    		$time_count = $userTest['te_time'] * 60;
+    	} else {
+    		$testAllowed = $userTest['te_time'] * 60;
+    		$mustFinishedAt = strtotime($userTest['ut_start_at']) + $testAllowed;
+    		$time_access = strtotime(date('Y-m-d H:i:s'));
+    		$time_count = $mustFinishedAt - $time_access;
+    	}
+    
+    	switch ($userTest['ut_status']) {
+    		case "ASSIGNED":
+    		case "DOING":
+    			if ($request = Yii::$app->request->post()) {
+    				unset($request[Yii::$app->request->csrfParam]);
+    				$answer = serialize($request);
+    				
+    				$logicUserTest->updateUserTest($id,['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_user_answer_ids' => $answer]);
+    				$logicUserTest->setMark($id);
+    				
+    				return $this->redirect(Url::toRoute(['mark', 'id' => $id]));
+    			}
+    			$data = (new UserTest())->getTest($id);
+    			return $this->render('test/start', [
+    					'data' => $data,
+    					'time_count' => $time_count,
+    			]);
+    			break;
+    			
+    		default:
+    			$this->redirect(Url::toRoute('/'));
+    			break;
+    	}
+    
+    }
+    public function actionMark()
+    {
+    	$id = Yii::$app->request->get('id');
+    	$array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
+    	array_shift($array);
+    	if ($mark = UserTest::getMark($id)) {
+    		return $this->render('test/result', [
+    				'mark' => $mark
+    		]);
+    	} else {
+    		return $this->redirect(Url::toRoute('/'));
+    	}
+    }
     public function actionIndex()
     {
     	$model = new UserTest();
