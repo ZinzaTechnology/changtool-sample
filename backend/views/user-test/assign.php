@@ -3,11 +3,11 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use yii\helpers\ArrayHelper;
 
 $this->title = 'Assign Test';
 $this->params['breadcrumbs'][] = ['label' => 'Assign test to user', 'url' => ['index']];
 ?>
+
 <h1><?= Html::encode($this->title) ?></h1>
 <div class="row">
     <?php
@@ -18,7 +18,6 @@ $this->params['breadcrumbs'][] = ['label' => 'Assign test to user', 'url' => ['i
                 'enableAjaxValidation' => false,
     ]);
     ?>
-    
     <div class="col-md-6">
         <div class="ibox-title">
             <h3>Test</h3>
