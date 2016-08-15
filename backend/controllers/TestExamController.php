@@ -150,7 +150,7 @@ class TestExamController extends BackendController
                     $logicTestExam->updateTestExamQuestionsInfoToSession($request['option']);
                 }
                 
-                $all_questions = $logicQuestion->findQuestionArrayQuestionID(Yii::$app->session->get('test_exam')['all_questions']);
+                $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
                 
                 return $this->render('update', [
                     'testExam' => Yii::$app->session->get('test_exam')['testExam'],
@@ -196,7 +196,7 @@ class TestExamController extends BackendController
             }
         } elseif (isset($get['delete_question'])) {
             // User delete a question in testExam
-            $all_questions = $logicQuestion->findQuestionArrayQuestionID(Yii::$app->session->get('test_exam')['all_questions']);
+            $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
             return $this->render('update', [
                 'testExam' => Yii::$app->session->get('test_exam')['testExam'],
                 'all_questions' => $all_questions,
@@ -215,7 +215,7 @@ class TestExamController extends BackendController
             
             $test_questions = $logicQuestion->findQuestionByTestId($id);
             $logicTestExam->initTestExamInfoToSession($testExam, $id, $test_questions);
-            $all_questions = $logicQuestion->findQuestionArrayQuestionID(Yii::$app->session->get('test_exam')['all_questions']);
+            $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
             
             return $this->render('update', [
                 'testExam' => $testExam,
