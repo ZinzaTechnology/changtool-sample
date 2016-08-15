@@ -11,8 +11,9 @@ use yii\data\Pagination;
 $this->title = 'Accounts';
 
 ?>
+
 <div class="ibox">
-    <div class="user-index">
+    <div class="user-index">    
         <h1><?= Html::encode($this->title) ?></h1>
         <p>
             <?= Html::a('New Account', ['create'], ['class' => 'btn btn-success']) ?>
@@ -33,7 +34,7 @@ $this->title = 'Accounts';
                 'u_mail',
                 'u_fullname',
                 'u_role',
-                ['class' => 'yii\grid\ActionColumn'],
+                ['class' => yii\grid\ActionColumn::className(), 'template' => '{update}']
             ],
         ]); ?>  
     </div>
