@@ -86,15 +86,13 @@ class UserTestController extends BackendController {
         if (UserTest::find()->where(['ut_id' => $id])->exists()) {
             if ((new LogicUserTest)->deteleTest($id))
                 $this->goReferrer();
-        } else
-            throw new NotFoundHttpException('User Test ID does not exists!');
+        } else throw new NotFoundHttpException('User Test ID does not exists!');
     }
 
     protected function findModel($id) {
         if (($model = UserTest::findOne($id)) !== null) {
             return $model;
-        } else
-            throw new NotFoundHttpException('The requested page does not exist.');
+        } else throw new NotFoundHttpException('The requested page does not exist.');
     }
 
 }
