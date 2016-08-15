@@ -22,7 +22,9 @@ class LogicTestExam extends LogicBase
     {
         parent::__construct();
     }
-
+    
+    // Const variable
+     const TEST_EXAM_INDEX_PAGING_PAGE_SIZE = 10;
     /**
      * Creates data provider instance with search query applied
      *
@@ -59,6 +61,9 @@ class LogicTestExam extends LogicBase
         // add conditions that should always apply here
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => self::TEST_EXAM_INDEX_PAGING_PAGE_SIZE,
+            ],
         ]);
 
         return $dataProvider;
