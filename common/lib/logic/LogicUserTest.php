@@ -19,39 +19,26 @@ use common\models\TestExamQuestions;
 use backend\models\QuestionClone;
 use backend\models\AnswerClone;
 
-class LogicUserTest extends LogicBase
-{
+class LogicUserTest extends LogicBase {
 
-    public $_errors = [],
-            $_assignedSuccess = false,
+    private $_assignedSuccess = false,
             $_testExam,
             $_teID,
             $_userID,
-            $_testExamParams = [];
-    public $_categoryID,
+            $_testExamParams = [],
+            $_trueAnswers = [];
+    private $_categoryID,
             $_levelID,
             $_request = [];
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
-    public function parseRequest($request)
-    {
+    public function parseRequest($request) {
         $this->_testExam = $request['TestExam'];
-        $userID = explode('"', $request['User']['u_id']);
-        $testID = explode('"', $this->_testExam['te_id']);
-        for ($i = 0; $i < count($userID); $i++) {
-            if ($i % 2 != 0) {
-                $this->_userID[] = $userID[$i];
-            }
-        }
-        for ($i = 0; $i < count($testID); $i++) {
-            if ($i % 2 != 0) {
-                $this->_teID[] = $testID[$i];
-            }
-        }
+        $this->_userID = json_decode($request['User']['u_id']);
+        $this->_teID = json_decode($this->_testExam['te_id']);
         $this->_categoryID = $this->_testExam['te_category'];
         $this->_levelID = $this->_testExam['te_level'];
         if (!empty($this->_testExam['te_category'])) {
@@ -68,34 +55,27 @@ class LogicUserTest extends LogicBase
         }
     }
 
-    public function isTestEmpty()
-    {
+    public function isTestEmpty() {
         return empty($this->_teID);
     }
 
-    public function isUserEmpty()
-    {
+    public function isUserEmpty() {
         return empty($this->_userID);
     }
 
-    public function isAssignedSuccess()
-    {
+    public function isAssignedSuccess() {
         return $this->_assignedSuccess;
     }
 
-    public function getTestExamParams()
-    {
+    public function getTestExamParams() {
         return $this->_testExamParams;
     }
 
-    public function getChoice()
-    {
+    public function getChoice() {
         return [$this->_categoryID, $this->_levelID];
     }
 
-    public function assignTest()
-    {
-        $countProcess = 0;
+    public function assignTest() {
         $userTest = new UserTest;
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -120,6 +100,7 @@ class LogicUserTest extends LogicBase
                         }
                     }
                     if ($answerCloneID = (new AnswerClone)->saveAnswerClone($answers)) {
+                        
                     }
                 }
             }
@@ -132,8 +113,7 @@ class LogicUserTest extends LogicBase
         }
     }
 
-    public function deteleTest($id)
-    {
+    public function deteleTest($id) {
         $transaction = Yii::$app->db->beginTransaction();
         $userTest = new UserTest;
         $command = Yii::$app->db->createCommand();
@@ -158,12 +138,9 @@ class LogicUserTest extends LogicBase
         return false;
     }
 
-    public static function getWithParams($params)
-    {
+    public static function getWithParams($params) {
         $query = new Query;
-        $query
-                ->select(['ut_id', 'u_name', 'te_category', 'te_title', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at'])
-                ->from('user_test')
+        $query  ->from('user_test')
                 ->innerJoin('user', 'user_test.u_id = user.u_id')
                 ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
                 ->andFilterWhere(['like', 'u_name', $params['u_name']])
@@ -175,14 +152,18 @@ class LogicUserTest extends LogicBase
         return $query->all();
     }
 
-    public function getTest($userTestID)
-    {
+    public function getTest($userTestID) {
         $question = QuestionClone::find()->select('qc_id,qc_content')
                 ->where(['ut_id' => $userTestID])
                 ->asArray()
                 ->all();
         $count = 0;
         while ($count < count($question)) {
+            $this->_trueAnswers = array_merge($this->_trueAnswers, AnswerClone::find()
+                            ->select('ac_content')
+                            ->where(['qc_id' => $question[$count]['qc_id'], 'ac_status' => 1])
+                            ->asArray()
+                            ->all());
             $question[$count]['answer'] = AnswerClone::find()
                     ->select('ac_id,ac_content,ac_status')
                     ->where(['qc_id' => $question[$count]['qc_id']])
@@ -193,25 +174,28 @@ class LogicUserTest extends LogicBase
         return $question;
     }
 
-    public function getUserAnswer($userTestID)
-    {
+    public function getTrueAnswer() {
+        return $this->_trueAnswers;
+    }
+
+    public function getUserAnswer($userTestID) {
         if ($infor = UserTest::findOne($userTestID)) {
             return unserialize($infor->ut_user_answer_ids);
         }
         return null;
     }
 
-    public function getQuestions($testID)
-    {
+    public function getQuestions($testID) {
         return (TestExamQuestions::find()
                         ->select('test_exam_questions.te_id,question.q_id,question.q_type,question.q_content')
                         ->innerJoin('question', 'test_exam_questions.q_id = question.q_id')
                         ->where(['test_exam_questions.te_id' => $testID, 'question.is_deleted' => 0])
                         ->asArray()
-                        ->all());
+                        ->all()
+                );
     }
-    public function getAnswersRandom($questionID, $type)
-    {
+
+    public function getAnswersRandom($questionID, $type) {
         $selectTrue = Answer::find()
                 ->select('qa_id,qa_content,qa_status')
                 ->where(['q_id' => $questionID, 'qa_status' => 1])
@@ -227,6 +211,8 @@ class LogicUserTest extends LogicBase
                 ->asArray()
                 ->all();
         $result = array_merge($selectTrue, $selectFalse);
+        shuffle($result);
         return $result;
     }
+
 }
