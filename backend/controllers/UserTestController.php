@@ -13,9 +13,11 @@ use common\lib\components\AppConstant;
 use common\lib\logic\LogicUserTest;
 use common\lib\helpers\AppArrayHelper;
 
-class UserTestController extends BackendController {
+class UserTestController extends BackendController
+{
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -28,10 +30,13 @@ class UserTestController extends BackendController {
 
     public $params;
 
-    public function actionIndex() {
-        if ($param = Yii::$app->request->post())
-            if ($param['submit'] == 'search')
+    public function actionIndex()
+    {
+        if ($param = Yii::$app->request->post()) {
+            if ($param['submit'] == 'search') {
                 $this->params = $param;
+            }
+        }
         return $this->render('index', [
             'selected' => $this->params,
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
@@ -45,7 +50,8 @@ class UserTestController extends BackendController {
         ]);
     }
 
-    public function actionDetail($id) {
+    public function actionDetail($id)
+    {
         $userTest = UserTest::find()->where(['ut_id' => $id]);
         if ($userTest->exists()) {
             $theUserTest = $userTest->one();
@@ -56,11 +62,13 @@ class UserTestController extends BackendController {
                 'tile' => TestExam::findOne($theUserTest->te_id)->te_title,
                 'userAnswer' => $userAnswer,
             ]);
-        } else
+        } else {
             throw new NotFoundHttpException('This id not found');
+        }
     }
 
-    public function actionAssign() {
+    public function actionAssign()
+    {
         $userTest = new UserTest;
         $logicUserTest = new LogicUserTest();
         if ($request = Yii::$app->request->post()) {
@@ -80,20 +88,23 @@ class UserTestController extends BackendController {
         ]);
     }
 
-    public function actionDelete($id) {
+    public function actionDelete($id)
+    {
         if (UserTest::find()->where(['ut_id' => $id])->exists()) {
-            if ((new LogicUserTest)->deteleTest($id))
+            if ((new LogicUserTest)->deteleTest($id)) {
                 $this->goReferrer();
-        } else
+            }
+        } else {
             throw new NotFoundHttpException('User Test ID does not exists!');
+        }
     }
 
-    protected function findModel($id) {
+    protected function findModel($id)
+    {
         if (($model = UserTest::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
 }

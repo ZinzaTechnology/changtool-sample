@@ -1,8 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
-use common\lib\components\AppConstant;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\TestExamQuestions */
@@ -21,32 +19,36 @@ $question_count = 1;
             <?php foreach ($data as $question) { ?>
                 <label class="control-label"><?= "Question {$question_count}" ?></label>
                 <?= Html::textarea('question', $question['qc_content'], ['class' => 'form-control', 'readonly' => true]) ?>
-                <?php
-                foreach ($question['answer'] as $answer) {
-                    $count = 0;
-                    $questionID = "question-{$question['qc_id']}";
-                    $classExtend = '';
-                    if ($answer['ac_status'] == 1) {
+                <ul class="panel">
+                    <?php
+                    foreach ($question['answer'] as $answer) {
+                        $count = 0;
+                        $classExtend = '';
                         if (!empty($userAnswer)) {
-                            switch ($userAnswer[$questionID][$count]) {
-                                case $answer['ac_status']:
-                                    $classExtend = "user's choice true";
-                                    break;
-                                default:
-                                    $classExtend = 'true';
-                                    break;
-                            }
-                        } else
-                            $classExtend = 'true';
-                    } else
-                        $classExtend = 'false';
-                    $count++;
-                    echo "<label>{$classExtend}</label>";
-                    echo Html::textInput('answer', $answer['ac_content'], ['class' => 'form-control', 'readonly' => true]);
-                }
-                $question_count++;
-            }
-            ?>
+                            if ($userAnswer["question-{$question['qc_id']}"][$count] == $answer['ac_status']) {
+                                if ($answer['ac_status'] == 1) {
+                                    $classExtend = 'panel-heading panel-primary';
+                                } else
+                                    $classExtend = 'panel-heading panel-danger';
+                            } else
+                                $classExtend = 'panel-heading panel-default';
+                        }else
+                                $classExtend = 'panel-heading panel-default';
+                        ?>
+
+                        <li class="<?= $classExtend ?>" style="list-style-type: upper-alpha">
+                            <?= $answer['ac_content'] ?>
+                        </li>
+                        <?php $count++;
+                    } ?>
+
+                </ul>
+                <div class="panel panel-primary m-t-md">
+                    <div class="panel-heading">True answer</div>
+                    <?= Html::ul($trueAnswer[$question_count - 1], ['class' => 'panel-body list-unstyled']) ?>
+                </div>
+    <?php $question_count++;
+} ?>
         </div>
     </div>
 </div>

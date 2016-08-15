@@ -1,16 +1,17 @@
 <?php
+
 /**
  * @author: cuongnx
  * @email: cuong@zinza.com.vn
  * @license: ZINZA Technology
  */
-
 namespace common\lib\helpers;
 
 use Yii;
 
 class AppArrayHelper extends yii\helpers\ArrayHelper
 {
+
     /**
      * This function filter keys that exist in the original array
      * and return an array with the keys given
@@ -23,13 +24,12 @@ class AppArrayHelper extends yii\helpers\ArrayHelper
      */
     public static function filterKeys($array, $keys)
     {
-        $result = [];
-
+        $result = [ ];
+        
         foreach ($keys as $key) {
-            $result[$key] = (isset($array[$key])) ? $array[$key] : null;
+            $result [$key] = (isset($array [$key])) ? $array [$key] : null;
         }
-
+        
         return $result;
     }
 }
-

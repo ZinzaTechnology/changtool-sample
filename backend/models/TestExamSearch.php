@@ -10,12 +10,14 @@ use backend\models\TestExam;
 /**
  * TestExamSearch represents the model behind the search form about `backend\models\TestExam`.
  */
-class TestExamSearch extends TestExam {
+class TestExamSearch extends TestExam
+{
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['te_id', 'te_category', 'te_level', 'te_time', 'te_num_of_questions', 'te_is_deleted'], 'integer'],
             [['te_code', 'te_title', 'te_created_at', 'te_last_updated_at'], 'safe'],
@@ -25,7 +27,8 @@ class TestExamSearch extends TestExam {
     /**
      * @inheritdoc
      */
-    public function scenarios() {
+    public function scenarios()
+    {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -37,7 +40,8 @@ class TestExamSearch extends TestExam {
      *
      * @return ActiveDataProvider
      */
-    public function search($params) {
+    public function search($params)
+    {
         $query = TestExam::find();
 
         // add conditions that should always apply here
@@ -71,5 +75,4 @@ class TestExamSearch extends TestExam {
 
         return $dataProvider;
     }
-
 }
