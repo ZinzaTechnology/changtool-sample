@@ -120,13 +120,16 @@ class LogicUserTest extends LogicBase {
         try {
             $record = $userTest->findOne(['ut_id' => $id]);
             switch ($record->ut_status) {
-                case "ASSIGNED":
+                case 'ASSIGNED':
                     $questionCloneID = ArrayHelper::getColumn(QuestionClone::findAll(['ut_id' => $id]), 'qc_id');
-                    if (count($questionCloneID)) {
+                    if (count($questionCloneID))
                         AnswerClone::deleteAll("qc_id in (" . implode(', ', $questionCloneID) . ")");
-                    }
                     QuestionClone::deleteAll("ut_id = {$id}");
                     $record->delete();
+                    break;
+                case 'DONE':
+                    break;
+                case 'DOING':
                     break;
             }
             $transaction->commit();
@@ -145,7 +148,7 @@ class LogicUserTest extends LogicBase {
                 ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
                 ->andFilterWhere(['like', 'u_name', $params['u_name']])
                 ->andFilterWhere(['like', 'te_title', $params['te_title']])
-                ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level'],])
+                ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level']])
                 ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
                 ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
                 ->addOrderBy(['ut_id' => SORT_DESC]);
@@ -154,21 +157,23 @@ class LogicUserTest extends LogicBase {
 
     public function getTest($userTestID) {
         $question = QuestionClone::find()->select('qc_id,qc_content')
-                ->where(['ut_id' => $userTestID])
-                ->asArray()
-                ->all();
+            ->where(['ut_id' => $userTestID])
+            ->asArray()
+            ->all();
         $count = 0;
         while ($count < count($question)) {
-            $this->_trueAnswers = array_merge($this->_trueAnswers, AnswerClone::find()
-                            ->select('ac_content')
-                            ->where(['qc_id' => $question[$count]['qc_id'], 'ac_status' => 1])
-                            ->asArray()
-                            ->all());
-            $question[$count]['answer'] = AnswerClone::find()
-                    ->select('ac_id,ac_content,ac_status')
-                    ->where(['qc_id' => $question[$count]['qc_id']])
+            $this->_trueAnswers = array_merge(
+                $this->_trueAnswers,
+                AnswerClone::find()
+                    ->select('ac_content')
+                    ->where(['qc_id' => $question[$count]['qc_id'], 'ac_status' => 1])
                     ->asArray()
-                    ->all();
+                    ->all()
+            );
+            $question[$count]['answer'] = AnswerClone::find()
+                ->where(['qc_id' => $question[$count]['qc_id']])
+                ->asArray()
+                ->all();
             $count++;
         }
         return $question;
@@ -187,29 +192,27 @@ class LogicUserTest extends LogicBase {
 
     public function getQuestions($testID) {
         return (TestExamQuestions::find()
-                        ->select('test_exam_questions.te_id,question.q_id,question.q_type,question.q_content')
-                        ->innerJoin('question', 'test_exam_questions.q_id = question.q_id')
-                        ->where(['test_exam_questions.te_id' => $testID, 'question.is_deleted' => 0])
-                        ->asArray()
-                        ->all()
-                );
+            ->select('test_exam_questions.te_id,question.q_id,question.q_type,question.q_content')
+            ->innerJoin('question', 'test_exam_questions.q_id = question.q_id')
+            ->where(['test_exam_questions.te_id' => $testID, 'question.is_deleted' => 0])
+            ->asArray()
+            ->all()
+        );
     }
 
     public function getAnswersRandom($questionID, $type) {
         $selectTrue = Answer::find()
-                ->select('qa_id,qa_content,qa_status')
-                ->where(['q_id' => $questionID, 'qa_status' => 1])
-                ->orderBy(new Expression('rand()'))
-                ->limit($type)
-                ->asArray()
-                ->all();
+            ->where(['q_id' => $questionID, 'qa_status' => 1])
+            ->orderBy(new Expression('rand()'))
+            ->limit($type)
+            ->asArray()
+            ->all();
         $selectFalse = Answer::find()
-                ->select('qa_id,qa_content,qa_status')
-                ->where(['q_id' => $questionID, 'qa_status' => 0])
-                ->orderBy(new Expression('rand()'))
-                ->limit(4 - $type)
-                ->asArray()
-                ->all();
+            ->where(['q_id' => $questionID, 'qa_status' => 0])
+            ->orderBy(new Expression('rand()'))
+            ->limit(4 - $type)
+            ->asArray()
+            ->all();
         $result = array_merge($selectTrue, $selectFalse);
         shuffle($result);
         return $result;
