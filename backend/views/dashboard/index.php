@@ -40,5 +40,16 @@ $this->title = 'Admin Dashboard';
                 </button></a>
             </div>
         </div>
+
+        <div class="hr-line-dashed"></div>
+
+        <div class="row">
+            <div class="col-lg-2">
+                <a href="<?= URL::toRoute("/import-data") ?>"><button class="btn btn-primary dim m-btn-large-dim" type="button">
+                    <i class="fa fa-upload"></i>
+                    <br><span class="m-btn-large-text">Import Data</span>
+                </button></a>
+            </div>
+        </div>
     </div>
 </div>
