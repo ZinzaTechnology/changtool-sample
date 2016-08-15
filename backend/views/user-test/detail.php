@@ -20,25 +20,31 @@ $question_count = 1;
         <div class="form-group">
             <?php foreach ($data as $question) { ?>
                 <label class="control-label"><?= "Question {$question_count}" ?></label>
+                <?= Html::textarea('question', $question['qc_content'], ['class' => 'form-control', 'readonly' => true]) ?>
                 <?php
-                echo Html::textarea('question', $question['qc_content'], ['class' => 'form-control', 'readonly' => true]);
                 foreach ($question['answer'] as $answer) {
                     $count = 0;
                     $questionID = "question-{$question['qc_id']}";
-//                if (isset($userAnswer[$questionID])) {
-//                    //User's choice
-//                    if ($userAnswer[$questionID][$count] == $answer['ac_id']) {
-//                        echo Html::textInput('answer', $answer['ac_content']);
-//                    } else {
-//                    }
-//                    if ($count < count($userAnswer[$questionID]))
-//                        $count++;
-//                } else {
-//                }
+                    $classExtend = '';
+                    if ($answer['ac_status'] == 1) {
+                        if (!empty($userAnswer)) {
+                            switch ($userAnswer[$questionID][$count]) {
+                                case $answer['ac_status']:
+                                    $classExtend = "user's choice true";
+                                    break;
+                                default:
+                                    $classExtend = 'true';
+                                    break;
+                            }
+                        } else
+                            $classExtend = 'true';
+                    } else
+                        $classExtend = 'false';
+                    $count++;
+                    echo "<label>{$classExtend}</label>";
                     echo Html::textInput('answer', $answer['ac_content'], ['class' => 'form-control', 'readonly' => true]);
                 }
                 $question_count++;
-                
             }
             ?>
         </div>
