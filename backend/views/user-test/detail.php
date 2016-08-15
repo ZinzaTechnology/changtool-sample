@@ -2,18 +2,24 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-
+use yii\widgets\Breadcrumbs;
 /* @var $this yii\web\View */
 /* @var $model backend\models\TestExamQuestions */
 
 $this->title = $tile;
-$this->params['breadcrumbs'][] = ['label' => 'Detail Test', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => Url::toRoute('/user-test')];
 $this->params['breadcrumbs'][] = $this->title;
 $question_count = ($page - 1) * $limitQuestion + 1;
 ?>
+
 <div class="ibox">
-    <div class="ibox-title">
+    <div class="ibox-title m-b-md">
         <h1><?= Html::encode($this->title) ?></h1>
+        <?=
+        Breadcrumbs::widget([
+            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+        ])
+        ?>
     </div>
     <div class="ibox-content">
         <div class="OK"></div>

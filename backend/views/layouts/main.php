@@ -99,7 +99,15 @@ $current_user = Yii::$app->user->identity;
                             'icon' => 'fa-tasks',
                             'url' => ["/user-test"],
                             'controllers' => [
-                                'usertest' => '*',
+                                'user-test' => '*',
+                            ],
+                        ],
+                        [
+                            'label' => 'Import Data',
+                            'icon' => 'fa-upload',
+                            'url' => ["/import-data"],
+                            'controllers' => [
+                                'import-data' => '*',
                             ],
                         ],
                     ],

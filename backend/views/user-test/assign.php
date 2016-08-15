@@ -3,12 +3,20 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+use yii\widgets\Breadcrumbs;
 
 $this->title = 'Assign Test';
-$this->params['breadcrumbs'][] = ['label' => 'Assign test to user', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title
 ?>
-
-<h1><?= Html::encode($this->title) ?></h1>
+<div class="ibox-title m-b-md">
+    <h1><?= Html::encode($this->title) ?></h1>
+    <?=
+    Breadcrumbs::widget([
+        'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+    ])
+    ?>
+</div>
 <div class="row">
     <?php
     $form = ActiveForm::begin([
