@@ -13,8 +13,10 @@ use yii\filters\AccessControl;
 use yii\db\ActiveQuery;
 use common\models\UserSearch;
 use yii\widgets\ActiveForm;
-use yii\web\Response;
 use yii\data\Pagination;
+use yii\web\Response;
+use common\lib\logic\LogicUser;
+use common\lib\helpers\AppArrayHelper;
 
 /**
  * Dashboard controller
@@ -64,57 +66,75 @@ class UserController extends BackendController
          
         ];
     }
-
-    /**
+    
+	public function actionIndex()
+    {		
+    	$logicUser = new LogicUser();
+    	$userSearch = new UserSearch();
+    	
+       	$param_tmps = Yii::$app->request->queryParams;
+       	$params = [];
+       	
+       	if (!empty($param_tmps)) {
+	       	if (isset($param_tmps['UserSearch'])) {
+		        $params = AppArrayHelper::filterKeys($param_tmps['UserSearch'], ['globalSearch']);
+	       	}
+       	}
+       	
+       	$dataProvider = $logicUser->findUserBySearch(['UserSearch' => $params], $userSearch);
+		$dataProvider->pagination->pageSize = 5;
+		
+        return $this->render('index', [
+        	'searchModel' => $userSearch,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+   	
+	public function actionCreate()
+    {
+    	$request = Yii::$app->request->post();
+    	
+    	if (isset($request['User'])) {
+    		$logicUser = new LogicUser();
+    		
+    		$params = AppArrayHelper::filterKeys($request['User'], ['u_name', 'u_fullname', 'u_role', 'u_mail', 'u_password_hash']);
+    		$newUser = $logicUser->createUserById($params);
+    				
+    		if (empty($newUser->errors)) {
+            	return $this->redirect('index');
+        	} else {
+        		$this->setSessionFlash('error', Html::errorSummary($newUser));
+        		return $this->render('create', [
+                	'model' => $newUser,
+            	]);
+        	}
+        } else {
+            return $this->render('create', [
+                'model' => new User(),
+            ]);
+        }
+    }
+    
+    public function actionValidate()
+    {
+    	$model = new User();
+    	
+    	if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
+    		Yii::$app->response->format = Response::FORMAT_JSON;
+    		return ActiveForm::validate($model);
+		}
+    }
+    
+     /**
      * Login action.
      *
      * @return string
      */
     
-	public function actionIndex()
-    {
-		
-    	$searchModel = new UserSearch();   	
-    	
-    	$param_tmps = Yii::$app->request->queryParams;
-    	$param_tmps[$searchModel->formname()]['is_deleted'] = 0; 
-		$dataProvider = $searchModel->search($param_tmps);
-		$dataProvider->pagination->pageSize=5;
-        return $this->render('index', [
-        	'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-    
-	public function actionCreate()
-    {
-    	$model = new User();
-  		
-	    if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-	    	Yii::$app->response->format = Response::FORMAT_JSON;
-	    	return ActiveForm::validate($model);
-		}
-    	
-    	if ($request = Yii::$app->request->post()) {
-    		$request = $request['User'];
-    		$model->u_name = $request['u_name'];
-    		$model->u_fullname = $request['u_fullname'];
-    		$model->u_role = $request['u_role'];
-    		$model->u_mail = $request['u_mail'];
-    		$model->u_password_hash = Yii::$app->security->generatePasswordHash($request['u_password_hash']);       	
-    		if ($model->save()) {
-            	return $this->redirect(['index', 'id' => $model->u_id]);
-        	}
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-    
     public function actionLogin()
     {
         $model = new LoginForm();
+        
         if ($model->load(Yii::$app->request->post()) && $model->login('ADMIN')) {
             return $this->redirect(['/user/index']);
         } else {
@@ -124,8 +144,6 @@ class UserController extends BackendController
         }
     }
     
-
-
     /**
      * Logout action.
      *
@@ -137,72 +155,61 @@ class UserController extends BackendController
 
         return $this->goHome();
     }
-
-    /**
-     * Signs user up.
-     *
-     * @return mixed
-     */
-    public function actionSignup()
-    {
-        $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
-                }
-            }
-        }
-        return $this->render('signup', [
-            'model' => $model,
-        ]);
-    }
     
  	public function actionView($id)
     {
+    	$logicUser = new LogicUser();
+    	
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $logicUser->findUserById($id),
         ]);
     }
     
     public function actionDelete($id)
     {
-    	$model = $this->findModel($id);
-		$model->is_deleted = 1;
-		$model->save();
-        return $this->redirect(['index']);
+    	$logicUser = new LogicUser();
+    	
+    	$logicUser->deleteUserById($id);
+    	
+        return $this->redirect('index');
     }
     
     public function actionUpdate($id)
     {
-    	$model = $this->findModel($id);
-		if ($request = Yii::$app->request->post()) {
-			$request = $request['User'];
-			$model->u_fullname = $request['u_fullname'];
-			$model->u_mail = $request['u_mail'];
-			$model->u_role = $request['u_role'];
-			//$model->u_password_hash = Yii::$app->security->generatePasswordHash($request['u_password_hash']);
-			if ($model->save()) {
-				return $this->redirect(['index', 'id' => $model->u_id]);
-			}
+    	
+    	$request = Yii::$app->request->post();
+    	$user = LogicUser::findUserById($id);
+    	
+		if (isset($request['User'])) {
+			$updateUser = new LogicUser();
+			
+			$params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
+			$updateUser->updateUserById($user, $params);	
+			
+			return $this->redirect('index');			
 		}
+		
         return $this->render('update', [
-                'model' => $model,
+                'model' => $user,
             ]);
     }
     
 	public function actionChangepassword($id)
  	{
- 		$model = $this->findModel($id);
- 		if ($request = Yii::$app->request->post()) {
- 			$request = $request['User'];
- 			$model->u_password_hash = Yii::$app->security->generatePasswordHash($request['u_password_hash']);
- 			if($model->save()) {
- 				return $this->redirect(['index', 'id' => $model->u_id]);
- 			}			
+ 		$request = Yii::$app->request->post();
+ 		$user = LogicUser::findUserById($id);
+ 		
+ 		if (isset($request['User'])) {
+ 			$changePwd = new LogicUser();
+ 			
+ 			$params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash']);
+ 			$changePwd->changePasswordUserById($user, $params);
+
+ 			return $this->redirect('index');			
  		}
+ 		
  		return $this->render('changepassword', [
- 			'model' => $model
+ 			'model' => $user,
  			]);
     }
     

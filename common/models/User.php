@@ -29,6 +29,7 @@ use common\lib\components\AppConstant;
  */
 class User extends AppActiveRecord implements IdentityInterface
 {
+	public static $is_logic_delete = true;
 
     /**
      * @inheritdoc
