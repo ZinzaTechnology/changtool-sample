@@ -440,7 +440,7 @@ class QuestionController extends BackendController
             
             $result = $logicQuestion->deleteQuestionById($q_id);
             if ($result) {
-                $this->redirect([
+                return $this->redirect([
                     '/question' 
                 ]);
             } else {
@@ -457,7 +457,7 @@ class QuestionController extends BackendController
             if ($q_id == ($checkid = $logicAnswer->findByAnswerId($qa_id))) {
                 $result = $logicAnswer->deleteAnswerById($qa_id);
                 if ($result) {
-                    $this->redirect([
+                    return $this->redirect([
                         '/question/view',
                         'q_id' => $q_id 
                     ]);
