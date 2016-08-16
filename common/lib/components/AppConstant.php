@@ -100,4 +100,15 @@ class AppConstant
         self::TEST_EXAM_LEVEL_INTERMEDIATE => 'Intermediate',
         self::TEST_EXAM_LEVEL_HARD => 'Hard',
     ];
+    
+    // user test
+    const USER_TEST_ASSIGNED = 'ASSIGNED';
+    const USER_TEST_DONE = 'DONE';
+    const USER_TEST_DOING = 'DOING';
+    
+    public static $USER_TEST_STATUS = [
+        self::USER_TEST_ASSIGNED => self::USER_TEST_ASSIGNED,
+        self::USER_TEST_DOING => self::USER_TEST_DOING,
+        self::USER_TEST_DONE => self::USER_TEST_DONE
+    ];
 }
