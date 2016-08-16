@@ -290,8 +290,9 @@ class TestExamController extends BackendController
         $questions = $logicQuestion->findQuestionBySearch($params);
 
         $data = [
-            'id' => Yii::$app->session->get('test_exam')['te_id'],
-            'all_questions' => Yii::$app->session->get('test_exam')['all_questions'],
+            'id' => $test_exam['te_id'],
+            'te_code' => $test_exam['testExam']['te_code'],
+            'all_questions' => $test_exam['all_questions'],
             'questions' => $questions,
             'category' => AppConstant::$QUESTION_CATEGORY_NAME[$category],
             'type' => $type,

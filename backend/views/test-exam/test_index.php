@@ -4,7 +4,7 @@ use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use yii\widgets\ActiveForm;
 
-$this->title = "Question Manager";
+$this->title = "TestExam $te_code: add questions";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
