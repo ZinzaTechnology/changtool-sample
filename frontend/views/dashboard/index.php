@@ -26,6 +26,6 @@ $this->title = 'Dashboard';
                     ?>
                 </div>
             </div>
-    <?php }
+    <?php                                                                                                                                                                                                                 }
 } ?>
 </div>

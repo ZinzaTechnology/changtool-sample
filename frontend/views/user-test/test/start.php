@@ -7,12 +7,12 @@ $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['/dashboard'
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-test-create" >
-	
+    
 
     <h1 style = 'color:#1a1aff'><?= Html::encode($this->title) ?></h1>
-    <?= Html::beginForm('', 'post', ['class' => 'form-group','id'=>'_start']); ?>
+    <?= Html::beginForm('', 'post', ['class' => 'form-group','id' => '_start']); ?>
     <h2 style = 'color:#e60000' >TIME LEFT:  <span id="countdown"> </span> </h2>
-  	<div class="sk-spinner sk-spinner-three-bounce">
+    <div class="sk-spinner sk-spinner-three-bounce">
     <div class="sk-bounce1"></div>
     <div class="sk-bounce2"></div>
     <div class="sk-bounce3"></div>
@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $answer['ac_content'] ?>
             </div>
             <?php
-        }
+}
     }
     ?>
      <i class="fa fa-hand-o-right"></i>

@@ -30,7 +30,7 @@ class LogicUserTest extends LogicBase
     private $_testExamParams = [];
     private $_pageMax = 0;
     private $_page = 0;
-    
+
     public function __construct()
     {
         parent::__construct();
@@ -73,22 +73,22 @@ class LogicUserTest extends LogicBase
     {
         return [$this->_testExam['te_category'], $this->_testExam['te_level']];
     }
-    
+
     public function getPageMax()
     {
         return $this->_pageMax;
     }
-    
+
     public function getPage()
     {
         return $this->_page;
     }
-    
+
     public function getTestDataByPageParam($id, $page = null)
     {
         $data = $this->findTestDataByUtID($id);
         $limitPerPage = AppConstant::USER_TEST_QUESTION_LIMIT_PER_PAGE;
-        $this->_pageMax = round((count($data)/$limitPerPage));
+        $this->_pageMax = round((count($data) / $limitPerPage));
         if (count($data) % $limitPerPage) {
             $this->_pageMax++;
         }
@@ -104,9 +104,9 @@ class LogicUserTest extends LogicBase
         } else {
             $this->_page = 1;
         }
-        return array_slice($data, ($this->_page-1) * $limitPerPage, $limitPerPage);
+        return array_slice($data, ($this->_page - 1) * $limitPerPage, $limitPerPage);
     }
-    
+
     public function assignTest()
     {
         $userTest = new UserTest;
@@ -175,33 +175,23 @@ class LogicUserTest extends LogicBase
         return false;
     }
 
-public static function findUserTestBySearch($params)
+    public static function findUserTestBySearch($params)
     {
         $query = new Query;
         $query->from('user_test')
             ->innerJoin('user', 'user_test.u_id = user.u_id')
             ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id');
-        if(isset($params['u_name'])) {
-            $query->andFilterWhere(['like', 'u_name', $params['u_name']]);
-        }
-        if (isset($params['te_title'])) {
-            $query->andFilterWhere(['like', 'te_title', $params['te_title']]);
-        }
-        if (isset($params['te_category'])) {
-            $query->andFilterWhere(['te_category' => $params['te_category']]);
-        }
-        if (isset($params['te_level'])) {
-            $query->andFilterWhere(['te_level' => $params['te_level']]);
-        }
-        if (isset($params['ut_status'])) {
-            $query->andFilterWhere(['ut_status' => $params['ut_status']]);
-        }
-        if (isset($params['ut_start_at'])) {
-            $query->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']]);
-        }
-        if (isset($params['ut_finished_at'])) {
-            $query->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']]);
-        }
+
+        $params = AppArrayHelper::filterKeys($params, ['u_id', 'u_name', 'te_title', 'te_category', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at']);
+
+        $query->andFilterWhere(['like', 'u_name', $params['u_name']]);
+        $query->andFilterWhere(['like', 'te_title', $params['te_title']]);
+        $query->andFilterWhere(['te_category' => $params['te_category']]);
+        $query->andFilterWhere(['te_level' => $params['te_level']]);
+        $query->andFilterWhere(['ut_status' => $params['ut_status']]);
+        $query->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']]);
+        $query->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']]);
+
         $query->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
     }
@@ -233,18 +223,19 @@ public static function findUserTestBySearch($params)
     {
         return AnswerClone::find()->where(['qc_id' => $qc_id])->asArray()->all();
     }
-  public function  updateUserTest($id, $params){
-    	$updateTest = UserTest::findOne($id);
-    
-    	if (!$updateTest) {
-    		return false;
-    	}	
-    	$params = AppArrayHelper::filterKeys($params,['ut_status','ut_start_at','ut_finished_at','ut_user_answer_ids']);
-    		$updateTest->load(['UserTest' => $params]);
-    	if ($updateTest->validate()) {
-    		return $updateTest->save();
-    	}
-     }
+    public function updateUserTest($id, $params)
+    {
+        $updateTest = UserTest::findOne($id);
+
+        if (!$updateTest) {
+            return false;
+        }
+        $params = AppArrayHelper::filterKeys($params, ['ut_status','ut_start_at','ut_finished_at','ut_user_answer_ids']);
+        $updateTest->load(['UserTest' => $params]);
+        if ($updateTest->validate()) {
+            return $updateTest->save();
+        }
+    }
 
     public function findUserAnswerByUtId($ut_id)
     {
@@ -254,55 +245,55 @@ public static function findUserTestBySearch($params)
     public function findAnswersRandomByQuestionId($questionID, $type)
     {
         $selectTrue = Answer::find()
-                ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_RIGHT])
-                ->orderBy(new Expression('rand()'))
-                ->limit($type)
-                ->asArray()
-                ->all();
+            ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_RIGHT])
+            ->orderBy(new Expression('rand()'))
+            ->limit($type)
+            ->asArray()
+            ->all();
         $selectFalse = Answer::find()
-                ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_WRONG])
-                ->orderBy(new Expression('rand()'))
-                ->limit(AppConstant::QUESTION_ANSWERS_LIMIT - $type)
-                ->asArray()
-                ->all();
+            ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_WRONG])
+            ->orderBy(new Expression('rand()'))
+            ->limit(AppConstant::QUESTION_ANSWERS_LIMIT - $type)
+            ->asArray()
+            ->all();
         $result = array_merge($selectTrue, $selectFalse);
         shuffle($result);
         return $result;
     }
     public function setMark($id) {
-    	$testExam = UserTest::findOne($id);
-    	if ($testExam && $testExam->ut_status == "DONE") {
-    		$answer = unserialize($testExam->ut_user_answer_ids);
-    		$amountQuestion = TestExam::findOne($testExam->te_id)->te_num_of_questions;
-    		$countTrue = 0;
-    		$keys = array_keys($answer);
-    		$parent = 0;
-    		foreach ($answer as $elements) {
-    			$countInside = 0;
-    			foreach ($elements as $element) {
-    				if (AnswerClone::findOne($element)->ac_status == 1)
-    					$countInside++;
-    					else $countInside--;
-    			}
-    			if ($countInside == count(AnswerClone::find()->where(['qc_id'=>str_replace('question-','',$keys[$parent]),'ac_status'=>1])->asArray()->all()))
-    				$countTrue++;
-    				$parent++;
-    		}
-    		Yii::$app->db->createCommand()->update('user_test', [
-    				'ut_mark' => $countTrue
-    		], "ut_id = {$id}"
-    		)->execute();
-    	}
+        $testExam = UserTest::findOne($id);
+        if ($testExam && $testExam->ut_status == "DONE") {
+            $answer = unserialize($testExam->ut_user_answer_ids);
+            $amountQuestion = TestExam::findOne($testExam->te_id)->te_num_of_questions;
+            $countTrue = 0;
+            $keys = array_keys($answer);
+            $parent = 0;
+            foreach ($answer as $elements) {
+                $countInside = 0;
+                foreach ($elements as $element) {
+                    if (AnswerClone::findOne($element)->ac_status == 1)
+                        $countInside++;
+                    else $countInside--;
+                }
+                if ($countInside == count(AnswerClone::find()->where(['qc_id'=>str_replace('question-','',$keys[$parent]),'ac_status'=>1])->asArray()->all()))
+                    $countTrue++;
+                $parent++;
+            }
+            Yii::$app->db->createCommand()->update('user_test', [
+                'ut_mark' => $countTrue
+            ], "ut_id = {$id}"
+        )->execute();
+        }
     }
-    
+
     public static function getMark($id) {
-    	$userTest = UserTest::findOne($id);
-    	if ($userTest)
-    		return [$userTest->ut_mark, TestExam::findOne($userTest->te_id)->te_num_of_questions];
-    		else{
-    			return false;
-    		}
+        $userTest = UserTest::findOne($id);
+        if ($userTest)
+            return [$userTest->ut_mark, TestExam::findOne($userTest->te_id)->te_num_of_questions];
+        else{
+            return false;
+        }
     }
-  
-    
+
+
 }

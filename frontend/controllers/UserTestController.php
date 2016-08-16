@@ -37,83 +37,82 @@ class UserTestController extends Controller
      * Lists all UserTest models.
      * @return mixed
      */
-    public function actionStartTest()
+    public function actionStartTest($ut_id)
     {
-    	// return to dashboard if no parameter
-    	if (!Yii::$app->request->get('id')) {
-    		$this->redirect(Url::toRoute('/'));
-    	}
+        // return to dashboard if no parameter
+        if (!Yii::$app->request->get('id')) {
+            $this->redirect(Url::toRoute('/'));
+        }
     
-    	$id = Yii::$app->request->get('id');
-    	$logicUserTest = new LogicUserTest();
-    	$userTest = LogicUserTest::findUserTestBySearch(['u_name' => null, 'ut_id' => $id, 'u_id' => Yii::$app->user->id])[0];
-    	// return to dashboard if no valid user test found
-    	if (!$userTest) {
-    		$this->redirect(Url::toRoute('/'));
-    	}
+        $id = Yii::$app->request->get('id');
+        $logicUserTest = new LogicUserTest();
+        $userTest = LogicUserTest::findUserTestBySearch(['u_name' => null, 'ut_id' => $id, 'u_id' => Yii::$app->user->id])[0];
+        // return to dashboard if no valid user test found
+        if (!$userTest) {
+            $this->redirect(Url::toRoute('/'));
+        }
     
-    	$time_count = 0;
-    	if ($userTest['ut_status'] == 'ASSIGNED') {
-    		$logicUserTest->updateUserTest($id, ['ut_status' => 'DOING', 'ut_start_at' => date('Y-m-d H:i:s')]);
-    	
-    		$time_count = $userTest['te_time'] * 60;
-    	} else {
-    		$testAllowed = $userTest['te_time'] * 60;
-    		$mustFinishedAt = strtotime($userTest['ut_start_at']) + $testAllowed;
-    		$time_access = strtotime(date('Y-m-d H:i:s'));
-    		$time_count = $mustFinishedAt - $time_access;
-    	}
+        $time_count = 0;
+        if ($userTest['ut_status'] == 'ASSIGNED') {
+            $logicUserTest->updateUserTest($id, ['ut_status' => 'DOING', 'ut_start_at' => date('Y-m-d H:i:s')]);
+        
+            $time_count = $userTest['te_time'] * 60;
+        } else {
+            $testAllowed = $userTest['te_time'] * 60;
+            $mustFinishedAt = strtotime($userTest['ut_start_at']) + $testAllowed;
+            $time_access = strtotime(date('Y-m-d H:i:s'));
+            $time_count = $mustFinishedAt - $time_access;
+        }
     
-    	switch ($userTest['ut_status']) {
-    		case "ASSIGNED":
-    		case "DOING":
-    			if ($request = Yii::$app->request->post()) {
-    				unset($request[Yii::$app->request->csrfParam]);
-    				$answer = serialize($request);
-    				
-    				$logicUserTest->updateUserTest($id,['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_user_answer_ids' => $answer]);
-    				$logicUserTest->setMark($id);
-    				
-    				return $this->redirect(Url::toRoute(['mark', 'id' => $id]));
-    			}
-    			$data = (new UserTest())->getTest($id);
-    			return $this->render('test/start', [
-    					'data' => $data,
-    					'time_count' => $time_count,
-    			]);
-    			break;
-    			
-    		default:
-    			$this->redirect(Url::toRoute('/'));
-    			break;
-    	}
-    
+        switch ($userTest['ut_status']) {
+            case "ASSIGNED":
+            case "DOING":
+                if ($request = Yii::$app->request->post()) {
+                    unset($request[Yii::$app->request->csrfParam]);
+                    $answer = serialize($request);
+                    
+                    $logicUserTest->updateUserTest($id, ['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_user_answer_ids' => $answer]);
+                    $logicUserTest->setMark($id);
+                    
+                    return $this->redirect(Url::toRoute(['mark', 'id' => $id]));
+                }
+                $data = (new UserTest())->getTest($id);
+                return $this->render('test/start', [
+                        'data' => $data,
+                        'time_count' => $time_count,
+                ]);
+                break;
+                
+            default:
+                $this->redirect(Url::toRoute('/'));
+                break;
+        }
     }
     public function actionMark()
     {
-    	$id = Yii::$app->request->get('id');
-    	$array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
-    	array_shift($array);
-    	if ($mark = UserTest::getMark($id)) {
-    		return $this->render('test/result', [
-    				'mark' => $mark
-    		]);
-    	} else {
-    		return $this->redirect(Url::toRoute('/'));
-    	}
+        $id = Yii::$app->request->get('id');
+        $array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
+        array_shift($array);
+        if ($mark = UserTest::getMark($id)) {
+            return $this->render('test/result', [
+                    'mark' => $mark
+            ]);
+        } else {
+            return $this->redirect(Url::toRoute('/'));
+        }
     }
     public function actionIndex()
     {
-    	$model = new UserTest();
-    	
-    	$current_user = Yii::$app->user->identity;
+        $model = new UserTest();
+        
+        $current_user = Yii::$app->user->identity;
         $dataProvider = new ActiveDataProvider([
             'query' => UserTest::find()->where(['u_id' => $current_user->u_id]),
         ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-        	'model' => $model,
+            'model' => $model,
         ]);
     }
     
@@ -122,17 +121,19 @@ class UserTestController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionStart(){
-    	$id = Yii::$app->request->get('ut_id');
-    	if(UserTest::findOne(['ut_id' => $id, 'u_id'=>Yii::$app->user->id])){
-    		if($request = Yii::$app->request->post())
-    		$updateTest = UserTest::findOne($id);
-    		$userTest = new UserTest();
-    		$data = $userTest->getTest($id);
-    		return $this->render('start',[
-    				'data' => $data,
-    		]);
-    	}
+    public function actionStart()
+    {
+        $id = Yii::$app->request->get('ut_id');
+        if (UserTest::findOne(['ut_id' => $id, 'u_id' => Yii::$app->user->id])) {
+            if ($request = Yii::$app->request->post()) {
+                $updateTest = UserTest::findOne($id);
+            }
+            $userTest = new UserTest();
+            $data = $userTest->getTest($id);
+            return $this->render('start', [
+                    'data' => $data,
+            ]);
+        }
     }
 
     public function actionView($id)
@@ -186,21 +187,22 @@ class UserTestController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionPagination() {
-    	//preparing the query
-    	$query = UserTest::find();
-    	// get the total number of users
-    	$count = $query->count();
-    	//creating the pagination object
-    	$pagination = new Pagination(['totalCount' => $count, 'defaultPageSize' => 10]);
-    	//limit the query using the pagination and retrieve the users
-    	$models = $query->offset($pagination->offset)
-    	->limit($pagination->limit)
-    	->all();
-    	return $this->render('pagination', [
-    			'models' => $models,
-    			'pagination' => $pagination,
-    	]);
+    public function actionPagination()
+    {
+        //preparing the query
+        $query = UserTest::find();
+        // get the total number of users
+        $count = $query->count();
+        //creating the pagination object
+        $pagination = new Pagination(['totalCount' => $count, 'defaultPageSize' => 10]);
+        //limit the query using the pagination and retrieve the users
+        $models = $query->offset($pagination->offset)
+        ->limit($pagination->limit)
+        ->all();
+        return $this->render('pagination', [
+                'models' => $models,
+                'pagination' => $pagination,
+        ]);
     }
     public function actionDelete($id)
     {
