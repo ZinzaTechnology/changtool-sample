@@ -178,9 +178,25 @@ class TestExamController extends BackendController
                 return $this->render('index', $data);
             } else {
                 // Update new data to session
-                $logicTestExam->updateTestExamInfoToSession($request);
+                $ret = $logicTestExam->updateTestExamInfoToSession($request);
+                if(AppConstant::$ERROR_SESSION_EMPTY == $ret){
+                    $this->setSessionFlash('error', 'Cannot update becasue session is not setted');
+                    $this->redirect(['update', 'id' => $id]);
+                }
                 // Update new data to database
-                $logicTestExam->updateAllChangedToDB($id);
+                $ret = $logicTestExam->updateChangesFromSessionToDB($this);
+                if(AppConstant::$ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB == $ret){
+                    $this->setSessionFlash('error', 'Error occur when save Test Exam info');
+                    $this->redirect(['update', 'id' => $id]);
+                }
+                else if(AppConstant::$ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB == $ret){
+                    $this->setSessionFlash('error', 'Error occur when insert questions to test exam');
+                    $this->redirect(['update', 'id' => $id]);
+                }
+                else if(AppConstant::$ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB == $ret){
+                    $this->setSessionFlash('error', 'Error occur when delete questions from test exam');
+                    $this->redirect(['update', 'id' => $id]);
+                }
 
                 $logicTestExam->removeTestExamInfoFromSession();
                 
