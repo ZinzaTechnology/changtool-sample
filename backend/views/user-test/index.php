@@ -45,10 +45,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="ibox-content">
                 <div class="form-group">
                     <label>Start date</label>
-                    <?= Html::input('date', 'ut_start_at', null, ['class' => 'form-control']) ?>
+                    <?= Html::input('date', 'ut_start_at', $selected['ut_start_at'], ['class' => 'form-control']) ?>
                 </div>
                 <div class="form-group">
-                    <label>End date</label> <?= Html::input('date', 'ut_finished_at', null, ['class' => 'form-control']) ?>
+                    <label>End date</label> <?= Html::input('date', 'ut_finished_at', $selected['ut_finished_at'], ['class' => 'form-control']) ?>
                 </div>
             </div>
         </div>
