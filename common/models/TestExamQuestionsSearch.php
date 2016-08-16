@@ -40,7 +40,7 @@ class TestExamQuestionsSearch extends TestExamQuestions
      */
     public function search($params)
     {
-        $query = TestExamQuestions::find();
+        $query = TestExamQuestions::query();
 
         // add conditions that should always apply here
 

@@ -4,9 +4,6 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\filters\VerbFilter;
-use frontend\models\ContactForm;
-use frontend\models\User;
-use frontend\models\UserTest;
 use common\models\TestExam;
 use common\models\AnswerClone;
 use common\lib\logic\LogicUserTest;

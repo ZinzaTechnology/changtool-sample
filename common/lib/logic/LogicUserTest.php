@@ -151,10 +151,10 @@ class LogicUserTest extends LogicBase
         $userTest = new UserTest;
         $command = Yii::$app->db->createCommand();
         try {
-            $record = $userTest->findOne(['ut_id' => $id]);
+            $record = $userTest->queryOne(['ut_id' => $id]);
             switch ($record->ut_status) {
                 case 'ASSIGNED':
-                    $questionCloneID = ArrayHelper::getColumn(QuestionClone::findAll(['ut_id' => $id]), 'qc_id');
+                    $questionCloneID = ArrayHelper::getColumn(QuestionClone::queryAll(['ut_id' => $id]), 'qc_id');
                     if (count($questionCloneID)) {
                         AnswerClone::deleteAll("qc_id in (" . implode(', ', $questionCloneID) . ")");
                     }
@@ -182,8 +182,10 @@ class LogicUserTest extends LogicBase
             ->innerJoin('user', 'user_test.u_id = user.u_id')
             ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id');
 
-        $params = AppArrayHelper::filterKeys($params, ['u_id', 'u_name', 'te_title', 'te_category', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at']);
+        $params = AppArrayHelper::filterKeys($params, ['ut_id', 'u_id', 'u_name', 'te_title', 'te_category', 'te_level', 'ut_status', 'ut_start_at', 'ut_finished_at']);
 
+        $query->andFilterWhere(['ut_id' => $params['ut_id']]);
+        $query->andFilterWhere(['user_test.u_id' => $params['u_id']]);
         $query->andFilterWhere(['like', 'u_name', $params['u_name']]);
         $query->andFilterWhere(['like', 'te_title', $params['te_title']]);
         $query->andFilterWhere(['te_category' => $params['te_category']]);
@@ -211,46 +213,42 @@ class LogicUserTest extends LogicBase
 
     public function findQuestionCloneByUtId($ut_id)
     {
-        return QuestionClone::find()->where(['ut_id' => $ut_id])->asArray()->all();
+        return QuestionClone::query()->andWhere(['ut_id' => $ut_id])->asArray()->all();
     }
 
     public function findAnswerCloneTrueByQcID($qc_id)
     {
-        return AnswerClone::find()->select('ac_content')->where(['qc_id' => $qc_id, 'ac_status' => AppConstant::ANSWER_STATUS_RIGHT])->asArray()->all();
+        return AnswerClone::query()->select('ac_content')->where(['qc_id' => $qc_id, 'ac_status' => AppConstant::ANSWER_STATUS_RIGHT])->asArray()->all();
     }
 
     public function findAnswerCloneByQcId($qc_id)
     {
-        return AnswerClone::find()->where(['qc_id' => $qc_id])->asArray()->all();
+        return AnswerClone::query()->andWhere(['qc_id' => $qc_id])->asArray()->all();
     }
+
     public function updateUserTest($id, $params)
     {
-        $updateTest = UserTest::findOne($id);
+        $updateTest = UserTest::queryOne($id);
 
         if (!$updateTest) {
             return false;
         }
-        $params = AppArrayHelper::filterKeys($params, ['ut_status','ut_start_at','ut_finished_at','ut_user_answer_ids']);
+        $params = AppArrayHelper::filterKeys($params, ['ut_status','ut_start_at','ut_finished_at','ut_user_answer_ids', 'ut_mark']);
         $updateTest->load(['UserTest' => $params]);
         if ($updateTest->validate()) {
             return $updateTest->save();
         }
     }
 
-    public function findUserAnswerByUtId($ut_id)
-    {
-        return unserialize(UserTest::findOne(['ut_id' => $ut_id])->ut_user_answer_ids);
-    }
-
     public function findAnswersRandomByQuestionId($questionID, $type)
     {
-        $selectTrue = Answer::find()
+        $selectTrue = Answer::query()
             ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_RIGHT])
             ->orderBy(new Expression('rand()'))
             ->limit($type)
             ->asArray()
             ->all();
-        $selectFalse = Answer::find()
+        $selectFalse = Answer::query()
             ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_WRONG])
             ->orderBy(new Expression('rand()'))
             ->limit(AppConstant::QUESTION_ANSWERS_LIMIT - $type)
@@ -260,22 +258,73 @@ class LogicUserTest extends LogicBase
         shuffle($result);
         return $result;
     }
+
+    public function findUserTestDataByUtId($ut_id)
+    {
+        // find user test
+        $userTest = UserTest::queryOne($ut_id);
+
+        if ($userTest) {
+            // find questions of the test
+            $question_clones = $this->findQuestionCloneByUtId($ut_id);
+            $userTest->question_clones = AppArrayHelper::index($question_clones, 'qc_id');
+
+            // find answers of questions
+            $answers = $this->findAnswerCloneByQcId(AppArrayHelper::getColumn($userTest->question_clones, 'qc_id'));
+            foreach ($answers as $ac) {
+                $ac_id = $ac['ac_id'];
+                $userTest->question_clones[$ac['qc_id']]['answers'][$ac_id] = $ac;
+            }
+        }
+
+        return $userTest;
+    }
+
+    public function scoreUserTest($userTestData, $userAnswers)
+    {
+        $questions = $userTestData->question_clones;
+
+        if (empty($questions) || empty($userAnswers)) {
+            return 0;
+        }
+
+        $score = 0;
+        foreach ($userAnswers as $qc_id => $userAnswer) {
+            $question = $questions[$qc_id];
+
+            foreach ($question['answers'] as $answer) {
+                if ($answer['ac_status'] == AppConstant::ANSWER_STATUS_RIGHT) {
+                    $key = array_search($answer['ac_id'], $userAnswer);
+                    if ($key !== false) {
+                        unset($userAnswer[$key]);
+                    }
+                }
+            }
+            
+            if (empty($userAnswer)) {
+                ++$score;
+            }
+        }
+
+        return $score;
+    }
+
     public function setMark($id) {
-        $testExam = UserTest::findOne($id);
+        $testExam = UserTest::queryOne($id);
         if ($testExam && $testExam->ut_status == "DONE") {
             $answer = unserialize($testExam->ut_user_answer_ids);
-            $amountQuestion = TestExam::findOne($testExam->te_id)->te_num_of_questions;
+            $amountQuestion = TestExam::queryOne($testExam->te_id)->te_num_of_questions;
             $countTrue = 0;
             $keys = array_keys($answer);
             $parent = 0;
             foreach ($answer as $elements) {
                 $countInside = 0;
                 foreach ($elements as $element) {
-                    if (AnswerClone::findOne($element)->ac_status == 1)
+                    if (AnswerClone::queryOne($element)->ac_status == 1)
                         $countInside++;
                     else $countInside--;
                 }
-                if ($countInside == count(AnswerClone::find()->where(['qc_id'=>str_replace('question-','',$keys[$parent]),'ac_status'=>1])->asArray()->all()))
+                if ($countInside == count(AnswerClone::queryOne()->where(['qc_id'=>str_replace('question-','',$keys[$parent]),'ac_status'=>1])->asArray()->all()))
                     $countTrue++;
                 $parent++;
             }
@@ -285,15 +334,5 @@ class LogicUserTest extends LogicBase
         )->execute();
         }
     }
-
-    public static function getMark($id) {
-        $userTest = UserTest::findOne($id);
-        if ($userTest)
-            return [$userTest->ut_mark, TestExam::findOne($userTest->te_id)->te_num_of_questions];
-        else{
-            return false;
-        }
-    }
-
 
 }

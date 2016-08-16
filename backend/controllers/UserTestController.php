@@ -54,10 +54,9 @@ class UserTestController extends BackendController
         if ($userTest->exists()) {
             $theUserTest = $userTest->one();
             $data = $logicUserTest->getTestDataByPageParam($id, Yii::$app->request->get('page'));
-            $userAnswer = empty($theUserTest->ut_user_answer_ids) ? '' : unserialize($theUserTest->ut_user_answer_ids);
+            $userAnswer = empty($theUserTest->ut_user_answer_ids) ? [] : unserialize($theUserTest->ut_user_answer_ids);
             return $this->render('detail', [
                 'data' => $data,
-                'userAnswer' => $logicUserTest->findUserAnswerByUtId($id),
                 'tile' => TestExam::findOne($theUserTest->te_id)->te_title,
                 'userAnswer' => $userAnswer,
                 'page' => $logicUserTest->getPage(),
@@ -86,7 +85,7 @@ class UserTestController extends BackendController
         $testExam = new TestExam;
         return $this->render('assign', [
             'userModel' => $user,
-            'userData' => $user->find()->where(['is_deleted'=>0]),
+            'userData' => $user->find()->where(['is_deleted' => 0]),
             'testExam' => $testExam,
             'testList' => $testExam->find()->where($logicUserTest->getTestExamParams()),
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,

@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
+
 /* @var $this yii\web\View */
 /* @var $model backend\models\TestExamQuestions */
 
@@ -49,7 +50,7 @@ $question_count = ($page - 1) * $limitQuestion + 1;
                     <?= Html::a('Next', ($page < $pageMax) ? Url::current(['page' => $page + 1]) : '', ['class' => 'btn btn-default', 'disabled' => ($page < $pageMax) ? false : true]) ?>
                 </div>
             <?php else : ?>
-                <?= "<strong>No question found</strong>" ?>
+                <strong>No question found</strong>"
             <?php endif; ?>
 
         </div>
