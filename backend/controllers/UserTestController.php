@@ -33,6 +33,7 @@ class UserTestController extends BackendController {
                 'selected' => $params,
                 'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
                 'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
+                'status' => AppConstant::$USER_TEST_STATUS,
                 'dataProvider' => new ArrayDataProvider([
                     'allModels' => (new LogicUserTest)->findUserTestBySearch($params),
                     'pagination' => [

@@ -134,7 +134,7 @@ class LogicUserTest extends LogicBase {
                 ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
                 ->andFilterWhere(['like', 'u_name', $params['u_name']])
                 ->andFilterWhere(['like', 'te_title', $params['te_title']])
-                ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level']])
+                ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level'], 'ut_status' => $params['ut_status']])
                 ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
                 ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
                 ->addOrderBy(['ut_id' => SORT_DESC]);

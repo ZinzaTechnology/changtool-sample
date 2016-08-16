@@ -54,14 +54,15 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
 
         <div class="col-sm-3">
-            <div class="ibox-title">
-                <h5>Form actions</h5>
-            </div>
             <div class="ibox-content text-center">
+                <div class="form-group">
+                    <label>Status</label>
+                    <?= Html::dropDownList('ut_status', $selected['ut_status'], $status, ['prompt' => 'Select Status...', 'class' => 'form-control']) ?>
+                </div>
                 <?= Html::submitButton('Search', ['class' => 'btn btn-primary', 'name' => 'submit', 'value' => 'search']) ?>
                 <?= Html::submitButton('Reset', ['class' => 'btn btn-white', 'name' => 'submit', 'value' => 'reset']) ?>
             </div>
-            <div class="text-center m-t-md">
+            <div class="text-center m-t-sm">
                 <?= Html::a('Assign test to User', ['assign'], ['class' => 'btn btn-success']) ?>
             </div>
         </div>
