@@ -284,4 +284,16 @@ class LogicTestExam extends LogicBase
         }
         return AppConstant::$ERROR_OK;
     }
+    
+    public function getParamsToDisplayQuestionsWillBeChose($test_exam)
+    {
+        $params = [
+            'category' => $test_exam['testExam']['te_category'],
+            'content' => null,
+            'type' => null,
+            'qt_content' => null,
+            'level' => null,
+        ];
+        return $params;
+    }
 }
