@@ -20,41 +20,29 @@ class QuestionController extends BackendController
         $level = AppConstant::$QUESTION_LEVEL_NAME;
         $request = Yii::$app->request->post();
         
-        $params = [];
-        $selected = [
-            "content" => "",
-            "category" => "",
-            "level" => "",
-            "type" => "",
-            "qt_content" => "" 
-        ];
-        
-        if (! empty($request)) {
-            $params = AppArrayHelper::filterKeys($request, [
-                'content',
-                'category',
-                'level',
-                'type',
-                'qt_content' 
-            ]);
-            $selected = $params;
-        }
+        $params = AppArrayHelper::filterKeys($request, [
+            'content',
+            'category',
+            'level',
+            'type',
+            'qt_content'
+        ]);
         $logicQuestion = new LogicQuestion();
         $questions = $logicQuestion->findQuestionBySearch($params);
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => $questions,
             'pagination' => [
-                'pagesize' => 15 
-            ] 
+                'pagesize' => AppConstant::PAGING_INDEX_PAGE_SIZE,
+            ]
         ]);
         
         $data = [
-            'selected' => $selected,
+            'selected' => $params,
             'dataProvider' => $dataProvider,
             'category' => $category,
             'type' => $type,
-            'level' => $level 
+            'level' => $level
         ];
         return $this->render('index', $data);
     }
@@ -65,20 +53,23 @@ class QuestionController extends BackendController
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
         $answer_status = AppConstant::$ANSWER_STATUS_NAME;
+
         $q_id = Yii::$app->request->get('q_id');
+
         $logicQuestion = new LogicQuestion();
         $logicAnswer = new LogicAnswer();
+
         $question = $logicQuestion->findQuestionById($q_id);
-        $answers = null;
+        $dataProvider = null;
         if ($question) {
-            //find answer 
+            // find answer
             $answers = $logicAnswer->findAnswerByQuestionId($q_id);
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $answers,
                 'pagination' => [
-                    'pagesize' => 5 
-                ] 
-            ]); 
+                    'pagesize' => AppConstant::PAGING_VIEW_PAGE_SIZE,
+                ]
+            ]);
         }
         
         $data = [
@@ -92,7 +83,7 @@ class QuestionController extends BackendController
         return $this->render('view', $data);
     }
 
-    public function insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion,$category, $type, $level, $answer_status)
+    public function insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status)
     {
         $params = [];
         // insert questions
@@ -101,7 +92,7 @@ class QuestionController extends BackendController
             'q_category',
             'q_level',
             'q_type',
-            'qt_content' 
+            'qt_content'
         ]);
         $question = $logicQuestion->createQuestion($params);
         if ($question != null) {
@@ -111,7 +102,7 @@ class QuestionController extends BackendController
             foreach ($request_answer as $val) {
                 $params = AppArrayHelper::filterKeys($val, [
                     'qa_content',
-                    'qa_status' 
+                    'qa_status'
                 ]);
                 $answer = $logicAnswer->createAnswerByQuesion($params, $q_id);
                 if ($answer != null) {
@@ -124,8 +115,8 @@ class QuestionController extends BackendController
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $answerarray,
                 'pagination' => [
-                    'pagesize' => 5 
-                ] 
+                    'pagesize' => AppConstant::PAGING_ADD_QUESTION_PAGE_SIZE,
+                ]
             ]);
             $data = [
                 'dataProvider' => $dataProvider,
@@ -150,11 +141,13 @@ class QuestionController extends BackendController
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
         $tag = AppConstant::$QUESTION_TAG_NAME;
+
         $logicQuestion = new LogicQuestion();
         $logicAnswer = new LogicAnswer();
+
         $question = $logicQuestion->initQuestion();
         $answer = [
-            $logicAnswer->initAnswer() 
+            $logicAnswer->initAnswer()
         ];
         $data = [
             'answer' => $answer,
@@ -164,10 +157,11 @@ class QuestionController extends BackendController
             'level' => $level,
             'answer_status' => $answer_status,
         ];
+
         $request = Yii::$app->request->post();
         if (! empty($request)) {
             $request_question = Yii::$app->request->post()['Question'];
-            $request_answer = Yii::$app->request->post()['Answer']; 
+            $request_answer = Yii::$app->request->post()['Answer'];
             if ((! empty($request_question)) && (! empty($request_answer))) {
                 $count = 0;
                 foreach ($request_answer as $val) {
@@ -181,7 +175,7 @@ class QuestionController extends BackendController
                 }
                 if ($request_question['q_type'] == 1) {
                     if ($count >= 1) {
-                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion,$category, $type, $level, $answer_status);
+                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
                         return $this->render('view', $data);
                     } else {
                         Yii::$app->session->setFlash('error', ' Answer right >= 1 !');
@@ -189,19 +183,17 @@ class QuestionController extends BackendController
                     }
                 } else {
                     if ($count >= 2) {
-                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion,$category, $type, $level, $answer_status);
+                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
                         return $this->render('view', $data);
                     } else {
                         Yii::$app->session->setFlash('error', ' Answer right >= 2 !');
                         return $this->goReferrer();
                     }
                 }
-            } else {
-                return $this->render('insert-question', $data);
             }
-        } else {
-            return $this->render('insert-question', $data);
         }
+
+        return $this->render('insert-question', $data);
     }
 
     public function editQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status, $answer_old)

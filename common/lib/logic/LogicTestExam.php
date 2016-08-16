@@ -132,7 +132,7 @@ class LogicTestExam extends LogicBase
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => AppConstant::$PAGING_INDEX_PAGE_SIZE,
+                'pageSize' => AppConstant::PAGING_INDEX_PAGE_SIZE,
             ],
         ]);
 
@@ -224,7 +224,7 @@ class LogicTestExam extends LogicBase
             'current_page' => 1, // Default current page
         ];
         Yii::$app->session->set('test_exam', $test_exam_info);
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     
@@ -232,7 +232,7 @@ class LogicTestExam extends LogicBase
     {
         if (!isset(Yii::$app->session['test_exam'])) {
             //throw new NotFoundHttpException('You must click edit buttion first to edit this testExam...');
-            return AppConstant::$ERROR_SESSION_EMPTY;
+            return AppConstant::ERROR_SESSION_EMPTY;
         }
         // Get testExam info from session
         $test_exam = Yii::$app->session->get('test_exam');
@@ -250,13 +250,13 @@ class LogicTestExam extends LogicBase
         $test_exam['testExam']['te_time'] = $params['te_time'];
 
         Yii::$app->session->set('test_exam', $test_exam);
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     public function updateTestExamQuestionsInfoToSession($options)
     {
         if (!isset(Yii::$app->session['test_exam'])) {
-            return AppConstant::$ERROR_SESSION_EMPTY;
+            return AppConstant::ERROR_SESSION_EMPTY;
         }
         // Get testExam info from session
         $test_exam = Yii::$app->session->get('test_exam');
@@ -276,25 +276,25 @@ class LogicTestExam extends LogicBase
         $test_exam['testExam']['te_num_of_questions'] = count($all_questions);
                     
         Yii::$app->session->set('test_exam', $test_exam);
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     public function removeTestExamInfoFromSession()
     {
         Yii::$app->session->remove('test_exam');
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     public function deleteQuestionOnSession($te_id, $q_id)
     {
         $test_exam = Yii::$app->session->get('test_exam');
         if ($test_exam['testExam']['te_id'] != $te_id) {
-            return AppConstant::$ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME;
+            return AppConstant::ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME;
         }
         $all_questions = $test_exam['all_questions'];
         
         $idx_all = array_search($q_id, $all_questions);
         if ($idx_all === false) {
-            return AppConstant::$ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM;
+            return AppConstant::ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM;
         }
         array_splice($all_questions, $idx_all, 1);
 
@@ -302,7 +302,7 @@ class LogicTestExam extends LogicBase
         $test_exam['testExam']['te_num_of_questions'] = count($all_questions);
         Yii::$app->session->set('test_exam', $test_exam);
         
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     
@@ -326,7 +326,7 @@ class LogicTestExam extends LogicBase
                 $testExam = $test_exam['testExam'];
                 if (!$testExam->validate() || !$testExam->save()) {
                     $transaction->rollBack();
-                    return AppConstant::$ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB;
+                    return AppConstant::ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB;
                 }
                 
                 // Update TestExam Question
@@ -342,13 +342,13 @@ class LogicTestExam extends LogicBase
                 
                 // Insert added questions for this exam
                 $ret = $logicTestExamQuestions->insertMultiTestExamQuestion($te_id, $added_questions);
-                if (AppConstant::$ERROR_OK != $ret) {
+                if (AppConstant::ERROR_OK != $ret) {
                     $transaction->rollBack();
                     return $ret;
                 }
                 // Delete removed questions of this exam
                 $ret = $logicTestExamQuestions->deleteMultiTestExamQuestion($te_id, $removed_questions);
-                if (AppConstant::$ERROR_OK != $ret) {
+                if (AppConstant::ERROR_OK != $ret) {
                     $transaction->rollBack();
                     return $ret;
                 }
@@ -359,6 +359,6 @@ class LogicTestExam extends LogicBase
                 throw $e;
             }
         }
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
 }

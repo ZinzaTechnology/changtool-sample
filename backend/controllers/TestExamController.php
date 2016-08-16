@@ -82,7 +82,7 @@ class TestExamController extends BackendController
             $page = $request['page'];
         }
         $question_ids = $logicTestExamQuestions->findQuestionIdByTestId($id);
-        $paging = $logicTestExam->pagingTestExam($id, 'view', $page, AppConstant::$PAGING_VIEW_PAGE_SIZE, $question_ids);
+        $paging = $logicTestExam->pagingTestExam($id, 'view', $page, AppConstant::PAGING_VIEW_PAGE_SIZE, $question_ids);
         return $this->render('view', [
             'testExam' => $testExam,
             'questions' => $paging['pagging_questions'],
@@ -209,7 +209,7 @@ class TestExamController extends BackendController
             }
             $page = $test_exam['current_page'];
             $all_question_ids = Yii::$app->session->get('test_exam')['all_questions'];
-            $paging = $logicTestExam->pagingTestExam($id, 'update', $page, AppConstant::$PAGING_UPDATE_PAGE_SIZE, $all_question_ids);
+            $paging = $logicTestExam->pagingTestExam($id, 'update', $page, AppConstant::PAGING_UPDATE_PAGE_SIZE, $all_question_ids);
 
             return $this->render('update', [
                 'testExam' => $testExam,
@@ -298,7 +298,7 @@ class TestExamController extends BackendController
             'type' => $type,
             'level' => $level,
             'search_param' => $params,
-            'pagging_size' => AppConstant::$PAGING_ADD_QUESTION_PAGE_SIZE,
+            'pagging_size' => AppConstant::PAGING_ADD_QUESTION_PAGE_SIZE,
         ];
         return $this->render('test_index', $data);
     }
