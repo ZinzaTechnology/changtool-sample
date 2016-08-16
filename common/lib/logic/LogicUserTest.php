@@ -24,7 +24,6 @@ class LogicUserTest extends LogicBase {
     private $_assignedSuccess = false;
     private $_testExam;
     private $_testExamParams = [];
-    private $_trueAnswers = [];
 
     public function __construct() {
         parent::__construct();
@@ -35,9 +34,9 @@ class LogicUserTest extends LogicBase {
         $this->_testExam['te_id'] = !empty($this->_testExam['te_id']) ? json_decode($this->_testExam['te_id']) : '';
         $this->_testExam['u_id'] = !empty($request['User']['u_id']) ? json_decode($request['User']['u_id']) : '';
         if (!empty($this->_testExam['te_category'])) {
-            $this->_testExamParams = array_merge($this->_testExamParams,['te_category' => $this->_testExam['te_category']]);
+            $this->_testExamParams = array_merge($this->_testExamParams, ['te_category' => $this->_testExam['te_category']]);
         } elseif (!empty($this->_testExam['te_level'])) {
-            $this->_testExamParams[] = array_merge($this->_testExamParams,['te_level' => $this->_testExam['te_level']]);
+            $this->_testExamParams[] = array_merge($this->_testExamParams, ['te_level' => $this->_testExam['te_level']]);
         }
         $this->_testExamParams = array_filter($this->_testExamParams);
     }
@@ -56,10 +55,6 @@ class LogicUserTest extends LogicBase {
 
     public function getTestExamParams() {
         return $this->_testExamParams;
-    }
-
-    public function getTrueAnswer() {
-        return $this->_trueAnswers;
     }
 
     public function getChoice() {
@@ -135,14 +130,14 @@ class LogicUserTest extends LogicBase {
     public static function findUserTestBySearch($params) {
         $query = new Query;
         $query->from('user_test')
-            ->innerJoin('user', 'user_test.u_id = user.u_id')
-            ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
-            ->andFilterWhere(['like', 'u_name', $params['u_name']])
-            ->andFilterWhere(['like', 'te_title', $params['te_title']])
-            ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level']])
-            ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
-            ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
-            ->addOrderBy(['ut_id' => SORT_DESC]);
+                ->innerJoin('user', 'user_test.u_id = user.u_id')
+                ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
+                ->andFilterWhere(['like', 'u_name', $params['u_name']])
+                ->andFilterWhere(['like', 'te_title', $params['te_title']])
+                ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level']])
+                ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
+                ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
+                ->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
     }
 
@@ -152,7 +147,7 @@ class LogicUserTest extends LogicBase {
         $testData = [];
         foreach ($questionsClone as $question) {
             $answer = $this->findAnswerCloneByQcId($question['qc_id']);
-            $this->_trueAnswers = array_merge($this->_trueAnswers, $this->findAnswerCloneTrueByQcID($question['qc_id']));
+            $question = array_merge($question, ['trueAnswer' => ArrayHelper::getColumn($this->findAnswerCloneTrueByQcID($question['qc_id']), 'ac_content')]);
             $testData[] = array_merge($question, ['answer' => $answer]);
         }
         return $testData;
@@ -168,6 +163,10 @@ class LogicUserTest extends LogicBase {
 
     public function findAnswerCloneByQcId($qc_id) {
         return AnswerClone::find()->where(['qc_id' => $qc_id])->asArray()->all();
+    }
+
+    public function findUserAnswerByUtId($ut_id) {
+        return unserialize(UserTest::findOne(['ut_id' => $ut_id])->ut_user_answer_ids);
     }
 
     public function findAnswersRandomByQuestionId($questionID, $type) {

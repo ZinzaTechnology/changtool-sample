@@ -16,38 +16,32 @@ $question_count = 1;
     </div>
     <div class="ibox-content">
         <div class="form-group">
-            <?php foreach ($data as $question): ?>
-                <label class="control-label"><?= "Question {$question_count}" ?></label>
-                <div class="alert alert-info">
-                    <strong><?= $question['qc_content'] ?></strong>
-                </div>
-                <ul class="panel">
-                    <?php
-                    foreach ($question['answer'] as $answer):
-                        $count = 0;
-                        $classExtend = '';
-                        if (!empty($userAnswer)) {
-                            if ($userAnswer["question-{$question['qc_id']}"][$count] == $answer['ac_status']) {
-                                if ($answer['ac_status'] == 1) {
-                                    $classExtend.= 'alert-success';
-                                } else $classExtend.= 'alert-danger';
-                            }
-                        }
-                        ?>
-                        <li class="p-w-sm <?= $classExtend ?>" style="list-style-type: upper-alpha">
-                            <?= $answer['ac_content'] ?>
-                        </li>
-                        <?php $count++;
-                    endforeach;
-                    ?>
-                </ul>
-                <div class="p-w-sm alert-success">
-                    <?= Html::ul($trueAnswer[$question_count - 1], ['class' => 'panel-body list-unstyled']) ?>
-                </div>
-                <?php
-                $question_count++;
-            endforeach;
-            ?>
+            <?php if (count($data)): ?>
+                <?php foreach ($data as $question): ?>
+                    <label class="control-label"><?= "Question {$question_count}" ?></label>
+                    <div class="alert alert-info">
+                        <strong><?= $question['qc_content'] ?></strong>
+                    </div>
+                    <div class="m-b-md">
+                        <?php foreach ($question['answer'] as $answer): ?>
+                            <div class="i-checks">
+                                <input type="radio" disabled 
+                                    <?php if (isset($userAnswer["question-{$answer['qc_id']}"]) && in_array($answer['ac_id'], $userAnswer["question-{$answer['qc_id']}"])): ?>
+                                        <?= "checked" ?>
+                                    <?php endif; ?>
+                                >
+                                <?= $answer['ac_content'] ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="p-w-sm alert-success">
+                        <?= Html::ul($question['trueAnswer'], ['class' => 'panel-body list-unstyled']) ?>
+                    </div>
+                    <?php $question_count++; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <?= "<strong>No question found</strong>" ?>
+            <?php endif; ?>
         </div>
     </div>
 </div>

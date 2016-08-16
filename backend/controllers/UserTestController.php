@@ -50,7 +50,7 @@ class UserTestController extends BackendController {
             $userAnswer = empty($theUserTest->ut_user_answer_ids) ? '' : unserialize($theUserTest->ut_user_answer_ids);
             return $this->render('detail', [
                 'data' => $logicUserTest->findTestDataByUtID($id),
-                'trueAnswer' => $logicUserTest->getTrueAnswer(),
+                'userAnswer' => $logicUserTest->findUserAnswerByUtId($id),
                 'tile' => TestExam::findOne($theUserTest->te_id)->te_title,
                 'userAnswer' => $userAnswer,
             ]);
