@@ -7,6 +7,10 @@ use common\lib\components\AppConstant;
 $this->title = 'Doing Test';
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['/dashboard']];
 $this->params['breadcrumbs'][] = $this->title;
+
+$this->registerJsFile('/res/js/plugins/dataTables/datatables.min.js', ['position' => static::POS_BEGIN]);
+$this->registerJsFile('/res/js/fr/userTest_do.js', ['position' => static::POS_BEGIN]);
+$this->registerCssFile('/res/css/plugins/dataTables/datatables.min.css');
 ?>
 
 <div class="ibox">
@@ -20,12 +24,13 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <div class="ibox-content">
-        <?= Html::beginForm(Url::toRoute('/user-test/submit'), 'post', ['class' => 'form-group','id' => '_start']); ?>
+    <div class="hidden" id="timeCount"><?= $timeCount ?></div>
+        <?= Html::beginForm(Url::toRoute('/user-test/submit'), 'post', ['class' => 'form-group','id' => 'testForm']); ?>
             <?= Html::hiddenInput('ut_id', $userTestData->ut_id) ?>
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="testTable">
                 <thead>
-                    <th></th>
-                    <th></th>
+                    <th>No.</th>
+                    <th>Content</th>
                 </thead>
                 <tbody>
                     <?php foreach (array_keys($userTestData->question_clones) as $idx => $qc_id) : ?>
@@ -58,51 +63,8 @@ $this->params['breadcrumbs'][] = $this->title;
             </table>
 
             <div class="hr-line-solid"></div>
-            <?=  Html::submitButton('Submit', ['class' => 'btn btn-primary', "onclick" => 'setFormSubmitting()'])  ?>
+            <?=  Html::submitButton('Submit', ['class' => 'btn btn-primary', "onclick" => 'testFormSubmit()'])  ?>
         
         <?php Html::endForm(); ?>
     </div>
 </div>
-
-<script>
-var formSubmitting = false;
-var setFormSubmitting = function() {
-    formSubmitting = true;
-
-};
-
-$(function() {
-    window.addEventListener("beforeunload", function (e) {
-        if (formSubmitting) {
-            return undefined;
-        }
-
-        var msg = "Do you really want to leave this page?";
-
-        (e || window.event).returnValue = msg; //Gecko + IE
-        return msg; //Gecko + Webkit, Safari, Chrome etc.
-    });
-    var duration= <?= $timeCount?>,
-        display = document.querySelector('#countdown');
-    startTimer(duration, display);   
-});
-
-function startTimer(duration, display) {
-    var timer = duration, minutes, seconds;
-    setInterval(function () {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
-
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        display.textContent = minutes + ":" + seconds;
-
-        if (--timer < 0) {
-            $('#_start').submit();
-        }
-    }, 1000);
-}
-
-
-</script>

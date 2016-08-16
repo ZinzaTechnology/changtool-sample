@@ -10,7 +10,6 @@ namespace common\lib\logic;
 
 use Yii;
 use yii\web\BadRequestHttpException;
-use yii\helpers\ArrayHelper;
 use yii\db\Expression;
 use yii\db\Query;
 use common\lib\helpers\AppArrayHelper;
@@ -116,7 +115,7 @@ class LogicUserTest extends LogicBase
                 $questions = [];
                 $userTestID = $lastUT_ID_count[0];
                 foreach ($this->_testExam['te_id'] as $teID) {
-                    $question = ArrayHelper::toArray((new LogicQuestion)->findQuestionByTestId($teID));
+                    $question = AppArrayHelper::toArray((new LogicQuestion)->findQuestionByTestId($teID));
                     foreach ($this->_testExam['u_id'] as $userID) {
                         $questions[] = array_merge(['ut_id' => $userTestID], ['question' => $question]);
                         $userTestID++;
@@ -154,7 +153,7 @@ class LogicUserTest extends LogicBase
             $record = $userTest->queryOne(['ut_id' => $id]);
             switch ($record->ut_status) {
                 case 'ASSIGNED':
-                    $questionCloneID = ArrayHelper::getColumn(QuestionClone::queryAll(['ut_id' => $id]), 'qc_id');
+                    $questionCloneID = AppArrayHelper::getColumn(QuestionClone::queryAll(['ut_id' => $id]), 'qc_id');
                     if (count($questionCloneID)) {
                         AnswerClone::deleteAll("qc_id in (" . implode(', ', $questionCloneID) . ")");
                     }
@@ -205,7 +204,7 @@ class LogicUserTest extends LogicBase
         $testData = [];
         foreach ($questionsClone as $question) {
             $answer = $this->findAnswerCloneByQcId($question['qc_id']);
-            $question = array_merge($question, ['trueAnswer' => ArrayHelper::getColumn($this->findAnswerCloneTrueByQcID($question['qc_id']), 'ac_content')]);
+            $question = array_merge($question, ['trueAnswer' => AppArrayHelper::getColumn($this->findAnswerCloneTrueByQcID($question['qc_id']), 'ac_content')]);
             $testData[] = array_merge($question, ['answer' => $answer]);
         }
         return $testData;
@@ -292,47 +291,27 @@ class LogicUserTest extends LogicBase
         foreach ($userAnswers as $qc_id => $userAnswer) {
             $question = $questions[$qc_id];
 
+            $answerCorrect = true;
+            $trueAnswerCount = 0;
             foreach ($question['answers'] as $answer) {
                 if ($answer['ac_status'] == AppConstant::ANSWER_STATUS_RIGHT) {
+                    // find the number of true answers
+                    ++$trueAnswerCount;
+
+                    // find the true answer in userAnswer
+                    // if not found, the userAnswer is wrong
                     $key = array_search($answer['ac_id'], $userAnswer);
-                    if ($key !== false) {
-                        unset($userAnswer[$key]);
+                    if ($key === false) {
+                        $answerCorrect = false;
                     }
                 }
             }
             
-            if (empty($userAnswer)) {
+            if ($answerCorrect && (count($userAnswer) == $trueAnswerCount)) {
                 ++$score;
             }
         }
 
         return $score;
     }
-
-    public function setMark($id) {
-        $testExam = UserTest::queryOne($id);
-        if ($testExam && $testExam->ut_status == "DONE") {
-            $answer = unserialize($testExam->ut_user_answer_ids);
-            $amountQuestion = TestExam::queryOne($testExam->te_id)->te_num_of_questions;
-            $countTrue = 0;
-            $keys = array_keys($answer);
-            $parent = 0;
-            foreach ($answer as $elements) {
-                $countInside = 0;
-                foreach ($elements as $element) {
-                    if (AnswerClone::queryOne($element)->ac_status == 1)
-                        $countInside++;
-                    else $countInside--;
-                }
-                if ($countInside == count(AnswerClone::queryOne()->where(['qc_id'=>str_replace('question-','',$keys[$parent]),'ac_status'=>1])->asArray()->all()))
-                    $countTrue++;
-                $parent++;
-            }
-            Yii::$app->db->createCommand()->update('user_test', [
-                'ut_mark' => $countTrue
-            ], "ut_id = {$id}"
-        )->execute();
-        }
-    }
-
 }

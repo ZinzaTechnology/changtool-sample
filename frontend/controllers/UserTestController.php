@@ -2,11 +2,7 @@
 namespace frontend\controllers;
 
 use Yii;
-use yii\data\ActiveDataProvider;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\data\Pagination;
 use common\lib\logic\LogicUserTest;
 use common\lib\logic\LogicTestExam;
 use common\lib\helpers\AppArrayHelper;
@@ -150,24 +146,6 @@ class UserTestController extends FrontendController
         ]);
     }
     
-    public function actionPagination()
-    {
-        //preparing the query
-        $query = UserTest::find();
-        // get the total number of users
-        $count = $query->count();
-        //creating the pagination object
-        $pagination = new Pagination(['totalCount' => $count, 'defaultPageSize' => 10]);
-        //limit the query using the pagination and retrieve the users
-        $models = $query->offset($pagination->offset)
-        ->limit($pagination->limit)
-        ->all();
-        return $this->render('pagination', [
-                'models' => $models,
-                'pagination' => $pagination,
-        ]);
-    }
-
     /**********************************************
      * private helper function
      * ********************************************/
