@@ -210,17 +210,27 @@ class TestExamController extends BackendController
                 'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);
         } else {
+            // When user click edit button 
             if (isset(Yii::$app->session['test_exam'])) {
-                Yii::$app->session->remove('test_exam');
+                // User is editting testExam
+                $test_exam = Yii::$app->session['test_exam'];
+                if($test_exam['testExam']['te_id'] != $id){
+                    // User cannot edit 2 testExams at the same time
+                    $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id']." Please commit edit or cancel to edit other testExam");
+                    return $this->redirect('index');
+                }
+                $testExam  = $test_exam['testExam'];
             }
-            $testExam = $logicTestExam->findTestExamById($id);
-            if (!$testExam) {
-                $this->setSessionFlash('error', 'Trying to edit non-existing test');
-                $this->redirect('index');
+            else{
+                // User start editting testExam
+                $testExam = $logicTestExam->findTestExamById($id);
+                if (!$testExam) {
+                    $this->setSessionFlash('error', 'Trying to edit non-existing test');
+                    return $this->redirect('index');
+                }
+                $test_questions = $logicQuestion->findQuestionByTestId($id);
+                $logicTestExam->initTestExamInfoToSession($testExam, $id, $test_questions);
             }
-            
-            $test_questions = $logicQuestion->findQuestionByTestId($id);
-            $logicTestExam->initTestExamInfoToSession($testExam, $id, $test_questions);
             $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
             
             return $this->render('update', [
