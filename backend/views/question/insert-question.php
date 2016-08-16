@@ -15,7 +15,7 @@ $this->params ['breadcrumbs'] [] = $this->title;
 
 	<div class="hr-line-solid"></div>
  
-<?php $form= ActiveForm :: begin(['action' =>['question/create'], 'id' => 'form_create', 'method' => 'post',])?>
+<?php $form= ActiveForm :: begin(['action' =>['question/insert-question'], 'id' => 'form_create', 'method' => 'post',])?>
 <?= $form ->field($question,'q_content')->textArea(['placeholder'=>'input question ?','row'=>'10'])?>
 <?php echo $form->field($question, 'q_category')->dropDownList($category,['prompt'=>'---Select---']); ?>
 <?= $form->field($question, 'q_level')->radioList( $level); ?>
@@ -74,10 +74,10 @@ DynamicFormWidget::begin ( [
                        
                 </div>
             <?php endforeach; ?>
-            </div>
+            	</div>
             <?php DynamicFormWidget::end(); ?>
 		 </div>
-		</div>
+				</div>
 
 
 
@@ -92,5 +92,6 @@ DynamicFormWidget::begin ( [
 <?php echo Html::a('Back', ['/question/index'],['class'=>'btn btn-success']);?>
 <?= Html::submitButton('Create',['class'=> 'btn btn-success'])?>
 <?php ActiveForm :: end()?>
+</div>
 
 		

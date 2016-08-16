@@ -3,9 +3,9 @@ use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 
 $this->title = 'Question Manager';
-$this->params ['breadcrumbs'] [] = [ 
+$this->params ['breadcrumbs'] [] = [
     'label' => 'Question Manager',
-    'url' => [ 
+    'url' => [
         'index' 
     ] 
 ];
@@ -80,9 +80,10 @@ $this->params ['breadcrumbs'] [] = [
             <?=Html::a ( 'Delete', [ '/question/delete','q_id' => $question->q_id ], [ 'class' => 'btn btn-danger','data' => [ 'confirm' => 'Are you sure you want to delete this item?','method' => 'post' ] ] )?>
 
         <?php else: ?>
-            <h3>Question not found</h3>
+            Question not found
+             
         <?php endif; ?>
 
-        <?= Html::a('Back', ['/question/index'], ['class' => 'btn btn-primary pull-right'])?>
+       		<?= Html::a('Back', ['/question/index'], ['class' => 'btn btn-primary pull-right'])?>
     </div>
 </div>
