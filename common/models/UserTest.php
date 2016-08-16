@@ -90,9 +90,8 @@ class UserTest extends \common\models\AppActiveRecord
         $db = Yii::$app->db;
         $count = 0;
         $dataInsert = [];
-        $dataUse = $data['UserTest'];
-        foreach ($dataUse['te_id'] as $test) {
-            foreach ($dataUse['u_id'] as $user) {
+        foreach ($data['te_id'] as $test) {
+            foreach ($data['u_id'] as $user) {
                 if (!self::find()->where(['te_id' => $test, 'u_id' => $user])->exists()) {
                     $dataInsert[] = [$test, $user];
                     $count++;
