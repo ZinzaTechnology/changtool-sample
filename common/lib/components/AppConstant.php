@@ -108,5 +108,6 @@ class AppConstant
      public static $ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB = 2;
      public static $ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM = 3;
      public static $ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB = 4;
-     public static $ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB = 4;
+     public static $ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB = 5;
+     
 }
