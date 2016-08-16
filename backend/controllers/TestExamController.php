@@ -132,22 +132,9 @@ class TestExamController extends BackendController
         if (!empty($request) && isset($request['te_update'])) {
             if ($request['te_update'] == 'add_question') {
                 $logicTestExam->updateTestExamInfoToSession($request);
-                $test_exam = Yii::$app->session->get('test_exam');
-
-                $params = $logicTestExam->getParamsToDisplayQuestionsWillBeChose($test_exam);
-                // Get all questions in database
-                $questions = $logicQuestion->findQuestionBySearch($params);
-
-                // Redirect to Question Index site to choose question
-                return $this->render('test_index', [
-                    'id' => $id,
-                    'questions' => $questions,
-                    'all_questions' => $test_exam['all_questions'],
-                    'category' => AppConstant::$QUESTION_CATEGORY_NAME[$test_exam['testExam']['te_category']],
-                    'level' => AppConstant::$QUESTION_LEVEL_NAME,
-                    'type' => AppConstant::$QUESTION_TYPE_NAME,
-                    'search_param' => [],
-                ]);
+                
+                return $this->redirect('test-index');
+                
             } elseif ($request['te_update'] == 'add_question_complete') {
                 if (isset($request['option'])) {
                     $logicTestExam->updateTestExamQuestionsInfoToSession($request['option']);
@@ -295,10 +282,9 @@ class TestExamController extends BackendController
         
         $request = Yii::$app->request->post();
         $params = [];
-        if (!empty($request)) {
-            $params = AppArrayHelper::filterKeys($request, ['content', 'category', 'level', 'type', 'qt_content']);
-            $params['category'] = $category;
-        }
+        
+        $params = AppArrayHelper::filterKeys($request, ['content', 'category', 'level', 'type', 'qt_content']);
+        $params['category'] = $category;
 
         $logicQuestion = new LogicQuestion();
         $questions = $logicQuestion->findQuestionBySearch($params);
