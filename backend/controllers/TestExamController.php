@@ -165,20 +165,7 @@ class TestExamController extends BackendController
                 // User cancel update, rollback original data
                 $logicTestExam->removeTestExamInfoFromSession();
                 
-                if (isset(Yii::$app->session['te_search'])) {
-                    $params = Yii::$app->session['te_search'];
-                }
-                        
-                $logicTestExam = new LogicTestExam();
-                $dataProvider = $logicTestExam->findTestExamBySearch($params);
-
-                $data = [
-                    'dataProvider' => $dataProvider,
-                    'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                    'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
-                    'te_search' => Yii::$app->session->get('te_search'),
-                ];
-                return $this->render('index', $data);
+                return $this->redirect(['index']);
             } else {
                 // Update new data to session
                 $ret = $logicTestExam->updateTestExamInfoToSession($request);
