@@ -36,7 +36,7 @@ class LogicUserTest extends LogicBase {
         if (!empty($this->_testExam['te_category'])) {
             $this->_testExamParams = array_merge($this->_testExamParams, ['te_category' => $this->_testExam['te_category']]);
         } elseif (!empty($this->_testExam['te_level'])) {
-            $this->_testExamParams[] = array_merge($this->_testExamParams, ['te_level' => $this->_testExam['te_level']]);
+            $this->_testExamParams = array_merge($this->_testExamParams, ['te_level' => $this->_testExam['te_level']]);
         }
         $this->_testExamParams = array_filter($this->_testExamParams);
     }
