@@ -28,7 +28,8 @@ class AppConstant
     const QUESTION_CATEGORY_C_CPP = 1002;
     const QUESTION_CATEGORY_JAVA = 1003;
     const QUESTION_CATEGORY_CS = 1004;
-
+    const QUESTION_ANSWERS_LIMIT = 4;
+    
     public static $QUESTION_CATEGORY_NAME = [
         self::QUESTION_CATEGORY_PHP => 'PHP',
         self::QUESTION_CATEGORY_C_CPP => 'C/C++',
