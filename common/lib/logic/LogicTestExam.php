@@ -195,9 +195,13 @@ class LogicTestExam extends LogicBase
                
         // Save new question id to session
         foreach ($options as $option) {
-            $all_questions[] = (int)$option;
+            if(!in_array($option, $all_questions)){
+                $all_questions[] = $option;
+            }
         }
-                    
+        // Sort $all_question
+        sort($all_questions);
+        
         $test_exam['all_questions'] = $all_questions;
         $test_exam['testExam']['te_num_of_questions'] = count($all_questions);
                     
