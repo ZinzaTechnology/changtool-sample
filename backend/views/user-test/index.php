@@ -54,7 +54,6 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
 
         <div class="col-sm-3">
-
             <div class="ibox-title">
                 <h5>Form actions</h5>
             </div>

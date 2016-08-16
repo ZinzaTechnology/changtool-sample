@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Assign test to user', 'url' => ['i
     <div class="col-md-6">
         <div class="ibox-title">
             <h3>Test</h3>
-            <?= Html::a('Add new user', Url::toRoute('site/index'), ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Add new test', Url::toRoute('test-exam/create'), ['class' => 'btn btn-primary']) ?>
         </div>
         <div class="ibox-content">
             <div class="col-md-6">
@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Assign test to user', 'url' => ['i
     <div class="col-md-6">
         <div class="ibox-title">
             <h3>User</h3>
-            <?= Html::a('Add new user', Url::toRoute('site/index'), ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Add new user', Url::toRoute('user/create'), ['class' => 'btn btn-primary']) ?>
         </div>
         <div class="ibox-content">
             <div>
