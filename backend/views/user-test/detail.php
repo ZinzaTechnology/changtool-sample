@@ -26,16 +26,16 @@ $question_count = 1;
                         <?php foreach ($question['answer'] as $answer): ?>
                             <div class="i-checks">
                                 <input type="radio" disabled 
-                                    <?php if (isset($userAnswer["question-{$answer['qc_id']}"]) && in_array($answer['ac_id'], $userAnswer["question-{$answer['qc_id']}"])): ?>
-                                        <?= "checked" ?>
-                                    <?php endif; ?>
+                                    <?php 
+                                        if (isset($userAnswer["question-{$answer['qc_id']}"]) && in_array($answer['ac_id'], $userAnswer["question-{$answer['qc_id']}"])){
+                                            echo "checked";
+                                        }
+                                    ?>
                                 >
                                 <?= $answer['ac_content'] ?>
+                                <?= ($answer['ac_status']==1)?"<span class='label label-primary'>True</span>":'' ?>
                             </div>
                         <?php endforeach; ?>
-                    </div>
-                    <div class="p-w-sm alert-success">
-                        <?= Html::ul($question['trueAnswer'], ['class' => 'panel-body list-unstyled']) ?>
                     </div>
                     <?php $question_count++; ?>
                 <?php endforeach; ?>
