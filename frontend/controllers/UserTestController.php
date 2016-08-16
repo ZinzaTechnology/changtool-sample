@@ -70,21 +70,13 @@ class UserTestController extends FrontendController
         $userTestData = $logicUserTest->findUserTestDataByUtId($id);
 
         // return to dashboard if no valid user test found
-        if (empty($userTestData) || $userTestData->u_id != Yii::$app->user->id) {
-            $this->setSessionFlash('error', 'User test not found');
-            return $this->redirect(Url::toRoute('/'));
-        }
+        $this->_redirectIfTestNotValid($userTestData);
 
         // if the test have not been started yet
-        if ($userTestData['ut_status'] === 'ASSIGNED') {
-            $this->setSessionFlash('error', 'You have not started this test yet');
-            return $this->redirect(Url::toRoute('/'));
-        }
+        $this->_redirectIfTestNotStarted($userTestData);
 
         // if the test have been done, redirect to result page
-        if ($userTestData['ut_status'] === 'DONE') {
-            return $this->redirect(Url::toRoute(['result', 'id' => $userTestData->ut_id]));
-        }
+        $this->_redirectIfTestDone($userTestData);
 
         $timeCount = 0;
         $testExam = $logicTestExam->findTestExamById($userTestData['te_id']);
@@ -122,21 +114,13 @@ class UserTestController extends FrontendController
         $userTestData = $logicUserTest->findUserTestDataByUtId($ut_id);
 
         // return to dashboard if no valid user test found
-        if (empty($userTestData) || $userTestData->u_id != Yii::$app->user->id) {
-            $this->setSessionFlash('error', 'User test not found');
-            return $this->redirect(Url::toRoute('/'));
-        }
+        $this->_redirectIfTestNotValid($userTestData);
 
         // if the test have not been started yet
-        if ($userTestData['ut_status'] === 'ASSIGNED') {
-            $this->setSessionFlash('error', 'You have not started this test yet');
-            return $this->redirect(Url::toRoute('/'));
-        }
+        $this->_redirectIfTestNotStarted($userTestData);
 
         // if the test have been done, redirect to result page
-        if ($userTestData['ut_status'] === 'DONE') {
-            return $this->redirect(Url::toRoute(['result', 'id' => $userTestData->ut_id]));
-        }
+        $this->_redirectIfTestDone($userTestData);
 
         // score the test
         $score = $logicUserTest->scoreUserTest($userTestData, $qaSubmit);
@@ -152,22 +136,13 @@ class UserTestController extends FrontendController
         $userTestData = $logicUserTest->findUserTestDataByUtId($id);
 
         // return to dashboard if no valid user test found
-        if (empty($userTestData) || $userTestData->u_id != Yii::$app->user->id) {
-            $this->setSessionFlash('error', 'User test not found');
-            return $this->redirect(Url::toRoute('/'));
-        }
+        $this->_redirectIfTestNotValid($userTestData);
 
         // if the test have not been started yet
-        if ($userTestData['ut_status'] === 'ASSIGNED') {
-            $this->setSessionFlash('error', 'You have not started this test yet');
-            return $this->redirect(Url::toRoute('/'));
-        }
+        $this->_redirectIfTestNotStarted($userTestData);
 
         // if the test have not been scored, redirect to /do page
-        if ($userTestData['ut_status'] === "DOING") {
-            $this->setSessionFlash('error', 'You have not started this test yet');
-            return $this->redirect(Url::toRoute(['do', 'id' => $userTestData->ut_id]));
-        }
+        $this->_redirectIfTestDoing($userTestData);
 
         // if no exceptions
         return $this->render('result', [
@@ -200,14 +175,14 @@ class UserTestController extends FrontendController
     {
         if (empty($userTestData) || $userTestData->u_id != Yii::$app->user->id) {
             $this->setSessionFlash('error', 'User test not found');
-            return $this->redirect(Url::toRoute('/'));
+            $this->forceRedirect(Url::toRoute('/'));
         }
     }
 
     private function _redirectIfTestDone($userTestData)
     {
         if ($userTestData['ut_status'] === 'DONE') {
-            return $this->redirect(Url::toRoute(['result', 'id' => $userTestData->ut_id]));
+            $this->forceRedirect(Url::toRoute(['result', 'id' => $userTestData->ut_id]));
         }
     }
 
@@ -215,15 +190,15 @@ class UserTestController extends FrontendController
     {
         if ($userTestData['ut_status'] === 'ASSIGNED') {
             $this->setSessionFlash('error', 'You have not started this test yet');
-            return $this->redirect(Url::toRoute('/'));
+            $this->forceRedirect(Url::toRoute('/'));
         }
     }
 
     private function _redirectIfTestDoing($userTestData)
     {
         if ($userTestData['ut_status'] === "DOING") {
-            $this->setSessionFlash('error', 'You have not started this test yet');
-            return $this->redirect(Url::toRoute(['do', 'id' => $userTestData->ut_id]));
+            $this->setSessionFlash('warning', 'Please continue to do the test');
+            $this->forceRedirect(Url::toRoute(['do', 'id' => $userTestData->ut_id]));
         }
     }
 }
