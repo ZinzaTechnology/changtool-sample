@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use yii\helpers\ArrayHelper;
 use kartik\select2\Select2;
 ?>
 
@@ -63,7 +62,7 @@ use kartik\select2\Select2;
                         </td>
                         <td>
                         <?= $form->field($testExam, 'te_num_of_questions')
-                            ->textInput(['type' => 'number'])
+                            ->textInput(['type' => 'number','disabled' => true])
                             ->hint('Input number question of this exam');?>
                         </td>
                     </tr>
@@ -74,22 +73,22 @@ use kartik\select2\Select2;
 
         <div class="row">
             <div class="col-md-12">
-                <?= Html::a('Add Question', ['create'], ['class' => 'btn btn-success']) ?>
+                <?= Html::submitButton('Add Question', ['name' => 'te_update', 'value' => 'add_question', 'class' => 'btn btn-primary']) ?>
                 <div class="hr-line-dashed"></div>
             </div>
 
             <div class="col-md-9">
                 <?php
                     $q_count = 1;
-                    foreach($questions as $q) {
+                    foreach($all_questions as $aq) {
                         echo '<div class="row">';
                         echo '<div class="col-md-9">';
-                        echo $form->field($q, 'q_content')->textArea(['style'=>'height: 100px', 'class' => 'col-md-9'])
+                        echo $form->field($aq, 'q_content')->textArea(['style'=>'height: 100px', 'class' => 'col-md-9'])
                             ->label("Question $q_count", ['class' => 'col-md-3']);
                         echo '</div>';
 
                         echo '<div class="col-md-3" style="padding-top: 20px">';
-                        echo Html::a("Delete Question $q_count", ['deleteq','te_id' => $testExam->te_id, 'q_id' => $q['q_id']], [
+                        echo Html::a("Delete Question $q_count", ['deleteq','te_id' => $testExam->te_id, 'q_id' => $aq['q_id']], [
                                 'class' => 'btn btn-danger',
                                 'data' => [
                                         'confirm' => 'Are you sure you want to delete this item?',
@@ -106,7 +105,12 @@ use kartik\select2\Select2;
         </div>
 
         <div class="hr-line-solid"></div>
-        <?= Html::submitButton('Update', ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton('Cancel', ['name' => 'te_update', 'value' => 'cancel', 
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Are you sure you want to cancel this update?',]
+        ]) ?>
+        <?= Html::submitButton('Update', ['name' => 'te_update', 'value' => 'update', 'class' => 'btn btn-primary']) ?>
 
     <?php ActiveForm::end(); ?>
 </div>
