@@ -254,7 +254,7 @@ class TestExamController extends BackendController
         if ($logicTestExam->deleteTestExamById($id)) {
             $this->redirect(['/test-exam']);
         } else {
-            Yii::$app->session->setFlash('error', 'Error occurs when deleting this test!');
+            $this->setSessionFlash('error', 'Error occurs when deleting this test!');
             $this->goReferrer();
         }
     }
@@ -268,8 +268,18 @@ class TestExamController extends BackendController
      */
     public function actionDeleteq($te_id, $q_id)
     {
+        $test_exam = Yii::$app->session->get('test_exam');
+        
         $logicTestExam = new LogicTestExam();
-        $logicTestExam->deleteQuestionOnSession($q_id);
+        $ret = $logicTestExam->deleteQuestionOnSession($te_id, $q_id);
+        if(AppConstant::$ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME == $ret){
+            $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id']." Please commit edit or cancel to edit other testExam");
+            return $this->redirect('index');
+        }
+        else if(AppConstant::$ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM == $ret){
+            $this->setSessionFlash('error', 'Question does not exist in this testExan');
+            $this->redirect(['update', 'id' => $id]);
+        }
         
         return $this->redirect(["update?id=$te_id&delete_question=TRUE"]);
     }

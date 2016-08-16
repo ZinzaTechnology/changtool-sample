@@ -214,9 +214,12 @@ class LogicTestExam extends LogicBase
         return AppConstant::$ERROR_OK;
     }
     
-    public function deleteQuestionOnSession($q_id)
+    public function deleteQuestionOnSession($te_id, $q_id)
     {
         $test_exam = Yii::$app->session->get('test_exam');
+        if($test_exam['testExam']['te_id'] != $te_id){
+            return AppConstant::$ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME;
+        }
         $all_questions = $test_exam['all_questions'];
         
         $idx_all = array_search($q_id, $all_questions);
@@ -300,4 +303,6 @@ class LogicTestExam extends LogicBase
         ];
         return $params;
     }
+    
+    
 }
