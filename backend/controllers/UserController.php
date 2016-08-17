@@ -89,6 +89,11 @@ class UserController extends BackendController
             'dataProvider' => $dataProvider,
         ]);
     }
+        
+    /**
+     * Create action.
+     *
+     */
     
     public function actionCreate()
     {
@@ -157,6 +162,11 @@ class UserController extends BackendController
         return $this->goHome();
     }
     
+    /**
+     * View action.
+     *
+     */
+    
     public function actionView($id)
     {
         $logicUser = new LogicUser();
@@ -166,12 +176,22 @@ class UserController extends BackendController
         ]);
     }
     
+    /**
+     * Delete action.
+     *
+     */
+    
     public function actionDelete($id)
     {
         $logicUser = new LogicUser();
         $logicUser->deleteUserById($id);
         return $this->redirect('index');
     }
+    
+    /**
+     * Update action.
+     *
+     */
     
     public function actionUpdate($id)
     {        
@@ -191,6 +211,11 @@ class UserController extends BackendController
                 'model' => $user,
             ]);
     }
+    
+    /**
+     * Change Password action.
+     *
+     */
     
     public function actionChangepassword($id)
     {
