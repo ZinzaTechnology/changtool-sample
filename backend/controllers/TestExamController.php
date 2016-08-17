@@ -141,26 +141,19 @@ class TestExamController extends BackendController
         if (!empty($request) && isset($request['te_update'])) {
             if ($request['te_update'] == 'add_question') {
                 $logicTestExam->updateTestExamInfoToSession($request);
+                return $this->redirect(['test-index']);
                 
-                return $this->redirect('test-index');
             } elseif ($request['te_update'] == 'add_question_complete') {
                 if (isset($request['option'])) {
                     $logicTestExam->updateTestExamQuestionsInfoToSession($request['option']);
                 }
+                return $this->redirect(['update', 'id' => $id]);
                 
-                $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
-                
-                return $this->render('update', [
-                    'testExam' => Yii::$app->session->get('test_exam')['testExam'],
-                    'all_questions' => $all_questions,
-                    'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                    'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
-                ]);
             } elseif ($request['te_update'] == 'cancel') {
                 // User cancel update, rollback original data
                 $logicTestExam->removeTestExamInfoFromSession();
-                
                 return $this->redirect(['index']);
+                
             } else {
                 // Update new data to session
                 $ret = $logicTestExam->updateTestExamInfoToSession($request);
@@ -182,23 +175,14 @@ class TestExamController extends BackendController
                 }
 
                 $logicTestExam->removeTestExamInfoFromSession();
-                
                 // Get question to display on View page
-                $all_questions = $logicQuestion->findQuestionByTestId($id);
+                return $this->redirect(['view','id' => $id]);
                 
-                return $this->redirect(['view',
-                    'id' => $id,
-                ]);
             }
         } elseif (isset($get['delete_question'])) {
             // User delete a question in testExam
             $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
-            return $this->render('update', [
-                'testExam' => Yii::$app->session->get('test_exam')['testExam'],
-                'all_questions' => $all_questions,
-                'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
-            ]);
+            return $this->redirect(['update', 'id'=> $id]);
         } else {
             // When user click edit button
             if (isset(Yii::$app->session['test_exam'])) {
@@ -207,7 +191,7 @@ class TestExamController extends BackendController
                 if ($test_exam['testExam']['te_id'] != $id) {
                     // User cannot edit 2 testExams at the same time
                     $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id']." Please commit edit or cancel to edit other testExam");
-                    return $this->redirect('index');
+                    return $this->redirect(['index']);
                 }
                 $testExam  = $test_exam['testExam'];
             } else {
@@ -215,11 +199,12 @@ class TestExamController extends BackendController
                 $testExam = $logicTestExam->findTestExamById($id);
                 if (!$testExam) {
                     $this->setSessionFlash('error', 'Trying to edit non-existing test');
-                    return $this->redirect('index');
+                    return $this->redirect(['index']);
                 }
                 $test_questions = $logicQuestion->findQuestionByTestId($id);
                 $logicTestExam->initTestExamInfoToSession($testExam, $id, $test_questions);
             }
+            
             $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
             
             return $this->render('update', [
