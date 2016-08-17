@@ -24,17 +24,18 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'u_mail')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($model, 'u_role')->dropDownList(
-                ['ADMIN' => 'ADMIN', 'USER' => 'USER',],
-                ['prompt' => '',
-                        'options' => [
-                            'USER' => ['Selected' => true]
+                ['ADMIN' => 'ADMIN', 'USER' => 'USER',], [
+                	'prompt' => '',
+                		'options' => [
+                    		'USER' => ['Selected' => true]
                         ]
                     ]
-            )
+                )
             ?>
 
             <div class="form-group">
                 <?= Html::submitButton($model->isNewRecord ? 'Done' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+                
                 <?= Html::a('Cancel', ['/user/index'], ['class' => 'btn btn-primary grid-button']) ?>
             </div>
 

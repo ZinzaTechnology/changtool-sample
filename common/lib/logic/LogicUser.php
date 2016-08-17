@@ -77,8 +77,8 @@ class LogicUser extends LogicBase
         }
         
         $query->andFilterWhere(['or', ['like', 'u_name', $userSearch->globalSearch],
-        ['like', 'u_mail', $userSearch->globalSearch],
-        ['like', 'u_fullname', $userSearch->globalSearch]]);
+            ['like', 'u_mail', $userSearch->globalSearch],
+            ['like', 'u_fullname', $userSearch->globalSearch]]);
         
         return $dataProvider;
     }
