@@ -49,7 +49,7 @@ class TestExamController extends BackendController
 
         $logicTestExam = new LogicTestExam();
         $dataProvider = $logicTestExam->findTestExamBySearch($params);
-
+        
         $data = [
             'dataProvider' => $dataProvider,
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
@@ -70,13 +70,22 @@ class TestExamController extends BackendController
         $logicQuestion = new LogicQuestion();
         $testExam = $logicTestExam->findTestExamById($id);
 
-        $testQuestions = null;
-        if ($testExam) {
-            $testQuestions = $logicQuestion->findQuestionByTestId($id);
+        if (!$testExam) {
+            // Cannot find info for this testExam id
+            $this->setSessionFlash('error', 'Can not find this testExam record in DB');
+            return $this->redirect(['index']);
         }
+        $request = Yii::$app->request->get();
+        $page = 1; // Default current page
+        if(isset($request['page'])){
+            $page = $request['page'];
+        }
+        $paging = $logicTestExam->pagingTestExam($id, 'view', $page, $logicTestExam->paging_view_page_size);
         return $this->render('view', [
             'testExam' => $testExam,
-            'questions' => $testQuestions,
+            'questions' => $paging['pagging_questions'],
+            'paging_html' => $paging['html'],
+            'start' => $paging['start'],
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
             'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
         ]);
@@ -179,9 +188,6 @@ class TestExamController extends BackendController
                 
                 return $this->redirect(['view',
                     'id' => $id,
-                    'all_questions' => $all_questions,
-                    'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                    'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
                 ]);
             }
         } elseif (isset($get['delete_question'])) {

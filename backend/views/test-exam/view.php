@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
             <?php
             if ($questions) {
                 $form = ActiveForm::begin();
-                $q_count = 1;
+                $q_count = $start + 1;
                 foreach ($questions as $q) {
                     echo $form->field($q, 'q_content')->textarea(['readonly' => true])->label("Question $q_count");
                     ++$q_count;
@@ -77,7 +77,9 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
                 echo '<h3>No question found</h3>';
             }
             ?>
-
+            
+            <?= $paging_html;?>
+            
             <div class="hr-line-solid"></div>
             <?= Html::a('Edit', ['update', 'id' => $testExam->te_id], ['class' => 'btn btn-success']) ?>
             <?= Html::a('Delete', ['delete', 'id' => $testExam->te_id], [
