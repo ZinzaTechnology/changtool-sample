@@ -13,7 +13,7 @@ use common\lib\logic\UserLogic;
  */
 class UserSearch extends User
 {
-	public $globalSearch;
+    public $globalSearch;
     /**
      * @inheritdoc
      */
@@ -32,11 +32,4 @@ class UserSearch extends User
     {
         return Model::scenarios();
     }
-    
 }
-
-
-
-
-
-

@@ -33,7 +33,7 @@ $current_user = Yii::$app->user->identity;
         <div class="sidebar-collapse">
             <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
-                    <?php if ($current_user): ?>
+                    <?php if ($current_user) : ?>
                     <div class="dropdown profile-element">
                         <img alt="user image" class="image-circle" src="<?= $current_user->getAvatar()?>" />
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -48,11 +48,11 @@ $current_user = Yii::$app->user->identity;
                         <a href="<?=Url::toRoute("/")?>">CHang</a>
                     </div>
                 </li>
-                <?php if (!$current_user): ?>
+                <?php if (!$current_user) : ?>
                 <li class="active">
                     <a href="<?= Url::toRoute("/user/login")?>"><i class="fa fa-sign-in"></i> <span class="nav-label">Login</span></a>
                 </li>
-                <?php else:
+                <?php else :
                 echo SideMenu::widget([
                     'options' => [
                         'tag' => null,
@@ -62,31 +62,49 @@ $current_user = Yii::$app->user->identity;
                         [
                             'label' => 'Dashboard',
                             'icon' => 'fa-delicious',
-                            'url' => ["/dashboard"]
+                            'url' => ["/dashboard"],
+                            'controllers' => [
+                                'dashboard' => '*',
+                            ],
                         ],
                         [
                             'label' => 'Account Manager',
                             'icon' => 'fa-users',
-                            'url' => ["/user/index"]
+                            'url' => ["/user"],
+                            'controllers' => [
+                                'user' => '*',
+                            ],
+
                         ],
                         [
                             'label' => 'Question Manager',
                             'icon' => 'fa-question-circle',
-                            'url' => ["/question"]
+                            'url' => ["/question"],
+                            'controllers' => [
+                                'question' => '*',
+                            ],
+
                         ],
                         [
                             'label' => 'Test Manager',
                             'icon' => 'fa-book',
-                            'url' => ["/test-exam"]
+                            'url' => ["/test-exam"],
+                            'controllers' => [
+                                'test-exam' => '*',
+                            ],
+
                         ],
                         [
                             'label' => 'User Test Manager',
                             'icon' => 'fa-tasks',
-                            'url' => ["/usertest"]
+                            'url' => ["/user-test"],
+                            'controllers' => [
+                                'usertest' => '*',
+                            ],
                         ],
                     ],
                 ]);
-                endif; ?>
+endif; ?>
             </ul>
 
         </div>
@@ -101,7 +119,7 @@ $current_user = Yii::$app->user->identity;
                         <li><a href="<?=Url::toRoute("/")?>"><span class="m-r-sm text-muted welcome-message">ZINZA CHangTool Backend</span></a></li>
                     </ul>
                 </div>
-                <?php if ($current_user): ?>
+                <?php if ($current_user) : ?>
                 <ul class="nav navbar-top-links navbar-right">
                     <li>
                         <a href="<?= Url::toRoute("/user/logout") ?>">

@@ -62,7 +62,7 @@ use kartik\select2\Select2;
                         </td>
                         <td>
                         <?= $form->field($testExam, 'te_num_of_questions')
-                            ->textInput(['type' => 'number','disabled' => true])
+                            ->textInput(['type' => 'number', 'disabled' => true])
                             ->hint('Input number question of this exam');?>
                         </td>
                     </tr>
@@ -79,33 +79,33 @@ use kartik\select2\Select2;
 
             <div class="col-md-9">
                 <?php
-                    $q_count = 1;
-                    foreach($all_questions as $aq) {
-                        echo '<div class="row">';
-                        echo '<div class="col-md-9">';
-                        echo $form->field($aq, 'q_content')->textArea(['style'=>'height: 100px', 'class' => 'col-md-9'])
-                            ->label("Question $q_count", ['class' => 'col-md-3']);
-                        echo '</div>';
+                $q_count = 1;
+                foreach ($all_questions as $aq) {
+                    echo '<div class="row">';
+                    echo '<div class="col-md-9">';
+                    echo $form->field($aq, 'q_content')->textArea(['style' => 'height: 100px', 'class' => 'col-md-9'])
+                        ->label("Question $q_count", ['class' => 'col-md-3']);
+                    echo '</div>';
 
-                        echo '<div class="col-md-3" style="padding-top: 20px">';
-                        echo Html::a("Delete Question $q_count", ['deleteq','te_id' => $testExam->te_id, 'q_id' => $aq['q_id']], [
-                                'class' => 'btn btn-danger',
-                                'data' => [
-                                        'confirm' => 'Are you sure you want to delete this item?',
-                                        'method' => 'post',
-                                ],
-                        ]);
-                        echo '</div>';
-                        echo '</div>';
-                        
-                        ++$q_count;
-                    }
+                    echo '<div class="col-md-3" style="padding-top: 20px">';
+                    echo Html::a("Delete Question $q_count", ['deleteq','te_id' => $testExam->te_id, 'q_id' => $aq['q_id']], [
+                        'class' => 'btn btn-danger',
+                        'data' => [
+                            'confirm' => 'Are you sure you want to delete this item?',
+                            'method' => 'post',
+                        ],
+                    ]);
+                    echo '</div>';
+                    echo '</div>';
+
+                    ++$q_count;
+                }
                 ?>
            </div> 
         </div>
 
         <div class="hr-line-solid"></div>
-        <?= Html::submitButton('Cancel', ['name' => 'te_update', 'value' => 'cancel', 
+        <?= Html::submitButton('Cancel', ['name' => 'te_update', 'value' => 'cancel',
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to cancel this update?',]

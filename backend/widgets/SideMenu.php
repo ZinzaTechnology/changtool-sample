@@ -19,8 +19,8 @@ use yii\helpers\ArrayHelper;
  */
 class SideMenu extends Menu
 {
-    public $items = array();
-    public $customTemplateOptions = array();
+    public $items = [];
+    public $customTemplateOptions = [];
     public $linkTemplate = '<a href="{url}">{labelTpl}</a>';
     public $labelTemplate = '<i class="fa {icon}"></i> <span class="nav-label">{label}</span>';
 
@@ -75,9 +75,17 @@ class SideMenu extends Menu
             if ($route[0] !== '/' && Yii::$app->controller) {
                 $route = Yii::$app->controller->module->getUniqueId() . '/' . $route;
             }
-
-            // same controller is ok
-            if (strpos(ltrim($route, '/'), Yii::$app->controller->id) === false) {
+            if (isset($item['controllers'])) {
+                $target_controllers = $item['controllers'];
+                $controller_id = Yii::$app->controller->id;
+                if (array_key_exists($controller_id, $target_controllers)) {
+                    $action_id = Yii::$app->controller->action->id;
+                    if ($target_controllers[$controller_id] === '*' || in_array($action_id, $target_controllers)) {
+                        return true;
+                    }
+                }
+            }
+            if (ltrim($route, '/') !== $this->route) {
                 return false;
             }
             unset($item['url']['#']);

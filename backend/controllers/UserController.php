@@ -29,7 +29,7 @@ class UserController extends BackendController
     public function behaviors()
     {
         return [
-        	    'access' => [
+                'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -40,17 +40,17 @@ class UserController extends BackendController
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
-                    return Yii::$app->user->identity->u_role;
-                }
+                            return Yii::$app->user->identity->u_role;
+                        }
                     ],
                 ],
-             ],
-            'verbs' => [
+                ],
+                'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
                 ],
-            ],
+                ],
         ];
     }
 
@@ -67,47 +67,47 @@ class UserController extends BackendController
         ];
     }
     
-	public function actionIndex()
-    {		
-    	$logicUser = new LogicUser();
-    	$userSearch = new UserSearch();
-    	
-       	$param_tmps = Yii::$app->request->queryParams;
-       	$params = [];
-       	
-       	if (!empty($param_tmps)) {
-	       	if (isset($param_tmps['UserSearch'])) {
-		        $params = AppArrayHelper::filterKeys($param_tmps['UserSearch'], ['globalSearch']);
-	       	}
-       	}
-       	
-       	$dataProvider = $logicUser->findUserBySearch(['UserSearch' => $params], $userSearch);
-		$dataProvider->pagination->pageSize = 5;
-		
+    public function actionIndex()
+    {
+        $logicUser = new LogicUser();
+        $userSearch = new UserSearch();
+        
+        $param_tmps = Yii::$app->request->queryParams;
+        $params = [];
+        
+        if (!empty($param_tmps)) {
+            if (isset($param_tmps['UserSearch'])) {
+                $params = AppArrayHelper::filterKeys($param_tmps['UserSearch'], ['globalSearch']);
+            }
+        }
+        
+        $dataProvider = $logicUser->findUserBySearch(['UserSearch' => $params], $userSearch);
+        $dataProvider->pagination->pageSize = 5;
+        
         return $this->render('index', [
-        	'searchModel' => $userSearch,
+            'searchModel' => $userSearch,
             'dataProvider' => $dataProvider,
         ]);
     }
-   	
-	public function actionCreate()
+    
+    public function actionCreate()
     {
-    	$request = Yii::$app->request->post();
-    	
-    	if (isset($request['User'])) {
-    		$logicUser = new LogicUser();
-    		
-    		$params = AppArrayHelper::filterKeys($request['User'], ['u_name', 'u_fullname', 'u_role', 'u_mail', 'u_password_hash']);
-    		$newUser = $logicUser->createUserById($params);
-    				
-    		if (empty($newUser->errors)) {
-            	return $this->redirect('index');
-        	} else {
-        		$this->setSessionFlash('error', Html::errorSummary($newUser));
-        		return $this->render('create', [
-                	'model' => $newUser,
-            	]);
-        	}
+        $request = Yii::$app->request->post();
+        
+        if (isset($request['User'])) {
+            $logicUser = new LogicUser();
+            
+            $params = AppArrayHelper::filterKeys($request['User'], ['u_name', 'u_fullname', 'u_role', 'u_mail', 'u_password_hash']);
+            $newUser = $logicUser->createUserById($params);
+                    
+            if (empty($newUser->errors)) {
+                return $this->redirect('index');
+            } else {
+                $this->setSessionFlash('error', Html::errorSummary($newUser));
+                return $this->render('create', [
+                    'model' => $newUser,
+                ]);
+            }
         } else {
             return $this->render('create', [
                 'model' => new User(),
@@ -117,12 +117,12 @@ class UserController extends BackendController
     
     public function actionValidate()
     {
-    	$model = new User();
-    	
-    	if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
-    		Yii::$app->response->format = Response::FORMAT_JSON;
-    		return ActiveForm::validate($model);
-		}
+        $model = new User();
+        
+        if ($model->load(Yii::$app->request->post()) && Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
     }
     
      /**
@@ -156,10 +156,10 @@ class UserController extends BackendController
         return $this->goHome();
     }
     
- 	public function actionView($id)
+    public function actionView($id)
     {
-    	$logicUser = new LogicUser();
-    	
+        $logicUser = new LogicUser();
+        
         return $this->render('view', [
             'model' => $logicUser->findUserById($id),
         ]);
@@ -167,79 +167,78 @@ class UserController extends BackendController
     
     public function actionDelete($id)
     {
-    	$logicUser = new LogicUser();
-    	
-    	$logicUser->deleteUserById($id);
-    	
+        $logicUser = new LogicUser();
+        
+        $logicUser->deleteUserById($id);
+        
         return $this->redirect('index');
     }
     
     public function actionUpdate($id)
     {
-    	
-    	$request = Yii::$app->request->post();
-    	$user = LogicUser::findUserById($id);
-    	
-		if (isset($request['User'])) {
-			$updateUser = new LogicUser();
-			
-			$params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
-			$updateUser->updateUserById($user, $params);	
-			
-			return $this->redirect('index');			
-		}
-		
+        
+        $request = Yii::$app->request->post();
+        $user = LogicUser::findUserById($id);
+        
+        if (isset($request['User'])) {
+            $updateUser = new LogicUser();
+            
+            $params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
+            $updateUser->updateUserById($user, $params);
+            
+            return $this->redirect('index');
+        }
+        
         return $this->render('update', [
                 'model' => $user,
             ]);
     }
     
-	public function actionChangepassword($id)
- 	{
- 		$request = Yii::$app->request->post();
- 		$user = LogicUser::findUserById($id);
- 		
- 		if (isset($request['User'])) {
- 			$changePwd = new LogicUser();
- 			
- 			$params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash']);
- 			$changePwd->changePasswordUserById($user, $params);
+    public function actionChangepassword($id)
+    {
+        $request = Yii::$app->request->post();
+        $user = LogicUser::findUserById($id);
+        
+        if (isset($request['User'])) {
+            $changePwd = new LogicUser();
+            
+            $params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash']);
+            $changePwd->changePasswordUserById($user, $params);
 
- 			return $this->redirect('index');			
- 		}
- 		
- 		return $this->render('changepassword', [
- 			'model' => $user,
- 			]);
+            return $this->redirect('index');
+        }
+        
+        return $this->render('changepassword', [
+            'model' => $user,
+            ]);
     }
     
-	protected function findModel($id)
-	{
-		if (($model = User::findOne($id)) !== null) {
+    protected function findModel($id)
+    {
+        if (($model = User::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-	}
-	
-	/**
-	 * @return \yii\db\ActiveQuery
-	 */
-	public function getUsername()
-	{
-	    return $this->hasOne(User::className(), ['id' => 'u_name']);
-	}
-	 
-	/**
-	 * @return \yii\db\ActiveQuery
-	 */
-	public function getFullname()
-	{
-	    return $this->hasOne(User::className(), ['id' => 'u_fullname']);
-	}
-	public function getEmail()
-	{
-		return $this->hasOne(User::className(), ['id' => 'u_mail']);
-	}
-	
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUsername()
+    {
+        return $this->hasOne(User::className(), ['id' => 'u_name']);
+    }
+     
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFullname()
+    {
+        return $this->hasOne(User::className(), ['id' => 'u_fullname']);
+    }
+    public function getEmail()
+    {
+        return $this->hasOne(User::className(), ['id' => 'u_mail']);
+    }
 }

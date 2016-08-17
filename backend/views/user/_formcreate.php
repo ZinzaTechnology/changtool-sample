@@ -9,8 +9,8 @@ use yii\widgets\ActiveForm;
     <div class="row">
         <div class="col-lg-6">
             <?php $form = ActiveForm::begin([
-            	'enableAjaxValidation' => true,
-            	'validationUrl' => 'validate',
+                'enableAjaxValidation' => true,
+                'validationUrl' => 'validate',
             ]); ?>
 
             <?= $form->field($model, 'u_name')->textInput(['maxlength' => true]) ?>
@@ -24,11 +24,13 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'u_mail')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($model, 'u_role')->dropDownList(
-                    ['ADMIN' => 'ADMIN', 'USER' => 'USER',], ['prompt' => '',
-                		'options' => [
-                    		'USER' => array('Selected' => true)
-                		]
-            		])
+                ['ADMIN' => 'ADMIN', 'USER' => 'USER',],
+                ['prompt' => '',
+                        'options' => [
+                            'USER' => ['Selected' => true]
+                        ]
+                    ]
+            )
             ?>
 
             <div class="form-group">

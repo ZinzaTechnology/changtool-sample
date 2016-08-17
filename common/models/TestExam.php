@@ -3,7 +3,6 @@
 namespace common\models;
 
 use Yii;
-    
 
 /**
  * This is the model class for table "test_exam".
@@ -40,6 +39,7 @@ class TestExam extends \common\models\AppActiveRecord
         return [
             [['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions'], 'required'],
             [['te_category', 'te_level', 'te_time', 'te_num_of_questions'], 'integer'],
+            [['te_category', 'te_level', 'te_time', 'te_num_of_questions'], 'compare', 'compareValue' => 0, 'operator' => '>'],
             [['created_at', 'updated_at'], 'safe'],
             [['te_code'], 'string', 'max' => 15],
             [['te_title'], 'string', 'max' => 32],
@@ -87,11 +87,12 @@ class TestExam extends \common\models\AppActiveRecord
         return $this->hasMany(UserTest::className(), ['te_id' => 'te_id']);
     }
     
-    public static function getData($param){
-    	if($param){
-    		return self::find()->where($param)->all();
-    	}else{
-    		return self::find()->all();
-    	}
+    public static function getData($param)
+    {
+        if ($param) {
+            return self::find()->where($param)->all();
+        } else {
+            return self::find()->all();
+        }
     }
 }

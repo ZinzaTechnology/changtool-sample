@@ -37,7 +37,7 @@ class TestExamController extends BackendController
      */
     public function actionIndex()
     {
-        $request= Yii::$app->request->get();
+        $request = Yii::$app->request->get();
         $params = [];
         if (!empty($request)) {
             $params = AppArrayHelper::filterKeys($request, ['te_level', 'te_category']);
@@ -94,8 +94,10 @@ class TestExamController extends BackendController
         $params = [];
         $newTest = new TestExam();
         if (!empty($request)) {
-            $params = AppArrayHelper::filterKeys($request['TestExam'],
-               ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']);
+            $params = AppArrayHelper::filterKeys(
+                $request['TestExam'],
+                ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']
+            );
 
             $newTest = $logicTestExam->insertTestExam(['TestExam' => $params]);
 
@@ -128,33 +130,16 @@ class TestExamController extends BackendController
         $get     = Yii::$app->request->get();
         $params = [];
         if (!empty($request) && isset($request['te_update'])) {
-            if($request['te_update'] == 'add_question'){
-
-                $logicTestExam->updateTestExamInfoToSession($request); 
+            if ($request['te_update'] == 'add_question') {
+                $logicTestExam->updateTestExamInfoToSession($request);
                 
-                // Get all questions in database
-                $questions = $logicQuestion->findQuestionBySearch(array());
-
-                // Redirect to Question Index site to choose question
-                return $this->render('test_index', [
-                    'id' => $id,
-                    'questions' => $questions,
-                    'all_questions' => Yii::$app->session->get('test_exam')['all_questions'],
-                    'category' => AppConstant::$QUESTION_CATEGORY_NAME,
-                    'level' => AppConstant::$QUESTION_LEVEL_NAME,
-                    'type' => AppConstant::$QUESTION_TYPE_NAME,
-                ]);
-                
-            }
-            else if($request['te_update'] == 'add_question_complete'){
-                
-                if(isset($request['option'])){
+                return $this->redirect('test-index');
+            } elseif ($request['te_update'] == 'add_question_complete') {
+                if (isset($request['option'])) {
                     $logicTestExam->updateTestExamQuestionsInfoToSession($request['option']);
                 }
                 
-                $all_questions = $logicQuestion->findQuestionArrayQuestionID(Yii::$app->session->get('test_exam')['all_questions']);
-                //var_dump($added_test_questions);
-                //die;
+                $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
                 
                 return $this->render('update', [
                     'testExam' => Yii::$app->session->get('test_exam')['testExam'],
@@ -162,67 +147,74 @@ class TestExamController extends BackendController
                     'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
                     'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
                 ]);
-            }
-            else if($request['te_update'] == 'cancel'){
+            } elseif ($request['te_update'] == 'cancel') {
                 // User cancel update, rollback original data
                 $logicTestExam->removeTestExamInfoFromSession();
                 
-                if(isset(Yii::$app->session['te_search'])){
-                    $params = Yii::$app->session['te_search'];
-                }
-                        
-                $logicTestExam = new LogicTestExam();
-                $dataProvider = $logicTestExam->findTestExamBySearch($params);
-
-                $data = [
-                    'dataProvider' => $dataProvider,
-                    'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                    'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
-                    'te_search' => Yii::$app->session->get('te_search'),
-                ];
-                return $this->render('index', $data);
-            }
-            else{
+                return $this->redirect(['index']);
+            } else {
                 // Update new data to session
-                $logicTestExam->updateTestExamInfoToSession($request); 
+                $ret = $logicTestExam->updateTestExamInfoToSession($request);
+                if (AppConstant::$ERROR_SESSION_EMPTY == $ret) {
+                    $this->setSessionFlash('error', 'Cannot update becasue session is not setted');
+                    $this->redirect(['update', 'id' => $id]);
+                }
                 // Update new data to database
-                $logicTestExam->updateAllChangedToDB($id);
+                $ret = $logicTestExam->updateChangesFromSessionToDB($this);
+                if (AppConstant::$ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB == $ret) {
+                    $this->setSessionFlash('error', 'Error occur when save Test Exam info');
+                    $this->redirect(['update', 'id' => $id]);
+                } elseif (AppConstant::$ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB == $ret) {
+                    $this->setSessionFlash('error', 'Error occur when insert questions to test exam');
+                    $this->redirect(['update', 'id' => $id]);
+                } elseif (AppConstant::$ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB == $ret) {
+                    $this->setSessionFlash('error', 'Error occur when delete questions from test exam');
+                    $this->redirect(['update', 'id' => $id]);
+                }
 
                 $logicTestExam->removeTestExamInfoFromSession();
                 
                 // Get question to display on View page
                 $all_questions = $logicQuestion->findQuestionByTestId($id);
                 
-                return $this->redirect(['view', 
+                return $this->redirect(['view',
                     'id' => $id,
                     'all_questions' => $all_questions,
                     'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
                     'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
                 ]);
             }
-        } else if(isset($get['delete_question'])){
+        } elseif (isset($get['delete_question'])) {
             // User delete a question in testExam
-            $all_questions = $logicQuestion->findQuestionArrayQuestionID(Yii::$app->session->get('test_exam')['all_questions']);
+            $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
             return $this->render('update', [
                 'testExam' => Yii::$app->session->get('test_exam')['testExam'],
                 'all_questions' => $all_questions,
                 'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
                 'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);
-        }
-        else{
-            if(isset(Yii::$app->session['test_exam'])){
-                Yii::$app->session->remove('test_exam');
+        } else {
+            // When user click edit button
+            if (isset(Yii::$app->session['test_exam'])) {
+                // User is editting testExam
+                $test_exam = Yii::$app->session['test_exam'];
+                if ($test_exam['testExam']['te_id'] != $id) {
+                    // User cannot edit 2 testExams at the same time
+                    $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id']." Please commit edit or cancel to edit other testExam");
+                    return $this->redirect('index');
+                }
+                $testExam  = $test_exam['testExam'];
+            } else {
+                // User start editting testExam
+                $testExam = $logicTestExam->findTestExamById($id);
+                if (!$testExam) {
+                    $this->setSessionFlash('error', 'Trying to edit non-existing test');
+                    return $this->redirect('index');
+                }
+                $test_questions = $logicQuestion->findQuestionByTestId($id);
+                $logicTestExam->initTestExamInfoToSession($testExam, $id, $test_questions);
             }
-            $testExam = $logicTestExam->findTestExamById($id);
-            if (!$testExam) {
-                $this->setSessionFlash('error', 'Trying to edit non-existing test');
-                $this->redirect('index');
-            }
-            
-            $test_questions = $logicQuestion->findQuestionByTestId($id);
-            $logicTestExam->initTestExamInfoToSession($testExam, $id, $test_questions);
-            $all_questions = $logicQuestion->findQuestionArrayQuestionID(Yii::$app->session->get('test_exam')['all_questions']);
+            $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
             
             return $this->render('update', [
                 'testExam' => $testExam,
@@ -245,7 +237,7 @@ class TestExamController extends BackendController
         if ($logicTestExam->deleteTestExamById($id)) {
             $this->redirect(['/test-exam']);
         } else {
-            Yii::$app->session->setFlash('error', 'Error occurs when deleting this test!');
+            $this->setSessionFlash('error', 'Error occurs when deleting this test!');
             $this->goReferrer();
         }
     }
@@ -259,59 +251,59 @@ class TestExamController extends BackendController
      */
     public function actionDeleteq($te_id, $q_id)
     {
-//        if (($model = TestExamQuestions::findOne(['te_id' => $te_id, 'q_id' => $q_id])) == null) 
-//        {
-//            throw new NotFoundHttpException('The requested page does not exist.');
-//        }
-//        $model->delete();
-        $logicTestExam = new LogicTestExam();
-        $logicTestExam->deleteQuestionOnSession($q_id);
+        $test_exam = Yii::$app->session->get('test_exam');
         
+        $logicTestExam = new LogicTestExam();
+        $ret = $logicTestExam->deleteQuestionOnSession($te_id, $q_id);
+        if (AppConstant::$ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME == $ret) {
+            $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id']." Please commit edit or cancel to edit other testExam");
+            return $this->redirect('index');
+        } elseif (AppConstant::$ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM == $ret) {
+            $this->setSessionFlash('error', 'Question does not exist in this testExan');
+            $this->redirect(['update', 'id' => $id]);
+        }
         
         return $this->redirect(["update?id=$te_id&delete_question=TRUE"]);
     }
 
     //[tho.nt] add.
     public function actionTestIndex()
-    {	
-        $category = AppConstant::$QUESTION_CATEGORY_NAME;
+    {
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
-
+        $test_exam = Yii::$app->session->get('test_exam');
+        $category = $test_exam['testExam']['te_category'];
+        
+        
         $request = Yii::$app->request->post();
         $params = [];
-        if (!empty($request)) {
-            $params = AppArrayHelper::filterKeys($request, ['content', 'category', 'level', 'type', 'qt_content']);
-        }
+        
+        $params = AppArrayHelper::filterKeys($request, ['content', 'category', 'level', 'type', 'qt_content']);
+        $params['category'] = $category;
 
         $logicQuestion = new LogicQuestion();
         $questions = $logicQuestion->findQuestionBySearch($params);
 
-        
         $data = [
-            'id' => Yii::$app->session->get('test_exam')['te_id'],
-            'all_questions' => Yii::$app->session->get('test_exam')['all_questions'],
+            'id' => $test_exam['te_id'],
+            'te_code' => $test_exam['testExam']['te_code'],
+            'all_questions' => $test_exam['all_questions'],
             'questions' => $questions,
-            'category' => $category,
+            'category' => AppConstant::$QUESTION_CATEGORY_NAME[$category],
             'type' => $type,
             'level' => $level,
+            'search_param' => $params,
         ];
         return $this->render('test_index', $data);
-
     }
     
     public function actionAssigntestexam()
     {
-        if($request= Yii::$app->request->get())
-        {
-            foreach($request['selection'] as $selection)
-            {
+        if ($request = Yii::$app->request->get()) {
+            foreach ($request['selection'] as $selection) {
                 echo $selection."<br \>";
-
-
             }
             print_r($request['selection']);
         }
     }
-
 }

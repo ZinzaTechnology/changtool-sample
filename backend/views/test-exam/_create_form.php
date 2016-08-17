@@ -15,52 +15,52 @@ use common\controllers\GlobalVariableControllser;
 
     <?php $form = ActiveForm::begin(); ?>
     <table class="table table-hovered">
-		<tr>
+        <tr>
             <td>
-			<?= $form->field($model, 'te_category')->widget(Select2::classname(), [
-		    		'data' => $category,
-		    		'language' => 'en',
-		    		'options' => ['placeholder' => 'Select Category ...'],
-		    		'pluginOptions' => [
-		    			'allowClear' => true,
-		    		],
-		    	]);
-			?>
+            <?= $form->field($model, 'te_category')->widget(Select2::classname(), [
+                    'data' => $category,
+                    'language' => 'en',
+                    'options' => ['placeholder' => 'Select Category ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                    ],
+                ]);
+            ?>
             </td>
             <td>
-			<?= $form->field($model, 'te_level')->widget(Select2::classname(), [
-		    		'data' => $level,
-		    		'language' => 'en',
-		    		'options' => ['placeholder' => 'Select a Level ...'],
-		    		'pluginOptions' => [
-		    			'allowClear' => true,
-		    		],
-		    	]);
-			?>
+            <?= $form->field($model, 'te_level')->widget(Select2::classname(), [
+                    'data' => $level,
+                    'language' => 'en',
+                    'options' => ['placeholder' => 'Select a Level ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                    ],
+                ]);
+            ?>
             </td>
         </tr>
         <tr>
             <td>
-	    	<?= $form->field($model, 'te_code')
-	    		->textInput()
-	    		->hint('Input the code of this exam');?>
+            <?= $form->field($model, 'te_code')
+                ->textInput()
+                ->hint('Input the code of this exam');?>
             </td>
             <td>
-		    <?= $form->field($model, 'te_title')
-		    	->textInput()
-		    	->hint('Input the title of this exam');?>
+            <?= $form->field($model, 'te_title')
+                ->textInput()
+                ->hint('Input the title of this exam');?>
             </td>
         </tr>
         <tr>
             <td>
-		    <?= $form->field($model, 'te_time')
-		    	->textInput(['type' => 'number'])
-		    	->hint('Input time to do this exam (in minutes)');?>
+            <?= $form->field($model, 'te_time')
+                ->textInput(['type' => 'number'])
+                ->hint('Input time to do this exam (in minutes)');?>
             </td>
             <td>
-		    <?= $form->field($model, 'te_num_of_questions')
-		    	->textInput(['type' => 'number'])
-		    	->hint('Input number question of this exam');?>
+            <?= $form->field($model, 'te_num_of_questions')
+                ->textInput(['type' => 'number'])
+                ->hint('Input number question of this exam');?>
             </td>
         </tr>
         <tr>
