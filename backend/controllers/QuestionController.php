@@ -89,52 +89,112 @@ class QuestionController extends BackendController
         $params = [];
         if (! empty($request)) {
             $request1 = Yii::$app->request->post() ['Question'];
-            if (! empty($request1)) {
-                $params = AppArrayHelper::filterKeys($request1, [
-                    'q_content',
-                    'q_category',
-                    'q_level',
-                    'q_type',
-                    'qt_content' 
-                ]);
+            $request2 = Yii::$app->request->post() ['Answer'];
+            if ((! empty($request1)) && (! empty($request2))) {
+                $count = 0;
+                foreach ($request2 as $val) {
+                    if ($val ['qa_status'] == 1) {
+                        $count = $count + 1;
+                    }
+                }
                 
-                $question = $logicQuestion->createQuestion($params);
-                if ($question != null) {
-                    $q_id = $question->q_id;
-                    $request2 = Yii::$app->request->post() ['Answer'];
-                    
-                    $answerarray = [];
-                    if (! empty($request2)) {
-                        foreach ($request2 as $val) {
-                            $params = AppArrayHelper::filterKeys($val, [
-                                'qa_content',
-                                'qa_status' 
-                            ]);
-                            $answer = $logicAnswer->createAnswerByQuesion($params, $q_id);
-                            if ($answer != null) {
-                                $answerarray [] = $answer;
-                            } else {
-                                Yii::$app->session->setFlash('error', 'Error occurs when create this question!');
-                                return $this->goReferrer();
-                            }
-                        }
+                if ($request1 ['q_type'] == 1) {
+                    if ($count >= 1) {
                         
-                        $data = [
-                            'answers' => $answerarray,
-                            'question' => $question,
-                            'category' => $category,
-                            'type' => $type,
-                            'level' => $level,
-                            'answer_status' => $answer_status 
-                        ];
-                        return $this->render('view', $data);
+                        // insert questions
+                        $params = AppArrayHelper::filterKeys($request1, [
+                            'q_content',
+                            'q_category',
+                            'q_level',
+                            'q_type',
+                            'qt_content' 
+                        ]);
+                        $question = $logicQuestion->createQuestion($params);
+                        if ($question != null) {
+                            $q_id = $question->q_id;
+                            
+                            $answerarray = [];
+                            // insert answers
+                            foreach ($request2 as $val) {
+                                $params = AppArrayHelper::filterKeys($val, [
+                                    'qa_content',
+                                    'qa_status' 
+                                ]);
+                                $answer = $logicAnswer->createAnswerByQuesion($params, $q_id);
+                                if ($answer != null) {
+                                    $answerarray [] = $answer;
+                                } else {
+                                    Yii::$app->session->setFlash('error', 'Error occurs when create this question!');
+                                    return $this->goReferrer();
+                                }
+                            }
+                            
+                            $data = [
+                                'answers' => $answerarray,
+                                'question' => $question,
+                                'category' => $category,
+                                'type' => $type,
+                                'level' => $level,
+                                'answer_status' => $answer_status 
+                            ];
+                            return $this->render('view', $data);
+                        } else {
+                            Yii::$app->session->setFlash('error', 'Error occurs when create this question!');
+                            return $this->goReferrer();
+                        }
                     } else {
-                        Yii::$app->session->setFlash('error', 'Error occurs when create this question!');
+                        Yii::$app->session->setFlash('error', 'Error : Answer right >= 1 !');
                         return $this->goReferrer();
                     }
                 } else {
-                    Yii::$app->session->setFlash('error', 'Error occurs when create this question!');
-                    return $this->goReferrer();
+                    if ($count >= 2) {
+                        
+                        // insert questions
+                        $params = AppArrayHelper::filterKeys($request1, [
+                            'q_content',
+                            'q_category',
+                            'q_level',
+                            'q_type',
+                            'qt_content' 
+                        ]);
+                        $question = $logicQuestion->createQuestion($params);
+                        if ($question != null) {
+                            $q_id = $question->q_id;
+                            $request2 = Yii::$app->request->post() ['Answer'];
+                            
+                            $answerarray = [];
+                            // insert answers
+                            foreach ($request2 as $val) {
+                                $params = AppArrayHelper::filterKeys($val, [
+                                    'qa_content',
+                                    'qa_status' 
+                                ]);
+                                $answer = $logicAnswer->createAnswerByQuesion($params, $q_id);
+                                if ($answer != null) {
+                                    $answerarray [] = $answer;
+                                } else {
+                                    Yii::$app->session->setFlash('error', 'Error occurs when create this question!');
+                                    return $this->goReferrer();
+                                }
+                            }
+                            
+                            $data = [
+                                'answers' => $answerarray,
+                                'question' => $question,
+                                'category' => $category,
+                                'type' => $type,
+                                'level' => $level,
+                                'answer_status' => $answer_status 
+                            ];
+                            return $this->render('view', $data);
+                        } else {
+                            Yii::$app->session->setFlash('error', 'Error occurs when create this question!');
+                            return $this->goReferrer();
+                        }
+                    } else {
+                        Yii::$app->session->setFlash('error', 'Error : Answer right >= 2 !');
+                        return $this->goReferrer();
+                    }
                 }
             } else {
                 return $this->render('insert-question', $data);
@@ -189,54 +249,114 @@ class QuestionController extends BackendController
         $params = [];
         if (! empty($request)) {
             $request1 = Yii::$app->request->post() ['Question'];
-            if (! empty($request1)) {
-                $params = AppArrayHelper::filterKeys($request1, [
-                    'q_id',
-                    'q_content',
-                    'q_category',
-                    'q_level',
-                    'q_type',
-                    'qt_content' 
-                ]);
-                
-                $question = $logicQuestion->updateQuestion($params);
-                if ($question != null) {
-                    $request2 = Yii::$app->request->post() ['Answer'];
-                    $answerarray = [];
-                    if (! empty($request2)) {
+            $request2 = Yii::$app->request->post() ['Answer'];
+            if ((! empty($request1)) && (! empty($request2))) {
+                $count = 0;
+                foreach ($request2 as $val) {
+                    if ($val ['qa_status'] == 1) {
+                        $count = $count + 1;
+                    }
+                }
+                if ($request1 ['q_type'] == 1) {
+                    if ($count >= 1) {
                         
-                        foreach ($request2 as $val) {
+                        // update question
+                        $params = AppArrayHelper::filterKeys($request1, [
+                            'q_id',
+                            'q_content',
+                            'q_category',
+                            'q_level',
+                            'q_type',
+                            'qt_content' 
+                        ]);
+                        
+                        $question = $logicQuestion->updateQuestion($params);
+                        if ($question != null) {
+                            $answerarray = [];
                             
-                            $params = AppArrayHelper::filterKeys($val, [
-                                'qa_id',
-                                'qa_content',
-                                'qa_status' 
-                            ]);
-                            $answer = $logicAnswer->updateAnswerByQuesion($params);
-                            if ($answer != null) {
-                                $answerarray [] = $answer;
-                            } else {
-                                Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
-                                return $this->goReferrer();
+                            foreach ($request2 as $val) {
+                                
+                                $params = AppArrayHelper::filterKeys($val, [
+                                    'qa_id',
+                                    'qa_content',
+                                    'qa_status' 
+                                ]);
+                                $answer = $logicAnswer->updateAnswerByQuesion($params);
+                                if ($answer != null) {
+                                    $answerarray [] = $answer;
+                                } else {
+                                    Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
+                                    return $this->goReferrer();
+                                }
                             }
+                            
+                            $data = [
+                                'answers' => $answerarray,
+                                'question' => $question,
+                                'category' => $category,
+                                'type' => $type,
+                                'level' => $level,
+                                'answer_status' => $answer_status 
+                            ];
+                            return $this->render('view', $data);
+                        } else {
+                            Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
+                            return $this->goReferrer();
                         }
-                        
-                        $data = [
-                            'answers' => $answerarray,
-                            'question' => $question,
-                            'category' => $category,
-                            'type' => $type,
-                            'level' => $level,
-                            'answer_status' => $answer_status 
-                        ];
-                        return $this->render('view', $data);
                     } else {
-                        Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
+                        Yii::$app->session->setFlash('error', 'Error : Answer right >= 1 !');
                         return $this->goReferrer();
                     }
                 } else {
-                    Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
-                    return $this->goReferrer();
+                    if ($count >= 2) {
+                        
+                        // update question
+                        $params = AppArrayHelper::filterKeys($request1, [
+                            'q_id',
+                            'q_content',
+                            'q_category',
+                            'q_level',
+                            'q_type',
+                            'qt_content' 
+                        ]);
+                        
+                        $question = $logicQuestion->updateQuestion($params);
+                        if ($question != null) {
+                            $answerarray = [];
+                            
+                            foreach ($request2 as $val) {
+                                
+                                $params = AppArrayHelper::filterKeys($val, [
+                                    'qa_id',
+                                    'qa_content',
+                                    'qa_status' 
+                                ]);
+                                $answer = $logicAnswer->updateAnswerByQuesion($params);
+                                if ($answer != null) {
+                                    $answerarray [] = $answer;
+                                } else {
+                                    Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
+                                    return $this->goReferrer();
+                                }
+                            }
+                            
+                            $data = [
+                                'answers' => $answerarray,
+                                'question' => $question,
+                                'category' => $category,
+                                'type' => $type,
+                                'level' => $level,
+                                'answer_status' => $answer_status 
+                            ];
+                            return $this->render('view', $data);
+                        } else {
+                            Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
+                            return $this->goReferrer();
+                        }
+                    } else {
+                        Yii::$app->session->setFlash('error', 'Error : Answer right >= 2 !');
+                        return $this->goReferrer();
+                    }
                 }
             }
         }
