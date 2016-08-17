@@ -40,7 +40,7 @@ class UserTestController extends BackendController
                 'dataProvider' => new ArrayDataProvider([
                     'allModels' => (new LogicUserTest)->findUserTestBySearch($params),
                     'pagination' => [
-                        'pageSize' => 5,
+                        'pageSize' => 10,
                     ]
                 ]),
         ]);
