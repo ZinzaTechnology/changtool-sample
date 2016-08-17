@@ -205,8 +205,8 @@ class QuestionController extends BackendController
     }
 
     public function actionEditQuestion()
-    {   
-        $session = Yii::$app->session; 
+    {
+        $session = Yii::$app->session;
         $answer_status = AppConstant::$ANSWER_STATUS_NAME;
         $category = AppConstant::$QUESTION_CATEGORY_NAME;
         $type = AppConstant::$QUESTION_TYPE_NAME;
@@ -229,7 +229,7 @@ class QuestionController extends BackendController
                     'q_id' => $q_id 
                 ];
                 if (($answer = $logicAnswer->findAnswerByQuestionId($q_id)) != null) {
-                    $session['answer'] = $answer;
+                    $session ['answer'] = $answer;
                     $data = [
                         'question' => $question,
                         'answer' => $answer,
@@ -250,8 +250,8 @@ class QuestionController extends BackendController
         $request = Yii::$app->request->post();
         $params = [];
         if (! empty($request)) {
-            $answer_old =  $session['answer'];
-            unset($session['answer']);
+            $answer_old = $session ['answer'];
+            unset($session ['answer']);
             $request1 = Yii::$app->request->post() ['Question'];
             $request2 = Yii::$app->request->post() ['Answer'];
             if ((! empty($request1)) && (! empty($request2))) {
@@ -278,32 +278,25 @@ class QuestionController extends BackendController
                         $question = $logicQuestion->updateQuestion($params);
                         if ($question != null) {
                             
-                          
-                            //delete old answers
-                            if($answer_old != null)
-                            {
-                                foreach ($answer_old as $val_old)
-                                {   
+                            // delete old answers
+                            if ($answer_old != null) {
+                                foreach ($answer_old as $val_old) {
                                     
                                     $i = 0;
-                                    foreach ($request2 as $val)
-                                    {
+                                    foreach ($request2 as $val) {
                                         $params = AppArrayHelper::filterKeys($val, [
-                                            'qa_id'
+                                            'qa_id' 
                                         ]);
-                                       if($val_old['qa_id'] == $params['qa_id'])
-                                       {
-                                           $i = $i + 1;
-                                       }
+                                        if ($val_old ['qa_id'] == $params ['qa_id']) {
+                                            $i = $i + 1;
+                                        }
                                     }
-                                    if ($i == 0)
-                                    {
-                                        $logicAnswer->deleteAnswerById($val_old['qa_id']);
-                                        
+                                    if ($i == 0) {
+                                        $logicAnswer->deleteAnswerById($val_old ['qa_id']);
                                     }
                                 }
                             }
-                            //update answer
+                            // update answer
                             $answerarray = [];
                             foreach ($request2 as $val) {
                                 $params = AppArrayHelper::filterKeys($val, [
@@ -353,31 +346,25 @@ class QuestionController extends BackendController
                         $question = $logicQuestion->updateQuestion($params);
                         if ($question != null) {
                             
-                            //delete old answers
-                            if($answer_old != null)
-                            {
-                                foreach ($answer_old as $val_old)
-                                {
-                            
+                            // delete old answers
+                            if ($answer_old != null) {
+                                foreach ($answer_old as $val_old) {
+                                    
                                     $i = 0;
-                                    foreach ($request2 as $val)
-                                    {
+                                    foreach ($request2 as $val) {
                                         $params = AppArrayHelper::filterKeys($val, [
-                                            'qa_id'
+                                            'qa_id' 
                                         ]);
-                                        if($val_old['qa_id'] == $params['qa_id'])
-                                        {
+                                        if ($val_old ['qa_id'] == $params ['qa_id']) {
                                             $i = $i + 1;
                                         }
                                     }
-                                    if ($i == 0)
-                                    {
-                                        $logicAnswer->deleteAnswerById($val_old['qa_id']);
-                            
+                                    if ($i == 0) {
+                                        $logicAnswer->deleteAnswerById($val_old ['qa_id']);
                                     }
                                 }
                             }
-                            //update answer
+                            // update answer
                             $answerarray = [];
                             foreach ($request2 as $val) {
                                 
