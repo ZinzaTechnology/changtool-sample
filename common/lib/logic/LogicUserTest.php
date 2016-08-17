@@ -9,6 +9,7 @@
 namespace common\lib\logic;
 
 use Yii;
+use yii\web\BadRequestHttpException;
 use yii\helpers\ArrayHelper;
 use yii\db\Expression;
 use yii\db\Query;
@@ -25,7 +26,9 @@ class LogicUserTest extends LogicBase
     private $_assignedSuccess = false;
     private $_testExam;
     private $_testExamParams = [];
-
+    private $_pageMax = 0;
+    private $_page = 0;
+    
     public function __construct()
     {
         parent::__construct();
@@ -68,7 +71,33 @@ class LogicUserTest extends LogicBase
     {
         return [$this->_testExam['te_category'], $this->_testExam['te_level']];
     }
-
+    
+    public function getPageMax()
+    {
+        return $this->_pageMax;
+    }
+    
+    public function getPage()
+    {
+        return $this->_page;
+    }
+    
+    public function getTestDataByPageParam($id, $page = null)
+    {
+        $data = $this->findTestDataByUtID($id);
+        if($page<$this->_pageMax)
+            throw new BadRequestHttpException('Page is larger than page max!');
+        $limitPerPage = AppConstant::USER_TEST_QUESTION_LIMIT_PER_PAGE;
+        $this->_pageMax = round((count($data)/$limitPerPage));
+        if(count($data)%$limitPerPage)
+            $this->_pageMax++;
+        if (!empty($page)) {
+            if (is_numeric($page) && $page>0)
+                $this->_page = $page;
+            else throw new \yii\web\BadRequestHttpException('Page must be a number and larger than 0!');
+        } else $this->_page = 1;
+        return array_slice($data, ($this->_page-1) * $limitPerPage, $limitPerPage);
+    }
     public function assignTest()
     {
         $userTest = new UserTest;
