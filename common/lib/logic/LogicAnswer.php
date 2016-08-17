@@ -26,8 +26,18 @@ class LogicAnswer extends LogicBase
     public function findAnswerByQuestionId($q_id)
     {
         return Answer::queryAll([
-            'q_id' => $q_id
+            'q_id' => $q_id 
         ]);
+    }
+
+    public function findByAnswerId($qa_id)
+    {
+        $answer = Answer::queryOne($qa_id);
+        if ($answer) {
+            return $answer->q_id;
+        }
+        
+        return null;
     }
 
     /**
@@ -40,23 +50,44 @@ class LogicAnswer extends LogicBase
         $answers_ids = ArrayHelper::getColumn($answers, 'qa_id');
         
         return Answer::updateAll([
-            'is_deleted' => 1
+            'is_deleted' => 1 
         ], [
-            'qa_id' => $answers_ids
+            'qa_id' => $answers_ids 
         ]);
     }
 
     public function createAnswerByQuesion($params, $q_id)
     {
-        date_default_timezone_set("Asia/Ho_Chi_Minh");
         $answer = new Answer();
         
         if (! empty($params)) {
             $answer->q_id = $q_id;
-            $answer->qa_content = $params['qa_content'];
-            $answer->qa_status = $params['qa_status'];
+            $answer->qa_content = $params ['qa_content'];
+            $answer->qa_status = $params ['qa_status'];
             $answer->is_deleted = 0;
-            $answer->save();
+            if ($answer->save() && $answer->validate()) {
+                return $answer;
+            } else
+                $answer = null;
+        }
+        
+        return $answer;
+    }
+
+    public function updateAnswerByQuesion($params)
+    {
+        if ($params != null) {
+            $answer = $this->findById($params ['qa_id']);
+            if ($answer != null) {
+                $answer->qa_content = $params ['qa_content'];
+                $answer->qa_status = $params ['qa_status'];
+                $answer->is_deleted = 0;
+                if ($answer->save() && $answer->validate()) {
+                    return $answer;
+                } else
+                    $answer = null;
+            } else
+                $answer = null;
         }
         
         return $answer;
@@ -64,15 +95,41 @@ class LogicAnswer extends LogicBase
 
     public function createAnswer($params)
     {
-        date_default_timezone_set("Asia/Ho_Chi_Minh");
         $answer = new Answer();
         
         if (! empty($params)) {
-            $answer->q_id = $params['q_id'];
-            $answer->qa_content = $params['qa_content'];
-            $answer->qa_status = $params['qa_status'];
+            $answer->q_id = $params ['q_id'];
+            $answer->qa_content = $params ['qa_content'];
+            $answer->qa_status = $params ['qa_status'];
             $answer->is_deleted = 0;
-            $answer->save();
+            if ($answer->save() && $answer->validate()) {
+                return $answer;
+            } else
+                $answer = null;
+        }
+        
+        return $answer;
+    }
+
+    public function updateAnswer($params)
+    {
+        if (! empty($params)) {
+            
+            $answer = $this->findById($params ['qa_id']);
+            
+            if ($answer != null) {
+                $answer->q_id = $params ['q_id'];
+                $answer->qa_content = $params ['qa_content'];
+                $answer->qa_status = $params ['qa_status'];
+                $answer->is_deleted = 0;
+                
+                if ($answer->save() && $answer->validate()) {
+                    
+                    return $answer;
+                } else
+                    $answer = null;
+            } else
+                $answer = null;
         }
         
         return $answer;
@@ -91,53 +148,15 @@ class LogicAnswer extends LogicBase
         return null;
     }
 
-    public function findByAnswerId($qa_id)
-    {
-        $answer = Answer::queryOne($qa_id);
-        if ($answer) {
-            return $answer->q_id;
-        }
-        
-        return null;
-    }
-
-    public function findAnswerByQuesionId2($q_id)
-    {
-        $answer = [];
-        $answer = Answer::find()->where([
-            'q_id' => $q_id
-        ]);
-        $answer->andWhere([
-            'is_deleted' => '0'
-        ]);
-        $answer = $answer->all();
-        if ($answer) {
-            return $answer;
-        }
-        
-        return null;
-    }
-
     public function findById($qa_id)
     {
         $answer = Answer::queryOne($qa_id);
         
-        if ($answer) {
-            return $answer;
-        }
-        
-        return null;
+        return $answer;
     }
 
     public function initAnswer()
     {
         return $answer = new Answer();
-    }
-
-    public function init2Answer()
-    {
-        return $answer = [
-            new Answer()
-        ];
     }
 }
