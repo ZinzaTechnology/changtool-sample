@@ -105,7 +105,7 @@ class AppConstant
     const USER_TEST_ASSIGNED = 'ASSIGNED';
     const USER_TEST_DONE = 'DONE';
     const USER_TEST_DOING = 'DOING';
-    
+    const USER_TEST_QUESTION_LIMIT_PER_PAGE = 5;
     public static $USER_TEST_STATUS = [
         self::USER_TEST_ASSIGNED => self::USER_TEST_ASSIGNED,
         self::USER_TEST_DOING => self::USER_TEST_DOING,
