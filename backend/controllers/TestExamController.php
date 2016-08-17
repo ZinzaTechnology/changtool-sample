@@ -10,7 +10,7 @@ use common\lib\components\AppConstant;
 use common\lib\logic\LogicTestExam;
 use common\lib\logic\LogicQuestion;
 use common\lib\helpers\AppArrayHelper;
-
+use common\lib\logic\LogicTestExamQuestions;
 /**
  * TestExamController implements the CRUD actions for TestExam model.
  */
@@ -67,7 +67,7 @@ class TestExamController extends BackendController
     public function actionView($id)
     {
         $logicTestExam = new LogicTestExam();
-        $logicQuestion = new LogicQuestion();
+        $logicTestExamQuestions = new LogicTestExamQuestions();
         $testExam = $logicTestExam->findTestExamById($id);
 
         if (!$testExam) {
@@ -80,7 +80,8 @@ class TestExamController extends BackendController
         if(isset($request['page'])){
             $page = $request['page'];
         }
-        $paging = $logicTestExam->pagingTestExam($id, 'view', $page, $logicTestExam->paging_view_page_size);
+        $question_ids = $logicTestExamQuestions->findQuestionIdByTestId($id);
+        $paging = $logicTestExam->pagingTestExam($id, 'view', $page, $logicTestExam->paging_view_page_size, $question_ids);
         return $this->render('view', [
             'testExam' => $testExam,
             'questions' => $paging['pagging_questions'],
@@ -204,12 +205,20 @@ class TestExamController extends BackendController
                 $test_questions = $logicQuestion->findQuestionByTestId($id);
                 $logicTestExam->initTestExamInfoToSession($testExam, $id, $test_questions);
             }
-            
-            $all_questions = $logicQuestion->findQuestionByIds(Yii::$app->session->get('test_exam')['all_questions']);
-            
+            $test_exam = Yii::$app->session['test_exam'];
+            if(isset($get['page'])){
+                $test_exam['current_page'] = $get['page'];
+                Yii::$app->session->set('test_exam', $test_exam);
+            }
+            $page = $test_exam['current_page'];
+            $all_question_ids = Yii::$app->session->get('test_exam')['all_questions'];
+            $paging = $logicTestExam->pagingTestExam($id, 'update', $page, $logicTestExam->paging_view_page_size, $all_question_ids);
+
             return $this->render('update', [
                 'testExam' => $testExam,
-                'all_questions' => $all_questions,
+                'all_questions' => $paging['pagging_questions'],
+                'paging_html' => $paging['html'],
+                'start' => $paging['start'],
                 'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
                 'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);

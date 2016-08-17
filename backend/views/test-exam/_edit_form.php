@@ -79,7 +79,7 @@ use kartik\select2\Select2;
 
             <div class="col-md-9">
                 <?php
-                $q_count = 1;
+                $q_count = $start + 1;
                 foreach ($all_questions as $aq) {
                     echo '<div class="row">';
                     echo '<div class="col-md-9">';
@@ -103,7 +103,9 @@ use kartik\select2\Select2;
                 ?>
            </div> 
         </div>
-
+        
+        <?= $paging_html; ?>
+        
         <div class="hr-line-solid"></div>
         <?= Html::submitButton('Cancel', ['name' => 'te_update', 'value' => 'cancel',
             'class' => 'btn btn-danger',

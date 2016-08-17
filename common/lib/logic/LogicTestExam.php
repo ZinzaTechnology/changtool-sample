@@ -17,6 +17,7 @@ use common\models\TestExamQuestions;
 use common\lib\helpers\AppArrayHelper;
 use common\lib\components\AppConstant;
 
+
 class LogicTestExam extends LogicBase
 {
     public function __construct()
@@ -27,6 +28,7 @@ class LogicTestExam extends LogicBase
     // Const variable
     public $paging_index_page_size = 10;
     public $paging_view_page_size = 5;
+    public $paging_update_page_size = 6;
      
     function create_link($url, $filter = [])
     {
@@ -39,12 +41,11 @@ class LogicTestExam extends LogicBase
         return $url . ($string ? '?'.ltrim($string, '&') : '');
     }
     
-    function pagingTestExam($te_id, $base_link, $current_page, $limit){
+    function pagingTestExam($te_id, $base_link, $current_page, $limit, $question_ids){
         $logicTestExamQuestions = new LogicTestExamQuestions();
         $logicQuestion = new LogicQuestion();
         
         // Get number of question on this exam
-        $question_ids = $logicTestExamQuestions->findQuestionIdByTestId($te_id);
         $total_records = count($question_ids);
         
         // Create link for paging test exam
@@ -221,10 +222,11 @@ class LogicTestExam extends LogicBase
         $testExam['te_num_of_questions'] = count($all_questions);
         
         $test_exam_info = [
-           'te_id' => $id,
-           'testExam' => $testExam,
-           'te_questions' => $test_questions,
-           'all_questions' => $all_questions,
+            'te_id' => $id,
+            'testExam' => $testExam,
+            'te_questions' => $test_questions,
+            'all_questions' => $all_questions,
+            'current_page' => 1, // Default current page
         ];
         Yii::$app->session->set('test_exam', $test_exam_info);
         return AppConstant::$ERROR_OK;
