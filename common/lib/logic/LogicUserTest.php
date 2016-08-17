@@ -85,16 +85,18 @@ class LogicUserTest extends LogicBase
     public function getTestDataByPageParam($id, $page = null)
     {
         $data = $this->findTestDataByUtID($id);
-        if($page<$this->_pageMax)
-            throw new BadRequestHttpException('Page is larger than page max!');
         $limitPerPage = AppConstant::USER_TEST_QUESTION_LIMIT_PER_PAGE;
         $this->_pageMax = round((count($data)/$limitPerPage));
         if(count($data)%$limitPerPage)
             $this->_pageMax++;
+        if ($page > $this->_pageMax)
+            throw new BadRequestHttpException('Page is larger than page max!');
+        elseif ($page < 1)
+            throw new BadRequestHttpException('Page must be more than 0!');
         if (!empty($page)) {
-            if (is_numeric($page) && $page>0)
+            if (is_numeric($page))
                 $this->_page = $page;
-            else throw new \yii\web\BadRequestHttpException('Page must be a number and larger than 0!');
+            else throw new BadRequestHttpException('Page must be a number!');
         } else $this->_page = 1;
         return array_slice($data, ($this->_page-1) * $limitPerPage, $limitPerPage);
     }
