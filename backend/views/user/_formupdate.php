@@ -24,7 +24,7 @@ use common\models\User;
                 
                 <?= Html::a('Change password', Url::toRoute(['changepassword','id' => $model->u_id])) ?>
                 
-                <hr>
+                <div class="hr-line-solid"></div>
                 
                 <div class="form-group">
                     <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Done', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-success']) ?>

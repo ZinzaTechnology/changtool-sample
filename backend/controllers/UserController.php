@@ -168,14 +168,13 @@ class UserController extends BackendController
     
     public function actionDelete($id)
     {
-        $logicUser = new LogicUser();        
-        $logicUser->deleteUserById($id);        
+        $logicUser = new LogicUser();
+        $logicUser->deleteUserById($id);
         return $this->redirect('index');
     }
     
     public function actionUpdate($id)
-    {
-        
+    {        
         $request = Yii::$app->request->post();
         $user = LogicUser::findUserById($id);
         
@@ -212,18 +211,10 @@ class UserController extends BackendController
             ]);
     }
     
-    protected function findModel($id)
-    {
-        if (($model = User::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-    }
-    
     /**
      * @return \yii\db\ActiveQuery
      */
+    
     public function getUsername()
     {
         return $this->hasOne(User::className(), ['id' => 'u_name']);
@@ -232,10 +223,12 @@ class UserController extends BackendController
     /**
      * @return \yii\db\ActiveQuery
      */
+    
     public function getFullname()
     {
         return $this->hasOne(User::className(), ['id' => 'u_fullname']);
     }
+    
     public function getEmail()
     {
         return $this->hasOne(User::className(), ['id' => 'u_mail']);

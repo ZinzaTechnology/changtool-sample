@@ -11,8 +11,9 @@ use yii\data\Pagination;
 $this->title = 'Accounts';
 
 ?>
+
 <div class="ibox">
-    <div class="user-index">
+    <div class="user-index">    
         <h1><?= Html::encode($this->title) ?></h1>
         <p>
             <?= Html::a('New Account', ['create'], ['class' => 'btn btn-success']) ?>
