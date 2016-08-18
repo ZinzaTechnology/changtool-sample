@@ -170,14 +170,23 @@ class LogicUserTest extends LogicBase
     {
         $query = new Query;
         $query->from('user_test')
-                ->innerJoin('user', 'user_test.u_id = user.u_id')
-                ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id')
-                ->andFilterWhere(['like', 'u_name', $params['u_name']])
-                ->andFilterWhere(['like', 'te_title', $params['te_title']])
-                ->andFilterWhere(['te_category' => $params['te_category'], 'te_level' => $params['te_level'], 'ut_status' => $params['ut_status']])
-                ->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']])
-                ->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']])
-                ->addOrderBy(['ut_id' => SORT_DESC]);
+            ->innerJoin('user', 'user_test.u_id = user.u_id')
+            ->innerJoin('test_exam', 'user_test.te_id = test_exam.te_id');
+        if(isset($params['u_name']))
+            $query->andFilterWhere(['like', 'u_name', $params['u_name']]);
+        if(isset($params['te_title']))
+            $query->andFilterWhere(['like', 'te_title', $params['te_title']]);
+        if(isset($params['te_category']))
+            $query->andFilterWhere(['te_category' => $params['te_category']]);
+        if(isset($params['te_level']))
+            $query->andFilterWhere(['te_level' => $params['te_level']]);
+        if(isset($params['ut_status']))
+            $query->andFilterWhere(['ut_status' => $params['ut_status']]);
+        if(isset($params['ut_start_at']))
+            $query->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']]);
+        if(isset($params['ut_finished_at']))
+            $query->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']]);
+        $query->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
     }
 
