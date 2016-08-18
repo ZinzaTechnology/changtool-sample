@@ -21,7 +21,9 @@
         "yiisoft/yii2-jui": "^2.0",
         "maksyutin/yii2-dual-list-box": "dev-master",
         "wbraganca/yii2-dynamicform": "*",
-        "kartik-v/yii2-widget-select2": "*"
+        "kartik-v/yii2-widget-select2": "*",
+	"kartik-v/yii2-export": "@dev",
+	"phpoffice/phpexcel": "dev-develop"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
