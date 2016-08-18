@@ -34,7 +34,7 @@ $this->title = 'Accounts';
                 'u_mail',
                 'u_fullname',
                 'u_role',
-                ['class' => 'yii\grid\ActionColumn'],
+                ['class' => yii\grid\ActionColumn::className(), 'template' => '{update}']
             ],
         ]); ?>  
     </div>

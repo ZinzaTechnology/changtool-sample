@@ -32,7 +32,7 @@ $this->title = $model->u_name;
                 <?= Html::a('Delete', ['delete', 'id' => $model->u_id], [
                     'class' => 'btn btn-danger',
                     'data' => [
-                        'confirm' => 'Are you sure you want to delete this item?',
+                        'confirm' => 'Are you sure you want to delete account ' . $model->u_name . '?',
                         'method' => 'post',
                     ],
                 ]) ?>

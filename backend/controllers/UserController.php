@@ -244,7 +244,7 @@ class UserController extends BackendController
     {
         return $this->hasOne(User::className(), ['id' => 'u_name']);
     }
-     
+    
     /**
      * @return \yii\db\ActiveQuery
      */
