@@ -27,14 +27,9 @@ $question_count = ($page - 1) * $limitQuestion + 1;
                         </div>
                         <div class="m-b-md">
                             <?php foreach ($question['answer'] as $answer) : ?>
+                                <?php $checked = (isset($userAnswer["question-{$answer['qc_id']}"]) && in_array($answer['ac_id'], $userAnswer["question-{$answer['qc_id']}"])) ? true : false; ?>
                                 <div class="i-checks">
-                                    <input type="radio" disabled 
-                                        <?php
-                                        if (isset($userAnswer["question-{$answer['qc_id']}"]) && in_array($answer['ac_id'], $userAnswer["question-{$answer['qc_id']}"])) {
-                                            echo "checked";
-                                        }
-                                        ?>
-                                    >
+                                    <?= Html::checkbox('answer', $checked, ['disabled' => '']) ?>
                                     <?= $answer['ac_content'] ?>
                                     <?= ($answer['ac_status'] == 1) ? "<span class='label label-primary'>True</span>" : '' ?>
                                 </div>
