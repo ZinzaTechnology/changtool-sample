@@ -91,12 +91,10 @@ class LogicUserTest extends LogicBase
             $this->_pageMax++;
         if ($page > $this->_pageMax)
             throw new BadRequestHttpException('Page is larger than page max!');
-        elseif ($page < 1)
-            throw new BadRequestHttpException('Page must be more than 0!');
-        if (!empty($page)) {
-            if (is_numeric($page))
-                $this->_page = $page;
-            else throw new BadRequestHttpException('Page must be a number!');
+        if (isset($page)) {
+            if (is_numeric($page) && $page>0){
+                    $this->_page = $page;
+            } else throw new BadRequestHttpException('Page must be a number and more than 0!');
         } else $this->_page = 1;
         return array_slice($data, ($this->_page-1) * $limitPerPage, $limitPerPage);
     }
