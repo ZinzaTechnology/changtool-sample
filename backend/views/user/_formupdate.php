@@ -30,7 +30,7 @@ use common\models\User;
                 <?= Html::a('Delete', ['delete', 'id' => $model->u_id], [
                     'class' => 'btn btn-danger',
                     'data' => [
-                        'confirm' => "Are you sure you want to delete account $model->u_name ?",
+                        'confirm' => "Are you sure you want to delete account $model->u_name?",
                         'method' => 'post',
                     ],
                 ]) ?>
