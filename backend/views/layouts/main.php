@@ -104,7 +104,7 @@ $current_user = Yii::$app->user->identity;
                         ],
                         [
                             'label' => 'Import Data',
-                            'icon' => 'fa-tasks',
+                            'icon' => 'fa-upload',
                             'url' => ["/import-data"],
                             'controllers' => [
                                 'import-data' => '*',
