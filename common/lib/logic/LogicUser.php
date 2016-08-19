@@ -44,7 +44,7 @@ class LogicUser extends LogicBase
         $user->save();
     }
     
-    public function updateUserById(&$user, $params)
+    public function updateUser(&$user, $params)
     {
         $user->u_fullname = $params['u_fullname'];
         $user->u_mail = $params['u_mail'];
@@ -56,7 +56,7 @@ class LogicUser extends LogicBase
         return $user;
     }
     
-    public function changePasswordUserById(&$user, $params)
+    public function changePassword(&$user, $params)
     {
         if($params['u_password_hash'] !== $params['confirm_pwd_update']) {
             return null;

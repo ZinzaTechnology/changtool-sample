@@ -181,7 +181,7 @@ class UserController extends BackendController
                 ]);
             }
         } else {
-            $this->setSessionFlash('error', 'User not found');           
+            $this->setSessionFlash('error', 'Invalid user'); 
         }
         return $this->redirect('index');
     }
@@ -197,6 +197,7 @@ class UserController extends BackendController
         
         if (!empty($id)) {
             $model = $logicUser->findUserById($id);
+            
             if($model == null) {
                 $this->setSessionFlash('error', 'User not found');
             } else {
@@ -205,6 +206,7 @@ class UserController extends BackendController
         } else {
             $this->setSessionFlash('error', 'Invalid User');
         }
+        
         return $this->redirect('index');
     }
     
@@ -215,24 +217,33 @@ class UserController extends BackendController
     
     public function actionUpdate($id)
     {        
-        $request = Yii::$app->request->post();
-        $user = LogicUser::findUserById($id);
+        $request = Yii::$app->request->post();                
         
-        if (!empty($user)) {
-            if (isset($request['User'])) {
-                $updateUser = new LogicUser();
-                
-                $params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
-                $updateUser->updateUserById($user, $params);
-                
+        if (!empty($id)) {
+            $user = LogicUser::findUserById($id);
+            
+            if (empty($user)) {
+                $this->setSessionFlash('error', 'User not found');
                 return $this->redirect('index');
-            }
-          
+            } else {               
+                
+                if (isset($request['User'])) {
+                    $updateUser = new LogicUser();
+                    
+                    $params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
+                    $updateUser->updateUser($user, $params);
+                    
+                    return $this->redirect('index');
+                }
+            
             return $this->render('update', [
                     'model' => $user,
                 ]);
+            }
         } else {
-            $this->setSessionFlash('error', 'User not found');
+            $this->setSessionFlash('error', 'Invalid user');
+            
+            return $this->redirect('index');
         }
     }
     
@@ -243,28 +254,37 @@ class UserController extends BackendController
     
     public function actionChangepassword($id)
     {
-        $request = Yii::$app->request->post();
-        $user = LogicUser::findUserById($id);
+        $request = Yii::$app->request->post();        
         
-        if (!empty($user)) {
-            if (isset($request['User'])) {
-                $changePwd = new LogicUser();
-                
-                $params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash', 'confirm_pwd_update']);
-                $user = $changePwd->changePasswordUserById($user, $params);
-                if($user ==  null) {
-                    $this->setSessionFlash('error', 'Confirm password incorrect!');
-                    return $this->redirect('changepassword');
-                }
-                
-                return $this->redirect('index');
-            }
+        if (!empty($id)) {
+            $user = LogicUser::findUserById($id);
             
-            return $this->render('changepassword', [
-                'model' => $user,
-                ]);
+            if (empty($user)) {
+                $this->setSessionFlash('error', 'User not found');
+                return $this->redirect('index');
+            } else {
+                
+                if (isset($request['User'])) {
+                    $changePwd = new LogicUser();
+                    
+                    $params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash', 'confirm_pwd_update']);
+                    $user = $changePwd->changePassword($user, $params);
+                    if($user ==  null) {
+                        $this->setSessionFlash('error', 'Confirm password incorrect!');
+                        return $this->redirect('changepassword');
+                    }
+                    
+                    return $this->redirect('index');
+                }
+            
+                return $this->render('changepassword', [
+                    'model' => $user,
+                    ]);
+            }
         } else {
-            $this->setSessionFlash('error', 'User not found');
+            $this->setSessionFlash('error', 'Invalid user');
+            
+            return $this->redirect('index');
         }
     }
     
