@@ -12,16 +12,16 @@ $this->params ['breadcrumbs'] [] = $this->title;
 		<h1><?= $this->title ?></h1>
         <?=Breadcrumbs::widget([ 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [ ] ])?>
     </div>
-	<div class="hr-line-solid"></div>
-
+	<br>
+	<div class="ibox-content">
     <?php $form = ActiveForm :: begin(['action' => ['question/edit-question'], 'id' => 'form_create', 'method' => 'post',])?>
 
-        <?= $form ->field($question, 'q_content')->textArea(['placeholder' => 'input question ?','row' => '10'])?>
+        <?= $form ->field($question, 'q_content')->textArea(['placeholder' => 'input question ?','row' => '15','style'=>'resize'])?>
         <?= $form->field($question, 'q_category')->dropDownList($category, ['prompt' => '---Select---']); ?>
         <?= $form->field($question, 'q_level')->radioList($level); ?>
         <?= $form->field($question, 'q_type')->radioList($type); ?>
         <?=  $form->field($question, 'q_id')->hiddenInput(['value' => $q_id])->label(false);?>
-        <hr width=300px align="left" />
+         <hr width=100%px align="left" />
 
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -83,10 +83,13 @@ $this->params ['breadcrumbs'] [] = $this->title;
             <?php DynamicFormWidget::end(); ?>
 
              </div>
+		</div>
 	</div>
-
-	<div class="hr-line-solid"></div>
-        <?php echo Html::a('Back', ['/question/index'], ['class' => 'btn btn-success']);?>
+	<br>
+	<div class="ibox-content">
+       
         <?= Html::submitButton('Update', ['class' => 'btn btn-success'])?>
-    <?php ActiveForm :: end()?>
+    	<?php ActiveForm :: end()?>
+    	 <?php echo Html::a('Back', ['/question/index'], ['class' => 'btn btn-primary pull-right']);?>
+    </div>
 </div>

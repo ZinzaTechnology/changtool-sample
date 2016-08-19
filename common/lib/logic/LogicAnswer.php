@@ -9,7 +9,6 @@ namespace common\lib\logic;
 
 use yii\helpers\ArrayHelper;
 use common\models\Answer;
-use common\lib\components\AppConstant;
 
 class LogicAnswer extends LogicBase
 {
@@ -28,16 +27,6 @@ class LogicAnswer extends LogicBase
         return Answer::queryAll([
             'q_id' => $q_id 
         ]);
-    }
-
-    public function findByAnswerId($qa_id)
-    {
-        $answer = Answer::queryOne($qa_id);
-        if ($answer) {
-            return $answer->q_id;
-        }
-        
-        return null;
     }
 
     /**
@@ -62,10 +51,10 @@ class LogicAnswer extends LogicBase
         
         if (! empty($params)) {
             $answer->q_id = $q_id;
-            $answer->qa_content = $params ['qa_content'];
-            $answer->qa_status = $params ['qa_status'];
+            $answer->qa_content = $params['qa_content'];
+            $answer->qa_status = $params['qa_status'];
             $answer->is_deleted = 0;
-            if ($answer->save() && $answer->validate()) {
+            if ($answer->validate() && $answer->save()) {
                 return $answer;
             } else
                 $answer = null;
@@ -74,20 +63,32 @@ class LogicAnswer extends LogicBase
         return $answer;
     }
 
-    public function updateAnswerByQuesion($params)
+    public function updateAnswerByQuesion($params, $q_id)
     {
-        if ($params != null) {
-            $answer = $this->findById($params ['qa_id']);
-            if ($answer != null) {
-                $answer->qa_content = $params ['qa_content'];
-                $answer->qa_status = $params ['qa_status'];
+        if ($params != null && $q_id != null) {
+            if ($params['qa_id'] == null) {
+                $answer = new Answer();
+                $answer->q_id = $q_id;
+                $answer->qa_content = $params['qa_content'];
+                $answer->qa_status = $params['qa_status'];
                 $answer->is_deleted = 0;
                 if ($answer->save() && $answer->validate()) {
                     return $answer;
                 } else
                     $answer = null;
-            } else
-                $answer = null;
+            } else {
+                $answer = $this->findByAnswerId($params['qa_id']);
+                if ($answer != null) {
+                    $answer->qa_content = $params['qa_content'];
+                    $answer->qa_status = $params['qa_status'];
+                    $answer->is_deleted = 0;
+                    if ($answer->validate() && $answer->save()) {
+                        return $answer;
+                    } else
+                        $answer = null;
+                } else
+                    $answer = null;
+            }
         }
         
         return $answer;
@@ -98,11 +99,11 @@ class LogicAnswer extends LogicBase
         $answer = new Answer();
         
         if (! empty($params)) {
-            $answer->q_id = $params ['q_id'];
-            $answer->qa_content = $params ['qa_content'];
-            $answer->qa_status = $params ['qa_status'];
+            $answer->q_id = $params['q_id'];
+            $answer->qa_content = $params['qa_content'];
+            $answer->qa_status = $params['qa_status'];
             $answer->is_deleted = 0;
-            if ($answer->save() && $answer->validate()) {
+            if ($answer->validate() && $answer->save()) {
                 return $answer;
             } else
                 $answer = null;
@@ -115,15 +116,15 @@ class LogicAnswer extends LogicBase
     {
         if (! empty($params)) {
             
-            $answer = $this->findById($params ['qa_id']);
+            $answer = $this->findByAnswerId($params['qa_id']);
             
             if ($answer != null) {
-                $answer->q_id = $params ['q_id'];
-                $answer->qa_content = $params ['qa_content'];
-                $answer->qa_status = $params ['qa_status'];
+                $answer->q_id = $params['q_id'];
+                $answer->qa_content = $params['qa_content'];
+                $answer->qa_status = $params['qa_status'];
                 $answer->is_deleted = 0;
                 
-                if ($answer->save() && $answer->validate()) {
+                if ($answer->validate() && $answer->save()) {
                     
                     return $answer;
                 } else
@@ -148,7 +149,7 @@ class LogicAnswer extends LogicBase
         return null;
     }
 
-    public function findById($qa_id)
+    public function findByAnswerId($qa_id)
     {
         $answer = Answer::queryOne($qa_id);
         

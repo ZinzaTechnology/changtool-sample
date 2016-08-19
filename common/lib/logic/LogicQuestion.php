@@ -96,7 +96,7 @@ class LogicQuestion extends LogicBase
             $question->q_type = $params ['q_type'];
             $question->q_level = $params ['q_level'];
             $question->is_deleted = 0;
-            if ($question->save() && $question->validate()) {
+            if ($question->validate() && $question->save()) {
                 return $question;
             } else
                 $question = null;
@@ -115,7 +115,7 @@ class LogicQuestion extends LogicBase
                 $question->q_type = $params ['q_type'];
                 $question->q_level = $params ['q_level'];
                 $question->is_deleted = 0;
-                if ($question->save() && $question->validate()) {
+                if ($question->validate() && $question->save()) {
                     return $question;
                 } else
                     $question = null;
