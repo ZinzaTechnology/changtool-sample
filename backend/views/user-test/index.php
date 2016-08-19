@@ -4,16 +4,20 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
-
+use yii\widgets\Breadcrumbs;
 $this->title = 'User Test';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php Pjax::begin(); ?>
 <div class="ibox">
-
-    <h1>
-        <?= Html::encode($this->title) ?>
-    </h1>
+    <div class="ibox-title m-b-md">
+        <h1><?= $this->title ?></h1>
+        <?=
+        Breadcrumbs::widget([
+            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+        ])
+        ?>
+    </div>
     <?= Html::beginForm(Url::toRoute(__METHOD__), 'POST', ['class' => 'form']); ?>
     <div class="row m-b-md">
         <div class="col-md-3">
@@ -116,13 +120,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     'view' => function ($url, $model) {
                         return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', Url::toRoute(['detail', 'id' => $model['ut_id']]));
                     },
-                    'delete' => function ($url, $model) {
+                            'delete' => function ($url, $model) {
                         return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete', 'id' => $model['ut_id']]), ['onclick' => "return confirm('Do you really want to delete this?')"]);
                     }
+                        ],
+                    ],
                 ],
-            ],
-        ],
-    ]);
-    ?>
-</div>
-<?php Pjax::end(); ?>
+            ]);
+            ?>
+        </div>
+        <?php Pjax::end(); ?>
