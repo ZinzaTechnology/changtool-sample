@@ -3,8 +3,10 @@
 namespace backend\controllers;
 
 use Yii;
+use yii\web\UploadedFile;
 use backend\controllers\BackendController;
 use common\lib\logic\LogicImportData;
+use common\models\Upload;
 
 class ImportDataController extends BackendController
 {
@@ -14,11 +16,16 @@ class ImportDataController extends BackendController
     }
     public function actionQuestionAnswer()
     {
-        if(Yii::$app->request->post()){
-            $file = "uploads/TestExamData_2.xlsx";
-            $logicImportData = new LogicImportData();
-            $logicImportData->insertDataByFileExcel($file);
+        $model = new Upload();
+        if(Yii::$app->request->isPost){
+            $model->excelFile = \yii\web\UploadedFile::getInstance($model, 'excelFile');
+            if($fileName = $model->open()){
+                $logicImportData = new LogicImportData();
+                $logicImportData->insertDataByFileExcel($fileName);
+            }else{
+                throw $model->getErrors();
+            }
         }
-        return $this->render('question-answer');
+        return $this->render('question-answer', ['model' => $model]);
     }
 }
