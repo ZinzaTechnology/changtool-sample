@@ -1,4 +1,5 @@
 <?php
+use Yii;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
@@ -6,6 +7,8 @@ use yii\widgets\ActiveForm;
 
 $this->title = "TestExam $te_code: add questions";
 $this->params['breadcrumbs'][] = $this->title;
+$this->registerJsFile('/res/js/paging.js', ['position' => \yii\web\View::POS_HEAD], null);
+$this->registerCssFile('/res/css/paging.css', [], null);
 ?>
 
 <div class="ibox">
@@ -27,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'action' => Url::toRoute(['/test-exam/update','id' => $id]),
                 'method' => 'post',
         ]); ?>
-        <table class="table table-hover">
+        <table class="table table-hover" id="results">
             <caption>QUESTION</caption>
             <thead>
                 <tr>
@@ -66,7 +69,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <div id="pageNavPosition"></div>
         <?= Html::submitButton('Add', ['name' => 'te_update', 'value' => 'add_question_complete', 'class' => 'btn btn-primary']) ?>
         <?php ActiveForm::end(); ?>
+        <script type="text/javascript">
+            var pager = new Pager('results', 10); 
+            pager.init(); 
+            pager.showPageNav('pager', 'pageNavPosition'); 
+            pager.showPage(1);
+        </script>
     </div>
 </div>
