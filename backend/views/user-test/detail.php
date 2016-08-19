@@ -14,7 +14,7 @@ $question_count = ($page - 1) * $limitQuestion + 1;
 
 <div class="ibox">
     <div class="ibox-title m-b-md">
-        <h1><?= $this->title ?></h1>
+        <h1><?= Html::encode($this->title) ?></h1>
         <?=
         Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],

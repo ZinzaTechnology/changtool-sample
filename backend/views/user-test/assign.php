@@ -10,7 +10,7 @@ $this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title
 ?>
 <div class="ibox-title m-b-md">
-    <h1><?= $this->title ?></h1>
+    <h1><?= Html::encode($this->title) ?></h1>
     <?=
     Breadcrumbs::widget([
         'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
