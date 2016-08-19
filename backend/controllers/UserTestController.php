@@ -68,7 +68,7 @@ class UserTestController extends BackendController
             throw new NotFoundHttpException('This id not found');
         }
     }
-
+    
     public function actionAssign()
     {
         $userTest = new UserTest;

@@ -104,6 +104,7 @@ class LogicUserTest extends LogicBase
         }
         return array_slice($data, ($this->_page-1) * $limitPerPage, $limitPerPage);
     }
+    
     public function assignTest()
     {
         $userTest = new UserTest;
