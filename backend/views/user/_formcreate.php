@@ -26,7 +26,6 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'u_role')->dropDownList(
                 ['ADMIN' => 'ADMIN', 'USER' => 'USER',],
                 [
-                    'prompt' => '',
                     'options' => [
                         'USER' => ['Selected' => true]
                     ]

@@ -171,9 +171,19 @@ class UserController extends BackendController
     {
         $logicUser = new LogicUser();
         
-        return $this->render('view', [
-            'model' => $logicUser->findUserById($id),
-        ]);
+        if (!empty($id)) {
+            $model = $logicUser->findUserById($id);
+            if ($model == null) {
+                $this->setSessionFlash('error', "User not found");
+            } else {
+                return $this->render('view', [
+                    'model' => $logicUser->findUserById($id),
+                ]);
+            }
+        } else {
+            $this->setSessionFlash('error', 'User not found');           
+        }
+        return $this->redirect('index');
     }
     
     /**
@@ -184,7 +194,17 @@ class UserController extends BackendController
     public function actionDelete($id)
     {
         $logicUser = new LogicUser();
-        $logicUser->deleteUserById($id);
+        
+        if (!empty($id)) {
+            $model = $logicUser->findUserById($id);
+            if($model == null) {
+                $this->setSessionFlash('error', 'User not found');
+            } else {
+                $logicUser->deleteUserById($id);
+            }
+        } else {
+            $this->setSessionFlash('error', 'Invalid User');
+        }
         return $this->redirect('index');
     }
     
@@ -198,18 +218,22 @@ class UserController extends BackendController
         $request = Yii::$app->request->post();
         $user = LogicUser::findUserById($id);
         
-        if (isset($request['User'])) {
-            $updateUser = new LogicUser();
-            
-            $params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
-            $updateUser->updateUserById($user, $params);
-            
-            return $this->redirect('index');
+        if (!empty($user)) {
+            if (isset($request['User'])) {
+                $updateUser = new LogicUser();
+                
+                $params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
+                $updateUser->updateUserById($user, $params);
+                
+                return $this->redirect('index');
+            }
+          
+            return $this->render('update', [
+                    'model' => $user,
+                ]);
+        } else {
+            $this->setSessionFlash('error', 'User not found');
         }
-        
-        return $this->render('update', [
-                'model' => $user,
-            ]);
     }
     
     /**
@@ -222,18 +246,26 @@ class UserController extends BackendController
         $request = Yii::$app->request->post();
         $user = LogicUser::findUserById($id);
         
-        if (isset($request['User'])) {
-            $changePwd = new LogicUser();
+        if (!empty($user)) {
+            if (isset($request['User'])) {
+                $changePwd = new LogicUser();
+                
+                $params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash', 'confirm_pwd_update']);
+                $user = $changePwd->changePasswordUserById($user, $params);
+                if($user ==  null) {
+                    $this->setSessionFlash('error', 'Confirm password incorrect!');
+                    return $this->redirect('changepassword');
+                }
+                
+                return $this->redirect('index');
+            }
             
-            $params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash']);
-            $changePwd->changePasswordUserById($user, $params);
-
-            return $this->redirect('index');
+            return $this->render('changepassword', [
+                'model' => $user,
+                ]);
+        } else {
+            $this->setSessionFlash('error', 'User not found');
         }
-        
-        return $this->render('changepassword', [
-            'model' => $user,
-            ]);
     }
     
     /**

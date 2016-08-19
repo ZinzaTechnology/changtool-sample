@@ -50,14 +50,24 @@ class LogicUser extends LogicBase
         $user->u_mail = $params['u_mail'];
         $user->u_role = $params['u_role'];
         
-        return $user->save();
+        if ($user->validate()) {
+            $user->save();
+        }
+        return $user;
     }
     
     public function changePasswordUserById(&$user, $params)
     {
+        if($params['u_password_hash'] !== $params['confirm_pwd_update']) {
+            return null;
+        }
+        
         $user->u_password_hash = Yii::$app->security->generatePasswordHash($params['u_password_hash']);
-
-        return $user->save();
+        
+        if ($user->validate()) {
+            $user->save();
+        }
+        return $user;
     }
     
     public function findUserBySearch($params, &$userSearch)

@@ -19,7 +19,7 @@ use common\models\User;
         
             <?= $form->field($model, 'u_mail')->textInput(['maxlenght' => true]) ?>  
         
-            <?= $form->field($model, 'u_role')->dropDownList([ 'ADMIN' => 'ADMIN', 'USER' => 'USER', ], ['prompt' => '']) ?> 
+            <?= $form->field($model, 'u_role')->dropDownList([ 'ADMIN' => 'ADMIN', 'USER' => 'USER', ]) ?> 
             
             <?= Html::a('Change password', Url::toRoute(['changepassword','id' => $model->u_id])) ?>
             
