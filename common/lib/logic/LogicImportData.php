@@ -25,7 +25,7 @@ class LogicImportData extends LogicBase
             $inputFileType = \PHPExcel_IOFactory::identify($fileDirectory);
             $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
             $objPHPExcel = $objReader->load($fileDirectory);
-            $sheet = $objPHPExcel->getSheet(0);
+            $sheet = $objPHPExcel->getSheet(1);
             $highestRow = $sheet->getHighestRow();
             $highestColumn = $sheet->getHighestColumn();
             for($row=1;$row<= $highestRow;$row++)
