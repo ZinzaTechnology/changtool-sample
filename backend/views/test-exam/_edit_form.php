@@ -84,7 +84,7 @@ use kartik\select2\Select2;
                     echo '<div class="row">';
                     echo '<div class="col-md-9">';
                     echo $form->field($aq, 'q_content')->textArea(['style' => 'height: 100px', 'class' => 'col-md-9'])
-                        ->label("Question $q_count", ['class' => 'col-md-3']);
+                        ->label("Question $q_count (q_id: $aq->q_id)", ['class' => 'col-md-3']);
                     echo '</div>';
 
                     echo '<div class="col-md-3" style="padding-top: 20px">';

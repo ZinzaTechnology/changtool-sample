@@ -69,7 +69,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
                 $form = ActiveForm::begin();
                 $q_count = $start + 1;
                 foreach ($questions as $q) {
-                    echo $form->field($q, 'q_content')->textarea(['readonly' => true])->label("Question $q_count");
+                    echo $form->field($q, 'q_content')->textarea(['readonly' => true])->label("Question $q_count (q_id: $q->q_id)");
                     ++$q_count;
                 }
                 $form = ActiveForm::end();

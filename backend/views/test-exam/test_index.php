@@ -35,6 +35,7 @@ $this->registerCssFile('/res/css/paging.css', [], null);
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Question ID</th>
                     <th>Category</th>
                     <th>Level</th>
                     <th>Type</th>
@@ -51,6 +52,7 @@ $this->registerCssFile('/res/css/paging.css', [], null);
                 <?php foreach ($questions as $question) : ?>
                     <tr>
                         <td><?= '<input type="checkbox" name="option[]" value="'.$question->q_id.'" '.(in_array($question->q_id, $all_questions) ? 'checked disabled readonly' : '').' />'; ?></td>
+                        <td><?= $question->q_id ?></td>
                         <td><?= $category ?></td>
                         <td><?= $level[$question->q_level] ?></td>
                         <td><?= $type[$question->q_type] ?></td>
