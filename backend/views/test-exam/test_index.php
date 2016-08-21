@@ -73,6 +73,7 @@ $this->registerCssFile('/res/css/paging.css', [], null);
         </table>
         <div id="pageNavPosition"></div>
         <?= Html::submitButton('Add', ['name' => 'te_update', 'value' => 'add_question_complete', 'class' => 'btn btn-primary']) ?>
+        <?= Html::a('Back', ['/test-exam/update?id='.$id], ['class' => 'btn btn-primary pull-right']) ?>
         <?php ActiveForm::end(); ?>
         <script type="text/javascript">
             var pager = new Pager('results', 10); 
