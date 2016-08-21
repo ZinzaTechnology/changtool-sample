@@ -235,6 +235,14 @@ class TestExamController extends BackendController
     {
         $logicTestExam = new LogicTestExam();
         if ($logicTestExam->deleteTestExamById($id)) {
+            if (isset(Yii::$app->session['test_exam'])) {
+                // User is editting testExam
+                $test_exam = Yii::$app->session['test_exam'];
+                if ($test_exam['testExam']['te_id'] == $id) {
+                    // User delete editting testExam, remove session of this testExam
+                    $logicTestExam->removeTestExamInfoFromSession();
+                }
+            }
             $this->redirect(['/test-exam']);
         } else {
             $this->setSessionFlash('error', 'Error occurs when deleting this test!');
