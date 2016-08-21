@@ -25,7 +25,7 @@ class LogicTestExam extends LogicBase
         parent::__construct();
     }
      
-    function create_link($url, $filter = [])
+    private function create_link($url, $filter = [])
     {
         $string = '';
         foreach ($filter as $key => $val){
@@ -36,7 +36,7 @@ class LogicTestExam extends LogicBase
         return $url . ($string ? '?'.ltrim($string, '&') : '');
     }
     
-    function pagingTestExam($te_id, $base_link, $current_page, $limit, $question_ids){
+    public function pagingTestExam($te_id, $base_link, $current_page, $limit, $question_ids){
         $logicTestExamQuestions = new LogicTestExamQuestions();
         $logicQuestion = new LogicQuestion();
         
@@ -59,7 +59,7 @@ class LogicTestExam extends LogicBase
         return $paging;
     }
     
-    function paging($link, $total_records, $current_page, $limit)
+    private function paging($link, $total_records, $current_page, $limit)
     {
         $total_page = ceil($total_records / $limit);
 
