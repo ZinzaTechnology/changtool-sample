@@ -329,7 +329,7 @@ class LogicTestExam extends LogicBase
             try {
                 // Update info to TestExam
                 $testExam = $test_exam['testExam'];
-                if (!$testExam->save()) {
+                if (!$testExam->validate() || !$testExam->save()) {
                     $transaction->rollBack();
                     return AppConstant::$ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB;
                 }
