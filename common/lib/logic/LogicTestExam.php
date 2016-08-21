@@ -24,11 +24,6 @@ class LogicTestExam extends LogicBase
     {
         parent::__construct();
     }
-    
-    // Const variable
-    public $paging_index_page_size = 10;
-    public $paging_view_page_size = 5;
-    public $paging_update_page_size = 6;
      
     function create_link($url, $filter = [])
     {
@@ -137,7 +132,7 @@ class LogicTestExam extends LogicBase
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => $this->paging_index_page_size,
+                'pageSize' => AppConstant::$PAGING_INDEX_PAGE_SIZE,
             ],
         ]);
 

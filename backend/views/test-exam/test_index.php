@@ -75,7 +75,7 @@ $this->registerCssFile('/res/css/paging.css', [], null);
         <?= Html::a('Back', ['/test-exam/update?id='.$id], ['class' => 'btn btn-primary pull-right']) ?>
         <?php ActiveForm::end(); ?>
         <script type="text/javascript">
-            var pager = new Pager('results', 10); 
+            var pager = new Pager('results', <?= $pagging_size ?>); 
             pager.init(); 
             pager.showPageNav('pager', 'pageNavPosition'); 
             pager.showPage(1);
