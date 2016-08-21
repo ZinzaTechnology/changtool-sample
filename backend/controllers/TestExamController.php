@@ -120,8 +120,8 @@ class TestExamController extends BackendController
 
         return $this->render('create', [
             'testExam' => $newTest,
-            'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-            'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
+            'test_category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+            'test_level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
         ]);
     }
 
@@ -219,8 +219,8 @@ class TestExamController extends BackendController
                 'all_questions' => $paging['pagging_questions'],
                 'paging_html' => $paging['html'],
                 'start' => $paging['start'],
-                'testCategory' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
-                'testLevel' => AppConstant::$TEST_EXAM_LEVEL_NAME,
+                'test_category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
+                'test_level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             ]);
         }
     }

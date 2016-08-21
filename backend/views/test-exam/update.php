@@ -28,8 +28,8 @@ $this->params['breadcrumbs'][] = 'Edit';
                 'all_questions' => $all_questions,
                 'paging_html' => $paging_html,
                 'start' => $start,
-                'testCategory' => $testCategory,
-                'testLevel' => $testLevel,
+                'test_category' => $test_category,
+                'test_level' => $test_level,
             ]) ?>
         </div>
 

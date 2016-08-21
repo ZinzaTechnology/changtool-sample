@@ -21,7 +21,7 @@ use kartik\select2\Select2;
                     <tr>
                         <td>
                         <?= $form->field($testExam, 'te_category')->widget(Select2::classname(), [
-                                'data' => $testCategory,
+                                'data' => $test_category,
                                 'language' => 'en',
                                 'options' => ['placeholder' => 'Select Category ...'],
                                 'pluginOptions' => [
@@ -32,7 +32,7 @@ use kartik\select2\Select2;
                         </td>
                         <td>
                         <?= $form->field($testExam, 'te_level')->widget(Select2::classname(), [
-                                'data' => $testLevel,
+                                'data' => $test_level,
                                 'language' => 'en',
                                 'options' => ['placeholder' => 'Select a Level ...'],
                                 'pluginOptions' => [
