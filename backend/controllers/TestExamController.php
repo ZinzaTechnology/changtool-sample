@@ -296,14 +296,4 @@ class TestExamController extends BackendController
         ];
         return $this->render('test_index', $data);
     }
-    
-    public function actionAssigntestexam()
-    {
-        if ($request = Yii::$app->request->get()) {
-            foreach ($request['selection'] as $selection) {
-                echo $selection."<br \>";
-            }
-            print_r($request['selection']);
-        }
-    }
 }
