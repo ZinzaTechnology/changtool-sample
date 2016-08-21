@@ -191,8 +191,8 @@ class TestExamController extends BackendController
                 $test_exam = Yii::$app->session['test_exam'];
                 if ($test_exam['testExam']['te_id'] != $id) {
                     // User cannot edit 2 testExams at the same time
-                    $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id']." Please commit edit or cancel to edit other testExam");
-                    return $this->redirect(['index']);
+                    $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_code'].". Please commit or cancel this to edit other testExam");
+                    return $this->redirect(['update', 'id' => $test_exam['te_id']]);
                 }
                 $testExam  = $test_exam['testExam'];
             } else {
