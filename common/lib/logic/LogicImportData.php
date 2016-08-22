@@ -81,10 +81,12 @@ class LogicImportData extends LogicBase
             $questionsID = $this->insertQuestionToDatabase('question', $questionsData);
             $answersID = $this->insertAnswerToDatabase('answer', $questionsID, $answersData);
             $transaction->commit();
+            return true;
         } catch (Exception $ex) {
             $transaction->rollBack();
             throw $ex;
         }
+        return false;
     }
     
     public function insertQuestionToDatabase($table, $data)

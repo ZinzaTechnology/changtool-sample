@@ -17,16 +17,19 @@ class ImportDataController extends BackendController
     public function actionQuestionAnswer()
     {
         $model = new Upload();
+        $success = '';
         if(Yii::$app->request->isPost){
             $model->excelFile = \yii\web\UploadedFile::getInstance($model, 'excelFile');
             try{
                 $fileName = $model->open();
                 $logicImportData = new LogicImportData();
-                $logicImportData->insertDataByFileExcel($fileName);
+                if($logicImportData->insertDataByFileExcel($fileName)){
+                    $success = 'Import successful';
+                }
             } catch (Exception $ex) {
                 throw $ex;
             }
         }
-        return $this->render('question-answer', ['model' => $model]);
+        return $this->render('question-answer', ['model' => $model, 'success' => $success]);
     }
 }
