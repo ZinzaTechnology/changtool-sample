@@ -48,20 +48,12 @@ class UserTestController extends BackendController
 
     public function actionDetail($id)
     {
-        $userTest = UserTest::find()->where(['ut_id' => $id]);
-        $logicUserTest = new LogicUserTest;
-        $data = null;
-        if ($userTest->exists()) {
-            $theUserTest = $userTest->one();
-            $data = $logicUserTest->getTestDataByPageParam($id, Yii::$app->request->get('page'));
-            $userAnswer = empty($theUserTest->ut_user_answer_ids) ? [] : unserialize($theUserTest->ut_user_answer_ids);
+        if ($userTest = UserTest::queryOne(['ut_id' => $id])) {
+            $userAnswer = empty($userTest->ut_user_answer_ids) ? [] : unserialize($userTest->ut_user_answer_ids);
             return $this->render('detail', [
-                'data' => $data,
-                'tile' => TestExam::findOne($theUserTest->te_id)->te_title,
+                'userTestData' => (new LogicUserTest)->findUserTestDataByUtId($id),
+                'tile' => TestExam::findOne($userTest->te_id)->te_title,
                 'userAnswer' => $userAnswer,
-                'page' => $logicUserTest->getPage(),
-                'pageMax' => $logicUserTest->getPageMax(),
-                'limitQuestion' => AppConstant::USER_TEST_QUESTION_LIMIT_PER_PAGE,
             ]);
         } else {
             throw new NotFoundHttpException('This id not found');
