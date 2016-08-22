@@ -103,6 +103,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
             ],
             [
+                'attribute' => 'Mark',
+                'value' => function ($model) {
+                    return $model['ut_mark'];
+                },
+            ],
+            [
                 'attribute' => 'Start Time',
                 'value' => function ($model) {
                     return $model['ut_start_at'];
