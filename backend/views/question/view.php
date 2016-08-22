@@ -3,6 +3,15 @@ use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use yii\helpers\Url;
 use yii\grid\GridView;
+$this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
+$this->registerCssFile('/res/css/plugins/editormd.min.css');
+//$this->registerJsFile('/res/lib/marked.min.js');
+//$this->registerJsFile('/res/lib/prettify.min.js');
+//$this->registerJsFile('/res/lib/flowchart.min.js');
+//$this->registerJsFile('/res/lib/raphael.min.js');
+//$this->registerJsFile('/res/lib/underscore.min.js');
+//$this->registerJsFile('/res/lib/sequence-diagram.min.js');
+//$this->registerJsFile('/res/lib/jquery.flowchart.min.js');
 
 $this->title = 'Question Manager';
 $this->params ['breadcrumbs'] [] = [
@@ -25,8 +34,43 @@ $this->params ['breadcrumbs'] [] = [
         <?php if ($question) : ?>
             <table class="table table-striped">
 			<tr>
-				<td>Question content</td>
-				<td><?= $question->q_content ?></td>
+				<td colspan="2"><h4>Question content </h2><br>
+					<div id="editormd-view">
+						<textarea class="editormd-markdown-textarea" name="Question[q_content]"></textarea>
+        				<textarea class="editormd-html-textarea" name="Question[q_content_html]"></textarea>
+					</div>
+				</td>
+				
+				<script>
+	            $(function() {
+	            	var editor = editormd("editormd-view", {
+	               	 width  : "100%",
+	               	 readOnly: true,
+	               	 markdown: <?= json_encode($question['q_content'])?>,
+	                 path : "/res/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
+	               });
+// 	                var testEditormdView;
+// 				    testEditormdView = editormd.markdownToHTML("test-editormd-view", {
+//                        markdown        : <?= json_encode($question->q_content) ?>,//+ "\r\n" + $("#append-test").text(),
+//                         //htmlDecode      : true,      
+//                         htmlDecode      : "style,script,iframe",  // you can filter tags decode
+//                         //toc             : false,
+//                         tocm            : true,    // Using [TOCM]
+//                         //tocContainer    : "#custom-toc-container", 
+//                         //gfm             : false,
+//                         //tocDropdown     : true,
+//                         // markdownSourceCode : true, 
+//                         emoji           : true,
+//                         taskList        : true,
+//                         tex             : true,  
+//                         flowChart       : true,  
+//                         sequenceDiagram : true,  
+//                     });
+               
+	            });
+				</script>
+				
+				
 			</tr>
 			<tr>
 				<td>Category</td>
@@ -44,6 +88,7 @@ $this->params ['breadcrumbs'] [] = [
 				<td>Updated date</td>
 				<td><?= $question->updated_at ?></td>
 			</tr>
+			
 		</table>
 
 	</div>
@@ -61,7 +106,7 @@ $this->params ['breadcrumbs'] [] = [
                     'qa_id',
                     'qa_content',
                     [
-                        'attribute' => 'q_category',
+                        'attribute' => 'category',
                         "content" => function ($model, $key, $index, $column) use ($answer_status) {
                             return $answer_status [$model->qa_status];
                         } 

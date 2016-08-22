@@ -6,6 +6,9 @@ use wbraganca\dynamicform\DynamicFormWidget;
 
 $this->title = "Update Question";
 $this->params ['breadcrumbs'] [] = $this->title;
+
+$this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
+$this->registerCssFile('/res/css/plugins/editormd.min.css');
 ?>
 <div class="ibox">
 	<div class="ibox-title">
@@ -16,7 +19,21 @@ $this->params ['breadcrumbs'] [] = $this->title;
 	<div class="ibox-content">
     <?php $form = ActiveForm :: begin(['action' => ['question/edit-question'], 'id' => 'form_create', 'method' => 'post',])?>
 
-        <?= $form ->field($question, 'q_content')->textArea(['placeholder' => 'input question ?','row' => '15','style'=>'resize'])?>
+        <?php // $form ->field($question, 'q_content')->textArea(['placeholder' => 'input question ?','row' => '15','style'=>'resize'])?>
+        
+        <div id="editormd">
+        	<textarea class="editormd-markdown-textarea" name="Question[q_content]"><?= $question['q_content']?></textarea>
+        	<textarea class="editormd-html-textarea" name="Question[q_content_html]"></textarea>
+        </div>
+     	<script type="text/javascript">
+      	$(function() {
+        var editor = editormd("editormd", {
+        	 width  : "100%",
+        	 height : 300,
+             path : "/res/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
+        });
+       });
+	   </script>
         <?= $form->field($question, 'q_category')->dropDownList($category, ['prompt' => '---Select---']); ?>
         <?= $form->field($question, 'q_level')->radioList($level); ?>
         <?= $form->field($question, 'q_type')->radioList($type); ?>
@@ -83,7 +100,7 @@ $this->params ['breadcrumbs'] [] = $this->title;
             <?php DynamicFormWidget::end(); ?>
 
              </div>
-		</div>
+	</div>
 	</div>
 	<br>
 	<div class="ibox-content">

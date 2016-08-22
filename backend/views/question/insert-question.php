@@ -20,31 +20,23 @@ $this->registerCssFile('/res/css/plugins/editormd.min.css');
 	<br>
 	<div class="ibox-content">
     <?php $form = ActiveForm :: begin(['action' => ['question/insert-question'], 'id' => 'form_create', 'method' => 'post',])?>
-        <?= $form ->field($question, 'q_content')->textArea(['placeholder' => 'input question ?','row' => '15'])?>
-        <div id="editormd" name="$id-markdown">
+        <?php // $form ->field($question, 'q_content')->textArea(['placeholder' => 'input question ?','row' => '15'])?>
+        <div id="editormd">
+            <textarea class="editormd-markdown-textarea" name="Question[q_content]"><?= $question['q_content']?></textarea>
+        	<textarea class="editormd-html-textarea" name="Question[q_content_html]"></textarea>
         </div>
      <script type="text/javascript">
       $(function() {
         var editor = editormd("editormd", {
         	 width  : "100%",
-        	 height : 500,
+        	 height : 300,
              path : "/res/lib/" // Autoload modules mode, codemirror, marked... dependents libs path
         });
-
-        /*
-        // or
-        var editor = editormd({
-            id   : "editormd",
-            path : "../lib/"
-        });
-        */
        });
 	   </script>
         <?php echo $form->field($question, 'q_category')->dropDownList($category, ['prompt' => '---Select---']); ?>
         <?= $form->field($question, 'q_level')->radioList($level); ?>
         <?= $form->field($question, 'q_type')->radioList($type); ?>
-       
-
         <hr width=100%px align="left" />
 
 		<div class="panel panel-default">
