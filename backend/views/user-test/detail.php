@@ -12,7 +12,6 @@ $this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => Url::toRoute(
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJsFile('/res/js/plugins/dataTables/datatables.min.js', ['position' => static::POS_BEGIN]);
-$this->registerJsFile('/res/js/fr/userTest_do.js', ['position' => static::POS_BEGIN]);
 $this->registerCssFile('/res/css/plugins/dataTables/datatables.min.css');
 ?>
 
