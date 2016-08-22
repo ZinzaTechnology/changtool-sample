@@ -28,7 +28,7 @@ class LogicImportData extends LogicBase
             $sheet = $objPHPExcel->getSheet(1);
             $highestRow = $sheet->getHighestRow();
             $highestColumn = $sheet->getHighestColumn();
-            for($row=1;$row<= $highestRow;$row++)
+            for($row = 1; $row <= $highestRow; $row++)
             {
                 $rowData = array_merge($rowData, $sheet->rangeToArray('A'.$row.':'.$highestColumn.$row, NULL, TRUE, FALSE));
             }
@@ -41,35 +41,39 @@ class LogicImportData extends LogicBase
     
     public function insertDataByFileExcel($fileDirectory)
     {
-        $data = $this->getDataFromFileExcel($fileDirectory);
+        $defaultAttribute = [
+            0 => 'question',
+            1 => 'category',
+            2 => 'level',
+            3 => 'type',
+            4 => 'content',
+            5 => 'answers',
+            6 => 'answer_is_true'
+        ];
         
-        $highestColumnHavingData = count($data[0]);
-        while (true) {
-            if (empty($data[0][$highestColumnHavingData]))
-                $highestColumnHavingData--;
-            else break;
+        $data = $this->getDataFromFileExcel($fileDirectory);
+        $attribute = $data[0];
+        
+        for($a = 0; $a < 7; $a++){
+            if($defaultAttribute[$a] != $attribute[$a]){
+                throw new \PHPExcel_Exception("INVALID FORMAT!");
+            }
         }
         
-        $indexOfAnswer = array_search('answers', $data[0]);
-        $questionsDataRange = $indexOfAnswer - 1; // -1 cuoi cung la bo di phan tu 'question' ko su dung
-        $answersDataRange = $highestColumnHavingData - $questionsDataRange;
-        $countAnswerData = -1;
+        $countAnswerData = - 1;
         $isNewQuestion = true;
         $questionsData = [];
         $answersData = [];
-        $question = [];
-        $answer = [];
         
         foreach($data as $row){
-            if (!empty($row[0]))
-                $isNewQuestion = true;
+            if (!empty($row[0])) $isNewQuestion = true;
             else $isNewQuestion = false;
             if ($isNewQuestion) {
                 $countAnswerData++;
-                $questionsData[] = array_merge(array_slice($row, 1, $questionsDataRange), [date('Y-m-d H:i:s')]);
-                $answersData[$countAnswerData] = array_slice($row, $indexOfAnswer, $answersDataRange);
+                $questionsData[] = array_merge(array_slice($row, 1, 4), [date('Y-m-d H:i:s')]);
+                $answersData[$countAnswerData] = array_slice($row, 5, 2);
             } else 
-                $answersData[$countAnswerData] = array_merge($answersData[$countAnswerData],array_slice($row, $indexOfAnswer, $answersDataRange));
+                $answersData[$countAnswerData] = array_merge($answersData[$countAnswerData], array_slice($row, 5, 2));
         }
         
         $transaction = Question::getDb()->beginTransaction();
@@ -99,12 +103,12 @@ class LogicImportData extends LogicBase
         $answerStatus = '';
         
         foreach($data as $answer){
-            for($i=0;$i<count($answer);$i++){
+            for($i=0; $i < count($answer); $i++){
                 if($i%2 == 0){
                     $answerContent = [$questionID, $answer[$i]];
                 } else {
-                    $answerStatus = [$answer[$i],date('Y-m-d H:i:s')];
-                    $answersInsert[] = array_merge($answerContent,$answerStatus);
+                    $answerStatus = [$answer[$i], date('Y-m-d H:i:s')];
+                    $answersInsert[] = array_merge($answerContent, $answerStatus);
                 }
             }
             $questionID++;
