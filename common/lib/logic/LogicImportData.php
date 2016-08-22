@@ -56,24 +56,57 @@ class LogicImportData extends LogicBase
         
         for($a = 0; $a < 7; $a++){
             if($defaultAttribute[$a] != $attribute[$a]){
-                throw new \PHPExcel_Exception("INVALID FORMAT!");
+                throw new \PHPExcel_Exception('INVALID FORMAT!');
             }
         }
         
-        $countAnswerData = - 1;
-        $isNewQuestion = true;
+        array_shift($data);
         $questionsData = [];
         $answersData = [];
+        $questionType = 0;
+        $countTrueAnswer = 0;
+        $countFalseAnswer = 0;
+        
+        //First element
+        $firstQuestion = array_slice($data[0], 1, 4);
+        $firstAnswer = array_slice($data[0], 5, 2);
+        $questionsData[] = array_merge($firstQuestion, [date('Y-m-d H:i:s')]);
+        $answersData[] = $firstAnswer;
+        $questionType = $firstQuestion[2];
+        
+        if ($firstAnswer[1] == 1) {
+            $countTrueAnswer++;
+        } else {
+            $countFalseAnswer++;
+        }
+        
+        array_shift($data);
         
         foreach($data as $row){
-            if (!empty($row[0])) $isNewQuestion = true;
-            else $isNewQuestion = false;
-            if ($isNewQuestion) {
-                $countAnswerData++;
-                $questionsData[] = array_merge(array_slice($row, 1, 4), [date('Y-m-d H:i:s')]);
-                $answersData[$countAnswerData] = array_slice($row, 5, 2);
-            } else 
-                $answersData[$countAnswerData] = array_merge($answersData[$countAnswerData], array_slice($row, 5, 2));
+            $answer = array_slice($row, 5, 2);
+            if (!empty($row[1])) {
+                if (($countFalseAnswer + $countTrueAnswer) < 4) {
+                    throw new \Exception('Amount of answers must be equal or more than 4!');
+                }
+                if ($questionType > $countTrueAnswer) {
+                    throw new \Exception('Amount of true answers must be equal or more than type of question!');
+                }
+
+                $question = array_slice($row, 1, 4);
+                $questionType = $question[2];
+                $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
+                $answersData[] = $answer;
+
+                $countTrueAnswer = 0;
+                $countFalseAnswer = 0;
+            } else {
+                $answersData[count($answersData) - 1] = array_merge($answersData[count($answersData) - 1], $answer);
+            }
+            if ($answer[1] == 1) {
+                $countTrueAnswer++;
+            } else {
+                $countFalseAnswer++;
+            }
         }
         
         $transaction = Question::getDb()->beginTransaction();
@@ -86,6 +119,7 @@ class LogicImportData extends LogicBase
             $transaction->rollBack();
             throw $ex;
         }
+        
         return false;
     }
     
@@ -105,8 +139,8 @@ class LogicImportData extends LogicBase
         $answerStatus = '';
         
         foreach($data as $answer){
-            for($i=0; $i < count($answer); $i++){
-                if($i%2 == 0){
+            for($i = 0; $i < count($answer); $i++){
+                if($i % 2 == 0){
                     $answerContent = [$questionID, $answer[$i]];
                 } else {
                     $answerStatus = [$answer[$i], date('Y-m-d H:i:s')];
