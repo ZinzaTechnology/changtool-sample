@@ -14,7 +14,13 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJsFile('/res/js/plugins/dataTables/datatables.min.js', ['position' => static::POS_BEGIN]);
 $this->registerCssFile('/res/css/plugins/dataTables/datatables.min.css');
 ?>
-
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#testTable').DataTable({
+        sort: false,
+    });
+});
+</script>
 <div class="ibox">
     <div class="ibox-title m-b-md">
         <h1><?= Html::encode($this->title) ?></h1>
