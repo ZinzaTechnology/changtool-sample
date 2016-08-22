@@ -23,12 +23,9 @@ use common\models\TestExam;
 
 class LogicUserTest extends LogicBase
 {
-
     private $_assignedSuccess = false;
     private $_testExam;
     private $_testExamParams = [];
-    private $_pageMax = 0;
-    private $_page = 0;
 
     public function __construct()
     {
@@ -71,16 +68,6 @@ class LogicUserTest extends LogicBase
     public function getChoice()
     {
         return [$this->_testExam['te_category'], $this->_testExam['te_level']];
-    }
-
-    public function getPageMax()
-    {
-        return $this->_pageMax;
-    }
-
-    public function getPage()
-    {
-        return $this->_page;
     }
 
     public function assignTest()
