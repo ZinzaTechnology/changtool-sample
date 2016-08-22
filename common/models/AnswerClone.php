@@ -67,11 +67,11 @@ class AnswerClone extends AppActiveRecord
         $dataInsert = [];
         foreach ($data as $elements) {
             foreach ($elements['answer'] as $answer) {
-                $dataInsert[] = [$elements['qc_id'], $answer['qa_content'], $answer['qa_status']];
+                $dataInsert[] = [$elements['qc_id'], $answer['qa_content'], $answer['qa_status'], date('Y-m-d H:i:s')];
                 $count++;
             }
         }
-        $db->createCommand()->batchInsert(self::tableName(), ['qc_id', 'ac_content', 'ac_status'], $dataInsert)->execute();
+        $db->createCommand()->batchInsert(self::tableName(), ['qc_id', 'ac_content', 'ac_status', 'created_at'], $dataInsert)->execute();
         return [$db->getLastInsertID(), $count];
     }
 }
