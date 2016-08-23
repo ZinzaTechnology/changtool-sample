@@ -91,7 +91,9 @@ class LogicImportData extends LogicBase
                 if ($questionType > $countTrueAnswer) {
                     throw new \Exception('Amount of true answers must be equal or more than type of question!');
                 }
-
+                if((4 - $questionType) > $countFalseAnswer){
+                    throw new Exception('Amount of false answers must be more!');
+                }
                 $question = array_slice($row, 1, 4);
                 $questionType = $question[2];
                 $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
