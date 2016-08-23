@@ -52,12 +52,10 @@ class LogicImportData extends LogicBase
         ];
         
         $data = $this->getDataFromFileExcel($fileDirectory);
-        $attribute = $data[0];
+        $attribute = array_slice($data[0], 0, 7);
         
-        for($a = 0; $a < 7; $a++){
-            if($defaultAttribute[$a] != $attribute[$a]){
-                throw new \PHPExcel_Exception('INVALID FORMAT!');
-            }
+        if(array_diff($defaultAttribute, $attribute)){
+            throw new \PHPExcel_Exception('INVALID FORMAT!');
         }
         
         array_shift($data);
@@ -85,22 +83,26 @@ class LogicImportData extends LogicBase
         foreach($data as $row){
             $answer = array_slice($row, 5, 2);
             if (!empty($row[1])) {
-                if (($countFalseAnswer + $countTrueAnswer) < 4) {
-                    throw new \Exception('Amount of answers must be equal or more than 4!');
+                switch(true){
+                    case ($countTrueAnswer >= 1 && $countFalseAnswer >= 3):
+                        goto parseData;
+                        break;
+                    case ($countTrueAnswer >= 2 && $countFalseAnswer >= 2):
+                        goto parseData;
+                        break;
+                    default:
+                        throw new \Exception('Answers must be more than 4. And True answers must be more equal type of question');
+                        break;
                 }
-                if ($questionType > $countTrueAnswer) {
-                    throw new \Exception('Amount of true answers must be equal or more than type of question!');
-                }
-                if((4 - $questionType) > $countFalseAnswer){
-                    throw new Exception('Amount of false answers must be more!');
-                }
-                $question = array_slice($row, 1, 4);
-                $questionType = $question[2];
-                $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
-                $answersData[] = $answer;
+                parseData:{
+                    $question = array_slice($row, 1, 4);
+                    $questionType = $question[2];
+                    $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
+                    $answersData[] = $answer;
 
-                $countTrueAnswer = 0;
-                $countFalseAnswer = 0;
+                    $countTrueAnswer = 0;
+                    $countFalseAnswer = 0;
+                }
             } else {
                 $answersData[count($answersData) - 1] = array_merge($answersData[count($answersData) - 1], $answer);
             }
