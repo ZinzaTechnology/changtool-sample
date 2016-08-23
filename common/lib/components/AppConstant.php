@@ -24,17 +24,26 @@ class AppConstant
     const USER_ROLE_ADMIN = 'ADMIN';
 
     // question
+    const QUESTION_ANSWERS_LIMIT = 4;
+
     const QUESTION_CATEGORY_PHP = 1001;
     const QUESTION_CATEGORY_C_CPP = 1002;
     const QUESTION_CATEGORY_JAVA = 1003;
     const QUESTION_CATEGORY_CS = 1004;
-    const QUESTION_ANSWERS_LIMIT = 4;
+    const QUESTION_CATEGORY_HTML_CSS = 1005;
+    const QUESTION_CATEGORY_JAVASCRIPT = 1006;
+    const QUESTION_CATEGORY_SQL = 1007;
+    const QUESTION_CATEGORY_TESTING = 1008;
     
     public static $QUESTION_CATEGORY_NAME = [
         self::QUESTION_CATEGORY_PHP => 'PHP',
         self::QUESTION_CATEGORY_C_CPP => 'C/C++',
         self::QUESTION_CATEGORY_JAVA => 'JAVA',
         self::QUESTION_CATEGORY_CS => 'C#',
+        self::QUESTION_CATEGORY_HTML_CSS => "HTML/CSS",
+        self::QUESTION_CATEGORY_JAVASCRIPT => "Javascript",
+        self::QUESTION_CATEGORY_SQL => "SQL",
+        self::QUESTION_CATEGORY_TESTING => "Testing",
     ];
 
     const QUESTION_LEVEL_INTERMEDIATE = 1;
@@ -83,12 +92,20 @@ class AppConstant
     const TEST_EXAM_CATEGORY_C_CPP = 1002;
     const TEST_EXAM_CATEGORY_JAVA = 1003;
     const TEST_EXAM_CATEGORY_CS = 1004;
+    const TEST_EXAM_CATEGORY_HTML_CSS = 1005;
+    const TEST_EXAM_CATEGORY_JAVASCRIPT = 1006;
+    const TEST_EXAM_CATEGORY_SQL = 1007;
+    const TEST_EXAM_CATEGORY_TESTING = 1008;
 
     public static $TEST_EXAM_CATEGORY_NAME = [
         self::TEST_EXAM_CATEGORY_PHP => 'PHP',
         self::TEST_EXAM_CATEGORY_C_CPP => 'C/C++',
         self::TEST_EXAM_CATEGORY_JAVA => 'JAVA',
         self::TEST_EXAM_CATEGORY_CS => 'C#',
+        self::TEST_EXAM_CATEGORY_HTML_CSS => "HTML/CSS",
+        self::TEST_EXAM_CATEGORY_JAVASCRIPT => "Javascript",
+        self::TEST_EXAM_CATEGORY_SQL => "SQL",
+        self::TEST_EXAM_CATEGORY_TESTING => "Testing",
     ];
 
     const TEST_EXAM_LEVEL_EASY = 1;
