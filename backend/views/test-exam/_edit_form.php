@@ -21,7 +21,7 @@ use kartik\select2\Select2;
                     <tr>
                         <td>
                         <?= $form->field($testExam, 'te_category')->widget(Select2::classname(), [
-                                'data' => $testCategory,
+                                'data' => $test_category,
                                 'language' => 'en',
                                 'options' => ['placeholder' => 'Select Category ...'],
                                 'pluginOptions' => [
@@ -32,7 +32,7 @@ use kartik\select2\Select2;
                         </td>
                         <td>
                         <?= $form->field($testExam, 'te_level')->widget(Select2::classname(), [
-                                'data' => $testLevel,
+                                'data' => $test_level,
                                 'language' => 'en',
                                 'options' => ['placeholder' => 'Select a Level ...'],
                                 'pluginOptions' => [
@@ -79,12 +79,12 @@ use kartik\select2\Select2;
 
             <div class="col-md-9">
                 <?php
-                $q_count = 1;
+                $q_count = $start + 1;
                 foreach ($all_questions as $aq) {
                     echo '<div class="row">';
                     echo '<div class="col-md-9">';
                     echo $form->field($aq, 'q_content')->textArea(['style' => 'height: 100px', 'class' => 'col-md-9'])
-                        ->label("Question $q_count", ['class' => 'col-md-3']);
+                        ->label("Question $q_count (q_id: $aq->q_id)", ['class' => 'col-md-3']);
                     echo '</div>';
 
                     echo '<div class="col-md-3" style="padding-top: 20px">';
@@ -103,7 +103,9 @@ use kartik\select2\Select2;
                 ?>
            </div> 
         </div>
-
+        
+        <?= $paging_html; ?>
+        
         <div class="hr-line-solid"></div>
         <?= Html::submitButton('Cancel', ['name' => 'te_update', 'value' => 'cancel',
             'class' => 'btn btn-danger',

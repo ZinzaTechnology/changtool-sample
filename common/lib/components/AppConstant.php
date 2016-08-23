@@ -115,11 +115,20 @@ class AppConstant
     /*
       * Define error
       */
-    public static $ERROR_OK = 0;
-    public static $ERROR_SESSION_EMPTY = 1;
-    public static $ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB = 2;
-    public static $ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM = 3;
-    public static $ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB = 4;
-    public static $ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB = 5;
-    public static $ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME = 6;
+    const ERROR_OK = 0;
+    const ERROR_SESSION_EMPTY = 1;
+    const ERROR_CAN_NOT_SAVE_TESTEXAM_TO_DB = 2;
+    const ERROR_QUESTION_NOT_EXIST_IN_TESTEXAM = 3;
+    const ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB = 4;
+    const ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB = 5;
+    const ERROR_CAN_NOT_EDIT_TWO_TESTEXAM_AT_THE_SAMETIME = 6;
+    
+     /*
+      * Define paging
+      */
+     // Const variable
+    const PAGING_INDEX_PAGE_SIZE = 10;
+    const PAGING_VIEW_PAGE_SIZE = 10;
+    const PAGING_UPDATE_PAGE_SIZE = 10;
+    const PAGING_ADD_QUESTION_PAGE_SIZE = 10;
 }

@@ -6,6 +6,8 @@ use yii\widgets\ActiveForm;
 
 $this->title = "TestExam $te_code: add questions";
 $this->params['breadcrumbs'][] = $this->title;
+$this->registerJsFile('/res/js/paging.js', ['position' => \yii\web\View::POS_HEAD], null);
+$this->registerCssFile('/res/css/paging.css', [], null);
 ?>
 
 <div class="ibox">
@@ -27,11 +29,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'action' => Url::toRoute(['/test-exam/update','id' => $id]),
                 'method' => 'post',
         ]); ?>
-        <table class="table table-hover">
+        <table class="table table-hover" id="results">
             <caption>QUESTION</caption>
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Question ID</th>
                     <th>Category</th>
                     <th>Level</th>
                     <th>Type</th>
@@ -48,6 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php foreach ($questions as $question) : ?>
                     <tr>
                         <td><?= '<input type="checkbox" name="option[]" value="'.$question->q_id.'" '.(in_array($question->q_id, $all_questions) ? 'checked disabled readonly' : '').' />'; ?></td>
+                        <td><?= $question->q_id ?></td>
                         <td><?= $category ?></td>
                         <td><?= $level[$question->q_level] ?></td>
                         <td><?= $type[$question->q_type] ?></td>
@@ -66,7 +70,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <div id="pageNavPosition"></div>
         <?= Html::submitButton('Add', ['name' => 'te_update', 'value' => 'add_question_complete', 'class' => 'btn btn-primary']) ?>
+        <?= Html::a('Back', ['/test-exam/update?id='.$id], ['class' => 'btn btn-primary pull-right']) ?>
         <?php ActiveForm::end(); ?>
+        <script type="text/javascript">
+            var pager = new Pager('results', <?= $pagging_size ?>); 
+            pager.init(); 
+            pager.showPageNav('pager', 'pageNavPosition'); 
+            pager.showPage(1);
+        </script>
     </div>
 </div>

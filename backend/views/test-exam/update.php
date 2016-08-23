@@ -6,7 +6,7 @@ use yii\widgets\Breadcrumbs;
 /* @var $this yii\web\View */
 /* @var $model backend\models\TestExam */
 
-$this->title = 'Edit Test Exam: ' . $testExam->te_id;
+$this->title = 'Edit Test Exam: ' . $testExam->te_code;
 $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $testExam->te_id, 'url' => ['view', 'id' => $testExam->te_id]];
 $this->params['breadcrumbs'][] = 'Edit';
@@ -26,8 +26,10 @@ $this->params['breadcrumbs'][] = 'Edit';
             <?= $this->render('_edit_form', [
                 'testExam' => $testExam,
                 'all_questions' => $all_questions,
-                'testCategory' => $testCategory,
-                'testLevel' => $testLevel,
+                'paging_html' => $paging_html,
+                'start' => $start,
+                'test_category' => $test_category,
+                'test_level' => $test_level,
             ]) ?>
         </div>
 
