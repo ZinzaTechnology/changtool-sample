@@ -25,7 +25,8 @@ class QuestionController extends BackendController
             'category',
             'level',
             'type',
-            'qt_content'
+            'qt_content',
+            'submit'
         ]);
         $logicQuestion = new LogicQuestion();
         $questions = $logicQuestion->findQuestionBySearch($params);
@@ -36,13 +37,12 @@ class QuestionController extends BackendController
                 'pagesize' => AppConstant::PAGING_INDEX_PAGE_SIZE,
             ]
         ]);
-        
         $data = [
-            'selected' => $params,
+            'selected' => ($params['submit'] != 'reset')?$params:null,
             'dataProvider' => $dataProvider,
             'category' => $category,
             'type' => $type,
-            'level' => $level
+            'level' => $level,
         ];
         return $this->render('index', $data);
     }
