@@ -47,9 +47,8 @@ $(document).ready(function(){
                                 <?php if ($qu['qc_type'] == AppConstant::QUESTION_TYPE_SINGLE_ANSWER) : ?>
                                     <?php foreach ($qu['answers'] as $ans) : ?>
                                         <?=
-                                        Html::radio("questions[$qc_id][]", false, [
+                                        Html::radio("questions[$qc_id][]", isset($userAnswer[$qc_id][$ans['ac_id']])? true : false, [
                                             'class' => 'i-checks',
-                                            'checked' => isset($userAnswer[$qc_id][$ans['ac_id']])? true : false,
                                             'disabled' => true])
                                         ?>
                                         <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?>
@@ -61,9 +60,8 @@ $(document).ready(function(){
                                 <?php else : ?>
                                     <?php foreach ($qu['answers'] as $ans) : ?>
                                         <?=
-                                        Html::checkbox("questions[$qc_id][]", false, [
+                                        Html::checkbox("questions[$qc_id][]", isset($userAnswer[$qc_id][$ans['ac_id']])? true : false, [
                                             'class' => 'i-checks',
-                                            'checked' => isset($userAnswer[$qc_id][$ans['ac_id']])? true : false,
                                             'disabled' => true])
                                         ?>
                                         <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?>
