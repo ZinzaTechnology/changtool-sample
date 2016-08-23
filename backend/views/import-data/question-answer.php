@@ -19,12 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
     </div>
     <div class="ibox-content">
-        <?php if(!empty($success)): ?>
-            <div class="alert alert-success">
-                <?= $success ?>
-            </div>
-        <?php endif; ?>
-        
         <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
         <?= $form->field($model, 'excelFile')->fileInput() ?>
         <?= Html::submitButton('Import', ['class' => 'btn btn-success']) ?>
