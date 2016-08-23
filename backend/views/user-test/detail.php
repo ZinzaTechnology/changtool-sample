@@ -52,7 +52,11 @@ $(document).ready(function(){
                                             'checked' => isset($userAnswer[$qc_id][$ans['ac_id']])? true : false,
                                             'disabled' => true])
                                         ?>
-                                        <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?><br>
+                                        <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?>
+                                        <?php if($ans['ac_status']==1): ?>
+                                            <span class="label label-primary">True</span>
+                                        <?php endif; ?>
+                                        <br>
                                     <?php endforeach; ?>
                                 <?php else : ?>
                                     <?php foreach ($qu['answers'] as $ans) : ?>
@@ -62,7 +66,11 @@ $(document).ready(function(){
                                             'checked' => isset($userAnswer[$qc_id][$ans['ac_id']])? true : false,
                                             'disabled' => true])
                                         ?>
-                                <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?><br>
+                                        <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?>
+                                        <?php if($ans['ac_status']==1): ?>
+                                            <span class="label label-primary">True</span>
+                                        <?php endif; ?>
+                                        <br>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             <?php endif; ?>
