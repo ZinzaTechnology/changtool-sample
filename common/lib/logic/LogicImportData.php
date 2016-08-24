@@ -52,8 +52,7 @@ class LogicImportData extends LogicBase
         ];
         
         $data = $this->getDataFromFileExcel($fileDirectory);
-        $data = array_filter(array_map('array_filter', $data));
-        
+        $data = array_map(null, $data);
         $attribute = array_slice($data[0], 0, 7);
         
         if(array_diff($defaultAttribute, $attribute)){
@@ -89,38 +88,29 @@ class LogicImportData extends LogicBase
         }
         array_shift($data);
         
+        $count = 0;
         foreach($data as $row){
-            if (count($row) > 2) {
-                $isNewQuestion = true;
-                if($isNewQuestion){
-                    switch(true){
-                        case ($countTrueAnswer > 0 && $countFalseAnswer > 0):
-                            $question = array_slice($row, 1, 4);
-                            $answer = array_slice($row, 5, 2);
-                            if($isNewQuestion){
-                                $countTrueAnswer = 0;
-                                $countFalseAnswer = 0;
-                            }
-                            if(count($answer)<2){
-                                $answer = [$answer[0], 0];
-                            }
-                            if ($answer[1] == 0) {
-                                $countFalseAnswer++;
-                            } else {
-                                $countTrueAnswer++;
-                            }
-                            $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
-                            $answersData[] = $answer;
-                            break;
-                        default:
-                            Yii::$app->session->setFlash('error', 'Must have at least 1 true answer and 1 false answer!');
-                            return;
-                            break;
+            $question = array_slice($data[0], 1, 4);
+            $answer = array_slice($data[0], 5, 2);
+            if ($question[1] > 2) {
+                if ($countTrueAnswer > 0 && $countFalseAnswer > 0){
+                    $countTrueAnswer = 0;
+                    $countFalseAnswer = 0;
+                    if(count($answer) < 2){
+                        $answer = [$answer[0], 0];
                     }
+                    if ($answer[1] == 0) {
+                        $countFalseAnswer++;
+                    } else {
+                        $countTrueAnswer++;
+                    }
+                    $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
+                    $answersData[] = $answer;
+                } else {
+                    Yii::$app->session->setFlash('error', "Must have at least 1 true answer and 1 false answer! at line {$count}");
+                    return;
                 }
             } else {
-                $isNewQuestion = false;
-                $answer = array_slice($row, 0, 2);
                 if(count($answer) < 2){
                     $answer = [$answer[0], 0];
                 }
@@ -131,8 +121,8 @@ class LogicImportData extends LogicBase
                 }
                 $answersData[count($answersData) - 1] = array_merge($answersData[count($answersData) - 1], $answer);
             }
+            $count++;
         }
-        
         $transaction = Question::getDb()->beginTransaction();
         try{
             $questionsID = $this->insertQuestionToDatabase('question', $questionsData);
