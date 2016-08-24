@@ -22,9 +22,8 @@ class ImportDataController extends BackendController
             try{
                 $fileName = $model->open();
                 $logicImportData = new LogicImportData();
-                if($logicImportData->insertDataByFileExcel($fileName)){
-                    $this->setSessionFlash('success', 'Import successful!');
-                }
+                $logicImportData->insertDataByFileExcel($fileName);
+                return $this->goReferrer();
             } catch (Exception $ex) {
                 throw $ex;
             }
