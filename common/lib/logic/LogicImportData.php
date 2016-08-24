@@ -41,15 +41,7 @@ class LogicImportData extends LogicBase
     
     public function insertDataByFileExcel($fileDirectory)
     {
-        $defaultAttribute = [
-            0 => 'question',
-            1 => 'category',
-            2 => 'level',
-            3 => 'type',
-            4 => 'content',
-            5 => 'answers',
-            6 => 'answer_is_true'
-        ];
+        $defaultAttribute = ['question', 'category', 'level', 'type', 'content', 'answers', 'answer_is_true'];
         
         $data = $this->getDataFromFileExcel($fileDirectory);
         $data = array_map(null, $data);
