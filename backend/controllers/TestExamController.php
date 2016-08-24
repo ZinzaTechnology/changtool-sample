@@ -70,7 +70,8 @@ class TestExamController extends BackendController
         $logicTestExam = new LogicTestExam();
         $logicTestExamQuestions = new LogicTestExamQuestions();
         $testExam = $logicTestExam->findTestExamById($id);
-
+        
+        $data = null;
         if (!$testExam) {
             // Cannot find info for this testExam id
             $this->setSessionFlash('error', 'Can not find this testExam record in DB');
@@ -84,9 +85,10 @@ class TestExamController extends BackendController
         $question_ids = $logicTestExamQuestions->findQuestionIdByTestId($id);
         $paging = $logicTestExam->pagingTestExam($id, 'view', $page, AppConstant::PAGING_VIEW_PAGE_SIZE, $question_ids);
         return $this->render('view', [
+            'data' => $data,
             'testExam' => $testExam,
-            'questions' => $paging['pagging_questions'],
             'paging_html' => $paging['html'],
+            'questions_answers' => $paging['pagging_questions_answers'],
             'start' => $paging['start'],
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
             'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
@@ -213,7 +215,7 @@ class TestExamController extends BackendController
 
             return $this->render('update', [
                 'testExam' => $testExam,
-                'all_questions' => $paging['pagging_questions'],
+                'all_questions' => $paging['pagging_questions_answers'],
                 'paging_html' => $paging['html'],
                 'start' => $paging['start'],
                 'test_category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
