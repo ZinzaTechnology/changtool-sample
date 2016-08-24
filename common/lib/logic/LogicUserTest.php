@@ -192,16 +192,18 @@ class LogicUserTest extends LogicBase
 
     public function findAnswersRandomByQuestionId($questionID, $type)
     {
+        $amountTrueAnswer = mt_rand(1, 4);
         $selectTrue = Answer::query()
             ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_RIGHT])
             ->orderBy(new Expression('rand()'))
-            ->limit($type)
+            ->limit($amountTrueAnswer)
             ->asArray()
             ->all();
+        $amountFalseAnswer = AppConstant::QUESTION_ANSWERS_LIMIT - count($selectTrue);
         $selectFalse = Answer::query()
             ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_WRONG])
             ->orderBy(new Expression('rand()'))
-            ->limit(AppConstant::QUESTION_ANSWERS_LIMIT - $type)
+            ->limit($amountFalseAnswer)
             ->asArray()
             ->all();
         $result = array_merge($selectTrue, $selectFalse);

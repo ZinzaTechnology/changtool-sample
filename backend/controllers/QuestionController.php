@@ -163,33 +163,27 @@ class QuestionController extends BackendController
             $request_question = Yii::$app->request->post()['Question'];
             $request_answer = Yii::$app->request->post()['Answer'];
             if ((! empty($request_question)) && (! empty($request_answer))) {
-                $count = 0;
+                $countTrue = 0;
+                $countFalse = 0;
                 foreach ($request_answer as $val) {
                     if ($val['qa_status'] == 1) {
-                        $count = $count + 1;
-                    }
+                        $countTrue++;
+                    }else $countFalse++;
                 }
-                if (count($request_answer) < 4) {
-                    Yii::$app->session->setFlash('error', 'total answer >= 4 !');
-                    return $this->goReferrer();
-                }
-                if ($request_question['q_type'] == 1) {
-                    if ($count >= 1) {
-                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
-                        return $this->render('view', $data);
-                    } else {
-                        Yii::$app->session->setFlash('error', ' Answer right >= 1 !');
+                switch(true){
+                    case ($countTrue < $request_question['q_type']):
+                        Yii::$app->session->setFlash('error', 'Amount of true answer must be equal or more than question type!');
                         return $this->goReferrer();
-                    }
-                } else {
-                    if ($count >= 2) {
+                        break;
+                    case ($countTrue >= 1 && $countFalse >= 1):
                         $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
-                        return $this->render('view', $data);
-                    } else {
-                        Yii::$app->session->setFlash('error', ' Answer right >= 2 !');
+                        break;
+                    default:
+                        Yii::$app->session->setFlash('error', 'Answer must have at least 1 true answer and 1 false answer!');
                         return $this->goReferrer();
-                    }
+                        break;
                 }
+                return $this->render('view', $data);
             }
         }
 
@@ -318,34 +312,27 @@ class QuestionController extends BackendController
             $request_question = Yii::$app->request->post()['Question'];
             $request_answer = Yii::$app->request->post()['Answer'];
             if ((! empty($request_question)) && (! empty($request_answer))) {
-                
-                $count = 0;
+                $countTrue = 0;
+                $countFalse = 0;
                 foreach ($request_answer as $val) {
                     if ($val['qa_status'] == 1) {
-                        $count = $count + 1;
-                    }
+                        $countTrue++;
+                    }else $countFalse++;
                 }
-                if (count($request_answer) < 4) {
-                    Yii::$app->session->setFlash('error', 'total answer >= 4 !');
-                    return $this->goReferrer();
-                }
-                if ($request_question['q_type'] == 1) {
-                    if ($count >= 1) {
-                        $data = $this->editQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status, $answer_old);
-                        return $this->render('view', $data);
-                    } else {
-                        Yii::$app->session->setFlash('error', ' total right Answer >= 1 !');
+                switch(true){
+                    case ($countTrue < $request_question['q_type']):
+                        Yii::$app->session->setFlash('error', 'Amount of true answer must be equal or more than question type!');
                         return $this->goReferrer();
-                    }
-                } else {
-                    if ($count >= 2) {
-                        $data = $this->editQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status, $answer_old);
-                        return $this->render('view', $data);
-                    } else {
-                        Yii::$app->session->setFlash('error', 'total right Answer  >= 2 !');
+                        break;
+                    case ($countTrue >= 1 && $countFalse >= 1):
+                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
+                        break;
+                    default:
+                        Yii::$app->session->setFlash('error', 'Answer must have at least 1 true answer and 1 false answer!');
                         return $this->goReferrer();
-                    }
+                        break;
                 }
+                return $this->render('view', $data);
             }
         }
     }
