@@ -53,8 +53,11 @@ class LogicTestExam extends LogicBase
         $paging_question_ids = array_slice($question_ids, $paging['start'], $paging['limit']);
         $paging_questions = $logicQuestion->findQuestionByIds($paging_question_ids);
         
+        $pagging_questions_answers = $logicQuestion->findAnswerByQuestionIds($paging_question_ids);
+        
         // Save questions on this page and return to display
         $paging['pagging_questions'] = $paging_questions;
+        $paging['pagging_questions_answers'] = $pagging_questions_answers;        
         
         return $paging;
     }

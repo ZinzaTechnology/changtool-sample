@@ -23,8 +23,8 @@ use yii\helpers\Url;
     </tr>
     <tr>
         <td colspan="6">
-            <?= Html::submitButton('Search', ['class' => 'btn btn-info', 'name' => 'submit', 'value' => 'search']) ?>
-            <?= Html::submitButton('Reset', ['class' => 'btn btn-warning', 'name' => 'submit', 'value' => 'reset']) ?>
+            <?= Html::submitButton('Search', ['class' => 'btn btn-success', 'name' => 'submit', 'value' => 'search']) ?>
+            <?= Html::a('Refresh', ['/question/index'], ['class' => 'btn btn-info']) ?>
         </td>
     </tr>
 </table>

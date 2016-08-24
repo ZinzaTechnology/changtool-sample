@@ -38,7 +38,7 @@ class QuestionController extends BackendController
             ]
         ]);
         $data = [
-            'selected' => ($params['submit'] != 'reset')?$params:null,
+            'selected' => $params,
             'dataProvider' => $dataProvider,
             'category' => $category,
             'type' => $type,

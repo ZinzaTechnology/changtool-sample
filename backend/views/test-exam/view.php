@@ -71,6 +71,15 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
                 foreach ($questions as $q) {
                     echo $form->field($q, 'q_content')->textarea(['readonly' => true])->label("Question $q_count (q_id: $q->q_id)");
                     ++$q_count;
+                    // Display answer of this question
+                    echo "<b>Answer:</b> <br>";
+                    foreach ($answers[$q->q_id] as $answer) {
+                        echo "- &nbsp;". $answer->qa_content ."&nbsp;";
+                        echo ($answer->qa_status == 1) ? "<span class='label label-primary'>True</span>" : '';
+                        echo "<br>";
+                        
+                        
+                    }
                 }
                 $form = ActiveForm::end();
             } else {

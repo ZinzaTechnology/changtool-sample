@@ -208,6 +208,22 @@ class LogicQuestion extends LogicBase
         }
         return $questions;
     }
+    
+    public function findAnswerByQuestionIds($q_ids)
+    {
+        $logicAnswer = new LogicAnswer();
+        
+        $answers = $logicAnswer->findAnswerByQuestionId($q_ids);
+        $answer_group_by_qid = [];
+        foreach($q_ids as $q_id) {
+            $answer_group_by_qid[$q_id] = [];
+        }
+
+        foreach ($answers as $answer) {
+            $answer_group_by_qid[$answer->q_id][] = $answer;
+        }
+        return $answer_group_by_qid;
+    }
 
     /**
      *
