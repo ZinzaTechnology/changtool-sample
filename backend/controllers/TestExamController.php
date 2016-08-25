@@ -205,11 +205,12 @@ class TestExamController extends BackendController
                 $logicTestExam->initTestExamInfoToSession($testExam, $id, $test_questions);
             }
             $test_exam = Yii::$app->session['test_exam'];
+            $page = 1;
             if (isset($get['page'])) {
                 $test_exam['current_page'] = $get['page'];
+                $page = $get['page'];
                 Yii::$app->session->set('test_exam', $test_exam);
             }
-            $page = $test_exam['current_page'];
             $all_question_ids = Yii::$app->session->get('test_exam')['all_questions'];
             $paging = $logicTestExam->pagingTestExam($id, 'update', $page, AppConstant::PAGING_UPDATE_PAGE_SIZE, $all_question_ids);
 
