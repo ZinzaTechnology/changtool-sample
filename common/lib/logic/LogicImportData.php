@@ -85,7 +85,7 @@ class LogicImportData extends LogicBase
             $question = array_slice($row, 1, 4);
             $answer = array_slice($row, 5, 2);
             if (count(array_filter($question)) > 2) {
-                if ($countTrueAnswer > 0){
+                if ($countTrueAnswer >= 1){
                     $countTrueAnswer = 0;
                     $countFalseAnswer = 0;
                 } else {
