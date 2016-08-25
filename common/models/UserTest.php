@@ -28,7 +28,10 @@ use yii\db\Expression;
 class UserTest extends \common\models\AppActiveRecord
 {
     public static $is_logic_delete = false;
+
     public $question_clones = [];
+
+    public $test_exam = null;
 
     /**
      * @inheritdoc
@@ -79,12 +82,12 @@ class UserTest extends \common\models\AppActiveRecord
         foreach ($data['te_id'] as $test) {
             foreach ($data['u_id'] as $user) {
                 if (!self::query()->where(['te_id' => $test, 'u_id' => $user])->exists()) {
-                    $dataInsert[] = [$test, $user];
+                    $dataInsert[] = [$test, $user, date('Y-m-d H:i:s')];
                     $count++;
                 }
             }
         }
-        $db->createCommand()->batchInsert(self::tableName(), ['te_id', 'u_id'], $dataInsert)->execute();
+        $db->createCommand()->batchInsert(self::tableName(), ['te_id', 'u_id', 'created_at'], $dataInsert)->execute();
         return [$db->getLastInsertID(), $count];
     }
 }

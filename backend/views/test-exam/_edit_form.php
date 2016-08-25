@@ -1,8 +1,20 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
+
+$this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
+$this->registerCssFile('/res/css/plugins/editormd.min.css');
+$this->registerJsFile('/res/lib/marked.min.js');
+$this->registerJsFile('/res/lib/prettify.min.js');
+$this->registerJsFile('/res/lib/flowchart.min.js');
+$this->registerJsFile('/res/lib/raphael.min.js');
+$this->registerJsFile('/res/lib/underscore.min.js');
+$this->registerJsFile('/res/lib/sequence-diagram.min.js');
+$this->registerJsFile('/res/lib/jquery.flowchart.min.js');
+
 ?>
 
 <div class="test-exam-form">
@@ -83,10 +95,12 @@ use kartik\select2\Select2;
                 foreach ($all_questions as $aq) {
                     echo '<div class="row">';
                     echo '<div class="col-md-9">';
-                    echo $form->field($aq, 'q_content')->textArea(['style' => 'height: 100px', 'class' => 'col-md-9'])
-                        ->label("Question $q_count (q_id: $aq->q_id)", ['class' => 'col-md-3']);
+                    echo "<label class='col-md-4'>";
+                    echo "Question $q_count (q_id: $aq->q_id)";
+                    echo '</label>';
+                    echo '<div style="background: #ebebe0" class="editormdCl m-b-md m-t-md" id="'.$aq->q_id.'"></div>';
+                    echo "<div class='hidden' id='{$aq->q_id}_hd'>".Json::htmlEncode($aq->q_content)."</div>";
                     echo '</div>';
-
                     echo '<div class="col-md-3" style="padding-top: 20px">';
                     echo Html::a("Delete Question $q_count", ['deleteq','te_id' => $testExam->te_id, 'q_id' => $aq['q_id']], [
                         'class' => 'btn btn-danger',
@@ -116,3 +130,28 @@ use kartik\select2\Select2;
 
     <?php ActiveForm::end(); ?>
 </div>
+
+<script>
+$(function() {
+    $(".editormdCl").each(function(idx, el) {
+        var el_id = el.id;
+        editormd.markdownToHTML(el.id, {
+            markdown        : JSON.parse($("#" + el_id + "_hd").html()),
+            //htmlDecode      : true,
+            htmlDecode      : "style,script,iframe",  // you can filter tags decode
+            //toc             : false,
+            tocm            : true,    // Using [TOCM]
+            //tocContainer    : "#custom-toc-container", 
+            //gfm             : false,
+            //tocDropdown     : true,
+            // markdownSourceCode : true, 
+            emoji           : true,
+            taskList        : true,
+            tex             : true,  
+            flowChart       : true,  
+            sequenceDiagram : true,  
+        });
+    });
+
+});
+</script>

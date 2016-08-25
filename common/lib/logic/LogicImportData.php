@@ -35,87 +35,91 @@ class LogicImportData extends LogicBase
         } catch (\Exception $ex) {
             throw $ex;
         }
-        
         return $rowData;
     }
     
     public function insertDataByFileExcel($fileDirectory)
     {
-        $defaultAttribute = [
-            0 => 'question',
-            1 => 'category',
-            2 => 'level',
-            3 => 'type',
-            4 => 'content',
-            5 => 'answers',
-            6 => 'answer_is_true'
-        ];
+        $defaultAttribute = ['question', 'category', 'level', 'type', 'content', 'answers', 'answer_is_true'];
         
         $data = $this->getDataFromFileExcel($fileDirectory);
-        $attribute = $data[0];
+        $data = array_map(null, $data);
+        $attribute = array_slice($data[0], 0, 7);
         
-        for($a = 0; $a < 7; $a++){
-            if($defaultAttribute[$a] != $attribute[$a]){
-                throw new \PHPExcel_Exception('INVALID FORMAT!');
-            }
+        if(array_diff($defaultAttribute, $attribute)){
+            Yii::$app->session->setFlash('error', 'INVALID FORMAT!');
+            return;
         }
-        
         array_shift($data);
+        
         $questionsData = [];
         $answersData = [];
         $questionType = 0;
         $countTrueAnswer = 0;
         $countFalseAnswer = 0;
+        $isNewQuestion = false;
         
-        //First element
-        $firstQuestion = array_slice($data[0], 1, 4);
-        $firstAnswer = array_slice($data[0], 5, 2);
-        $questionsData[] = array_merge($firstQuestion, [date('Y-m-d H:i:s')]);
-        $answersData[] = $firstAnswer;
-        $questionType = $firstQuestion[2];
-        
-        if ($firstAnswer[1] == 1) {
-            $countTrueAnswer++;
+        //first data
+        $question = array_slice($data[0], 1, 4);
+        $answer = array_slice($data[0], 5, 2);
+        if (count(array_filter($question)) > 2) {
+            $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
+            if(empty($answer[1])){
+                $answer = [$answer[0], 0];
+            }
+            if ($answer[1] == 0) {
+                $countFalseAnswer++;
+            } else {
+                $countTrueAnswer++;
+            }
+            $answersData[] = $answer;
         } else {
-            $countFalseAnswer++;
+            Yii::$app->session->setFlash('error', "First record must have question's information");
+            return;
         }
-        
         array_shift($data);
         
+        $count = 0;
         foreach($data as $row){
+            $count++;
+            $question = array_slice($row, 1, 4);
             $answer = array_slice($row, 5, 2);
-            if (!empty($row[1])) {
-                if (($countFalseAnswer + $countTrueAnswer) < 4) {
-                    throw new \Exception('Amount of answers must be equal or more than 4!');
+            if (count(array_filter($question)) > 2) {
+                if ($countTrueAnswer >= 1){
+                    $countTrueAnswer = 0;
+                    $countFalseAnswer = 0;
+                } else {
+                    Yii::$app->session->setFlash('error', "Must have at least 1 true answer! ~ question having line {$count}");
+                    return;
                 }
-                if ($questionType > $countTrueAnswer) {
-                    throw new \Exception('Amount of true answers must be equal or more than type of question!');
+                if(empty($answer[1])){
+                    $answer = [$answer[0], 0];
                 }
-                if((4 - $questionType) > $countFalseAnswer){
-                    throw new Exception('Amount of false answers must be more!');
+                if ($answer[1] == 0) {
+                    $countFalseAnswer++;
+                } else {
+                    $countTrueAnswer++;
                 }
-                $question = array_slice($row, 1, 4);
-                $questionType = $question[2];
                 $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
                 $answersData[] = $answer;
-
-                $countTrueAnswer = 0;
-                $countFalseAnswer = 0;
             } else {
+                if(empty($answer[1])){
+                    $answer = [$answer[0], 0];
+                }
+                if ($answer[1] == 0) {
+                    $countFalseAnswer++;
+                } else {
+                    $countTrueAnswer++;
+                }
                 $answersData[count($answersData) - 1] = array_merge($answersData[count($answersData) - 1], $answer);
             }
-            if ($answer[1] == 1) {
-                $countTrueAnswer++;
-            } else {
-                $countFalseAnswer++;
-            }
         }
-        
         $transaction = Question::getDb()->beginTransaction();
         try{
             $questionsID = $this->insertQuestionToDatabase('question', $questionsData);
             $answersID = $this->insertAnswerToDatabase('answer', $questionsID, $answersData);
             $transaction->commit();
+            Yii::$app->session->setFlash('success', 'Import successful!');
             return true;
         } catch (Exception $ex) {
             $transaction->rollBack();
@@ -141,6 +145,7 @@ class LogicImportData extends LogicBase
         $answerStatus = '';
         
         foreach($data as $answer){
+            $answerContent = [];
             for($i = 0; $i < count($answer); $i++){
                 if($i % 2 == 0){
                     $answerContent = [$questionID, $answer[$i]];

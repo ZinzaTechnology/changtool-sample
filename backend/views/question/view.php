@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\widgets\Breadcrumbs;
 use yii\helpers\Url;
 use yii\grid\GridView;
@@ -40,7 +41,7 @@ $this->params['breadcrumbs'][] = [
                     var editor = editormd("editormd-view", {
                      width  : "100%",
                      readOnly: true,
-                     markdown: <?= json_encode($question['q_content'])?>,
+                     markdown: <?= Json::htmlEncode($question['q_content'])?>,
                      path : "/res/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
                    });
                 });
@@ -137,5 +138,5 @@ $this->params['breadcrumbs'][] = [
         <?= Html::a('Edit', ['/question/edit-question', 'q_id' => $question->q_id], ['class' => 'btn btn-success'])?>
         <?=Html::a('Delete', ['/question/delete','q_id' => $question->q_id ], ['class' => 'btn btn-danger','data' => ['confirm' => 'Are you sure you want to delete this item?','method' => 'post' ] ])?>
         <?= Html::a('Back', ['/question/index'], ['class' => 'btn btn-primary pull-right'])?>
-        </div>
+    </div>
 </div>

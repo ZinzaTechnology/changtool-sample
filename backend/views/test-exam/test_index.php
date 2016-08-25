@@ -1,8 +1,19 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use yii\widgets\ActiveForm;
+
+$this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
+$this->registerCssFile('/res/css/plugins/editormd.min.css');
+$this->registerJsFile('/res/lib/marked.min.js');
+$this->registerJsFile('/res/lib/prettify.min.js');
+$this->registerJsFile('/res/lib/flowchart.min.js');
+$this->registerJsFile('/res/lib/raphael.min.js');
+$this->registerJsFile('/res/lib/underscore.min.js');
+$this->registerJsFile('/res/lib/sequence-diagram.min.js');
+$this->registerJsFile('/res/lib/jquery.flowchart.min.js');
 
 $this->title = "TestExam $te_code: add questions";
 $this->params['breadcrumbs'][] = $this->title;
@@ -55,7 +66,10 @@ $this->registerCssFile('/res/css/paging.css', [], null);
                         <td><?= $category ?></td>
                         <td><?= $level[$question->q_level] ?></td>
                         <td><?= $type[$question->q_type] ?></td>
-                        <td><?= $question->q_content ?></td>
+                        <td>
+                            <div class='editormdCl' id='<?= $question->q_id?>'></div>
+                            <div class='hidden' id='<?= $question->q_id ?>_hd'><?= Json::htmlEncode($question->q_content) ?></div>
+                        </td>
                         <td><?= $question->created_at ?></td>
                         <td><?= $question->updated_at ?></td>
                         <td><?= Html::a('View', ['/question/view', 'q_id' => $question->q_id], ['class' => 'btn btn-warning']) ?></td>
@@ -75,3 +89,28 @@ $this->registerCssFile('/res/css/paging.css', [], null);
         </script>
     </div>
 </div>
+
+<script>
+$(function() {
+    $(".editormdCl").each(function(idx, el) {
+        var el_id = el.id;
+        editormd.markdownToHTML(el.id, {
+            markdown        : JSON.parse($("#" + el_id + "_hd").html()),
+            //htmlDecode      : true,
+            htmlDecode      : "style,script,iframe",  // you can filter tags decode
+            //toc             : false,
+            tocm            : true,    // Using [TOCM]
+            //tocContainer    : "#custom-toc-container", 
+            //gfm             : false,
+            //tocDropdown     : true,
+            // markdownSourceCode : true, 
+            emoji           : true,
+            taskList        : true,
+            tex             : true,  
+            flowChart       : true,  
+            sequenceDiagram : true,  
+        });
+    });
+
+});
+</script>

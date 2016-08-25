@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use yii\grid\GridView;
@@ -46,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         //$content = str_replace("\n", "<br>", $model->q_content);
                         $content_id = "q_content_".$model->q_id;
                         $content = '<div class="editormdCl" id="'.$content_id.'"></div>';
-                        $content .= "<div class='hidden' id='{$content_id}_hd'>".json_encode($model->q_content)."</div>";
+                        $content .= "<div class='hidden' id='{$content_id}_hd'>".Json::htmlEncode($model->q_content)."</div>";
                         return $content;
                     }
                 ],

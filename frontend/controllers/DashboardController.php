@@ -3,11 +3,10 @@
 namespace frontend\controllers;
 
 use Yii;
-use yii\filters\VerbFilter;
-use common\models\TestExam;
-use common\models\AnswerClone;
 use common\lib\logic\LogicUserTest;
-use yii\helpers\Url;
+use common\lib\components\AppConstant;
+use common\lib\helpers\AppArrayHelper;
+use common\models\TestExam;
 
 /**
  * Dashboard controller
@@ -45,22 +44,9 @@ class DashboardController extends FrontendController
     {
         $logicUserTest = new LogicUserTest();
         $userTests = $logicUserTest->findUserTestBySearch(['u_id' => Yii::$app->user->id]);
-
         return $this->render('index', [
             'user_test_models' => $userTests,
+            'category' => AppConstant::$QUESTION_CATEGORY_NAME,
         ]);
-    }
-
-    public function actionMarkRecord()
-    {
-        if ($request = Yii::$app->request->post()) {
-            UserTest::updateEnd($id, serialize($request));
-            return $this->redirect(Url::toRoute(['mark', 'id' => $id]));
-        }
-            $data = (new UserTest())->getTest($id);
-            return $this->render('test/start', [
-                        'data' => $data,
-                        'time_count' => $time_count,
-            ]);
     }
 }

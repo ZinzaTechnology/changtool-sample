@@ -163,33 +163,27 @@ class QuestionController extends BackendController
             $request_question = Yii::$app->request->post()['Question'];
             $request_answer = Yii::$app->request->post()['Answer'];
             if ((! empty($request_question)) && (! empty($request_answer))) {
-                $count = 0;
+                $countTrue = 0;
+                $countFalse = 0;
                 foreach ($request_answer as $val) {
                     if ($val['qa_status'] == 1) {
-                        $count = $count + 1;
-                    }
+                        $countTrue++;
+                    }else $countFalse++;
                 }
-                if (count($request_answer) < 4) {
-                    Yii::$app->session->setFlash('error', 'total answer >= 4 !');
-                    return $this->goReferrer();
-                }
-                if ($request_question['q_type'] == 1) {
-                    if ($count >= 1) {
-                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
-                        return $this->render('view', $data);
-                    } else {
-                        Yii::$app->session->setFlash('error', ' Answer right >= 1 !');
+                switch(true){
+                    case ($countTrue < $request_question['q_type']):
+                        Yii::$app->session->setFlash('error', 'Amount of true answer must be equal or more than question type!');
                         return $this->goReferrer();
-                    }
-                } else {
-                    if ($count >= 2) {
+                        break;
+                    case ($countTrue >= 1 && $countFalse >= 1):
                         $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
-                        return $this->render('view', $data);
-                    } else {
-                        Yii::$app->session->setFlash('error', ' Answer right >= 2 !');
+                        break;
+                    default:
+                        Yii::$app->session->setFlash('error', 'Answer must have at least 1 true answer and 1 false answer!');
                         return $this->goReferrer();
-                    }
+                        break;
                 }
+                return $this->render('view', $data);
             }
         }
 
@@ -318,34 +312,27 @@ class QuestionController extends BackendController
             $request_question = Yii::$app->request->post()['Question'];
             $request_answer = Yii::$app->request->post()['Answer'];
             if ((! empty($request_question)) && (! empty($request_answer))) {
-                
-                $count = 0;
+                $countTrue = 0;
+                $countFalse = 0;
                 foreach ($request_answer as $val) {
                     if ($val['qa_status'] == 1) {
-                        $count = $count + 1;
-                    }
+                        $countTrue++;
+                    }else $countFalse++;
                 }
-                if (count($request_answer) < 4) {
-                    Yii::$app->session->setFlash('error', 'total answer >= 4 !');
-                    return $this->goReferrer();
-                }
-                if ($request_question['q_type'] == 1) {
-                    if ($count >= 1) {
-                        $data = $this->editQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status, $answer_old);
-                        return $this->render('view', $data);
-                    } else {
-                        Yii::$app->session->setFlash('error', ' total right Answer >= 1 !');
+                switch(true){
+                    case ($countTrue < $request_question['q_type']):
+                        Yii::$app->session->setFlash('error', 'Amount of true answer must be equal or more than question type!');
                         return $this->goReferrer();
-                    }
-                } else {
-                    if ($count >= 2) {
-                        $data = $this->editQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status, $answer_old);
-                        return $this->render('view', $data);
-                    } else {
-                        Yii::$app->session->setFlash('error', 'total right Answer  >= 2 !');
+                        break;
+                    case ($countTrue >= 1 && $countFalse >= 1):
+                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
+                        break;
+                    default:
+                        Yii::$app->session->setFlash('error', 'Answer must have at least 1 true answer and 1 false answer!');
                         return $this->goReferrer();
-                    }
+                        break;
                 }
+                return $this->render('view', $data);
             }
         }
     }
@@ -367,68 +354,7 @@ class QuestionController extends BackendController
         }
     }
 
-    public function actionDeleteAnswer()
-    {
-        if (($qa_id = Yii::$app->request->get('qa_id')) != null && ($q_id = Yii::$app->request->get('q_id')) != null) {
-            $logicAnswer = new LogicAnswer();
-            if ($q_id == ($logicAnswer->findByAnswerId($qa_id)->q_id)) {
-                $result = $logicAnswer->deleteAnswerById($qa_id);
-                if ($result) {
-                    return $this->redirect([
-                        '/question/view',
-                        'q_id' => $q_id 
-                    ]);
-                } else {
-                    Yii::$app->session->setFlash('error', 'Error occurs when deleting this answer!');
-                    $this->goReferrer();
-                }
-            } else {
-                Yii::$app->session->setFlash('error', 'Error occurs when deleting this answer!');
-                $this->goReferrer();
-            }
-        }
-    }
+   
 
-    public function actionEditAnswer()
-    {
-        $params = [];
-        $logicAnswer = new LogicAnswer();
-        if (($qa_id = Yii::$app->request->get('qa_id')) != null && ($q_id = Yii::$app->request->get('q_id')) != null) {
-            if (($answer = $logicAnswer->findByAnswerId($qa_id)) != null) {
-                if ($q_id == $answer->q_id) {
-                    $data = [
-                        'answer' => $answer,
-                        'q_id' => $q_id,
-                        'qa_id' => $qa_id 
-                    ];
-                    return $this->render('edit-answer', $data);
-                } else {
-                    Yii::$app->session->setFlash('error', 'Error occurs when editting this answer!');
-                    return $this->goReferrer();
-                }
-            } else {
-                Yii::$app->session->setFlash('error', 'Error occurs when editting this answer!');
-                return $this->goReferrer();
-            }
-        }
-        
-        $request = Yii::$app->request->post()['Answer'];
-        if (! empty($request)) {
-            $params = AppArrayHelper::filterKeys($request, [
-                'qa_id',
-                'qa_content',
-                'qa_status',
-                'q_id' 
-            ]);
-            if (($answer = $logicAnswer->updateAnswer($params)) != null) {
-                return $this->redirect([
-                    '/question/view',
-                    'q_id' => $params['q_id'] 
-                ]);
-            } else {
-                Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
-                return $this->goReferrer();
-            }
-        }
-    }
+   
 }
