@@ -52,7 +52,7 @@ $(document).ready(function(){
                     <tr>
                         <td class="text-center">Question <?= $idx + 1 ?></td>
                         <td>
-                            <div class="editormdCl" id="<?= $qu['qc_id']  ?>"></div>
+                            <div style='background: #F5F5F6' class="editormdCl m-b-xs" id="<?= $qu['qc_id']  ?>"></div>
                             <div class="hidden" id="<?= $qu['qc_id'].'_hd' ?>"><?= json_encode($qu['qc_content']) ?></div>
                             <?php if(isset($qu['answers'])): ?>
                                 <?php if ($qu['qc_type'] == AppConstant::QUESTION_TYPE_SINGLE_ANSWER) : ?>
