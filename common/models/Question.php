@@ -7,6 +7,7 @@ use Yii;
 class Question extends \common\models\AppActiveRecord
 {
     public static $is_logic_delete = true;
+    public $answers = [];
 
     /**
      * @inheritdoc
@@ -24,44 +25,43 @@ class Question extends \common\models\AppActiveRecord
         return [
             [
                 [
-                    
                     'q_content',
                     'q_level',
                     'q_type',
-                    'q_category' 
+                    'q_category'
                 ],
-                'required' 
+                'required'
             ],
             [
                 [
-                    'q_id' 
+                    'q_id'
                 ],
-                'integer' 
+                'integer'
             ],
             [
                 [
-                    'q_content' 
+                    'q_content'
                 ],
-                'string' 
+                'string'
             ],
             [
                 [
-                    'q_category' 
+                    'q_category'
                 ],
-                'integer' 
+                'integer'
             ],
             [
                 [
-                    'q_type' 
+                    'q_type'
                 ],
-                'integer' 
+                'integer'
             ],
             [
                 [
-                    'q_level' 
+                    'q_level'
                 ],
-                'integer' 
-            ] 
+                'integer'
+            ]
         ];
     }
 
@@ -77,7 +77,7 @@ class Question extends \common\models\AppActiveRecord
             'q_type' => 'Type',
             'q_level' => 'Level',
             'created_at' => 'Created at',
-            'updated_at' => 'Updated at' 
+            'updated_at' => 'Updated at'
         ];
     }
 
@@ -88,7 +88,7 @@ class Question extends \common\models\AppActiveRecord
     public function getAnswers()
     {
         return $this->hasMany(Answer::className(), [
-            'q_id' => 'q_id' 
+            'q_id' => 'q_id'
         ]);
     }
 
@@ -99,7 +99,7 @@ class Question extends \common\models\AppActiveRecord
     public function getTags()
     {
         return $this->hasMany(Tag::className(), [
-            'q_id' => 'q_id' 
+            'q_id' => 'q_id'
         ]);
     }
 
@@ -110,7 +110,7 @@ class Question extends \common\models\AppActiveRecord
     public function getTestExamQuestions()
     {
         return $this->hasMany(TestExamQuestions::className(), [
-            'q_id' => 'q_id' 
+            'q_id' => 'q_id'
         ]);
     }
 
@@ -121,9 +121,9 @@ class Question extends \common\models\AppActiveRecord
     public function getTest()
     {
         return $this->hasMany(TestExam::className(), [
-            'te_id' => 'te_id' 
+            'te_id' => 'te_id'
         ])->viaTable('test_exam_questions', [
-            'q_id' => 'q_id' 
+            'q_id' => 'q_id'
         ]);
     }
 }
