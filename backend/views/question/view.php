@@ -137,5 +137,5 @@ $this->params['breadcrumbs'][] = [
         <?= Html::a('Edit', ['/question/edit-question', 'q_id' => $question->q_id], ['class' => 'btn btn-success'])?>
         <?=Html::a('Delete', ['/question/delete','q_id' => $question->q_id ], ['class' => 'btn btn-danger','data' => ['confirm' => 'Are you sure you want to delete this item?','method' => 'post' ] ])?>
         <?= Html::a('Back', ['/question/index'], ['class' => 'btn btn-primary pull-right'])?>
-        </div>
+    </div>
 </div>
