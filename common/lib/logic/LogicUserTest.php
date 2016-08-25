@@ -23,12 +23,9 @@ use common\models\TestExam;
 
 class LogicUserTest extends LogicBase
 {
-
     private $_assignedSuccess = false;
     private $_testExam;
     private $_testExamParams = [];
-    private $_pageMax = 0;
-    private $_page = 0;
 
     public function __construct()
     {
@@ -71,39 +68,6 @@ class LogicUserTest extends LogicBase
     public function getChoice()
     {
         return [$this->_testExam['te_category'], $this->_testExam['te_level']];
-    }
-
-    public function getPageMax()
-    {
-        return $this->_pageMax;
-    }
-
-    public function getPage()
-    {
-        return $this->_page;
-    }
-
-    public function getTestDataByPageParam($id, $page = null)
-    {
-        $data = $this->findTestDataByUtID($id);
-        $limitPerPage = AppConstant::USER_TEST_QUESTION_LIMIT_PER_PAGE;
-        $this->_pageMax = round((count($data) / $limitPerPage));
-        if (count($data) % $limitPerPage) {
-            $this->_pageMax++;
-        }
-        if ($page > $this->_pageMax) {
-            throw new BadRequestHttpException('Page is larger than page max!');
-        }
-        if (isset($page)) {
-            if (is_numeric($page) && $page > 0) {
-                $this->_page = $page;
-            } else {
-                throw new BadRequestHttpException('Page must be a number and more than 0!');
-            }
-        } else {
-            $this->_page = 1;
-        }
-        return array_slice($data, ($this->_page - 1) * $limitPerPage, $limitPerPage);
     }
 
     public function assignTest()
@@ -196,20 +160,7 @@ class LogicUserTest extends LogicBase
         $query->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
     }
-
-    public function findTestDataByUtID($ut_id)
-    {
-        $answersClone = [];
-        $questionsClone = $this->findQuestionCloneByUtId($ut_id);
-        $testData = [];
-        foreach ($questionsClone as $question) {
-            $answer = $this->findAnswerCloneByQcId($question['qc_id']);
-            $question = array_merge($question, ['trueAnswer' => AppArrayHelper::getColumn($this->findAnswerCloneTrueByQcID($question['qc_id']), 'ac_content')]);
-            $testData[] = array_merge($question, ['answer' => $answer]);
-        }
-        return $testData;
-    }
-
+    
     public function findQuestionCloneByUtId($ut_id)
     {
         return QuestionClone::query()->andWhere(['ut_id' => $ut_id])->asArray()->all();
@@ -241,16 +192,18 @@ class LogicUserTest extends LogicBase
 
     public function findAnswersRandomByQuestionId($questionID, $type)
     {
+        $amountTrueAnswer = mt_rand(1, 4);
         $selectTrue = Answer::query()
             ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_RIGHT])
             ->orderBy(new Expression('rand()'))
-            ->limit($type)
+            ->limit($amountTrueAnswer)
             ->asArray()
             ->all();
+        $amountFalseAnswer = AppConstant::QUESTION_ANSWERS_LIMIT - count($selectTrue);
         $selectFalse = Answer::query()
             ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_WRONG])
             ->orderBy(new Expression('rand()'))
-            ->limit(AppConstant::QUESTION_ANSWERS_LIMIT - $type)
+            ->limit($amountFalseAnswer)
             ->asArray()
             ->all();
         $result = array_merge($selectTrue, $selectFalse);
@@ -267,7 +220,6 @@ class LogicUserTest extends LogicBase
             // find questions of the test
             $question_clones = $this->findQuestionCloneByUtId($ut_id);
             $userTest->question_clones = AppArrayHelper::index($question_clones, 'qc_id');
-
             // find answers of questions
             $answers = $this->findAnswerCloneByQcId(AppArrayHelper::getColumn($userTest->question_clones, 'qc_id'));
             foreach ($answers as $ac) {

@@ -19,9 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
     </div>
     <div class="ibox-content">
-        <div class="small">
-            
-        </div>
         <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
         <?= $form->field($model, 'excelFile')->fileInput() ?>
         <?= Html::submitButton('Import', ['class' => 'btn btn-success']) ?>
