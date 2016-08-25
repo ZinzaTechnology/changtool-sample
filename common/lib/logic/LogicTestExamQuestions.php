@@ -59,10 +59,10 @@ class LogicTestExamQuestions extends LogicBase
             $q_count = count($q_ids);
             $q_inserted_count = Yii::$app->db->createCommand()->batchInsert(TestExamQuestions::tableName(), ['te_id', 'q_id', 'created_at'], $teqs)->execute();
             if ($q_count != $q_inserted_count) {
-                return AppConstant::$ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB;
+                return AppConstant::ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB;
             }
         }
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     public function deleteMultiTestExamQuestion($te_id, $q_ids)
@@ -75,10 +75,10 @@ class LogicTestExamQuestions extends LogicBase
             $q_count = count($q_ids);
             $q_deleted_count = Yii::$app->db->createCommand()->delete(TestExamQuestions::tableName(), ['te_id' => $te_ids, 'q_id' => $q_ids])->execute();
             if ($q_count != $q_deleted_count) {
-                return AppConstant::$ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB;
+                return AppConstant::ERROR_CAN_NOT_DELETE_TESTEXAM_QUESTIONS_FROM_DB;
             }
         }
-        return AppConstant::$ERROR_OK;
+        return AppConstant::ERROR_OK;
     }
     
     public function insertTestExamQuestion($te_id, $q_id)
@@ -93,9 +93,9 @@ class LogicTestExamQuestions extends LogicBase
         ];
         if ($testExamQuestion->load($params) && $testExamQuestion->validate()) {
             if ($testExamQuestion->save()) {
-                return AppConstant::$ERROR_OK;
+                return AppConstant::ERROR_OK;
             }
         }
-        return AppConstant::$ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB;
+        return AppConstant::ERROR_CAN_NOT_INSERT_TESTEXAM_QUESTIONS_TO_DB;
     }
 }

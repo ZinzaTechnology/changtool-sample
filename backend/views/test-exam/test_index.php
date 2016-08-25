@@ -59,13 +59,6 @@ $this->registerCssFile('/res/css/paging.css', [], null);
                         <td><?= $question->created_at ?></td>
                         <td><?= $question->updated_at ?></td>
                         <td><?= Html::a('View', ['/question/view', 'q_id' => $question->q_id], ['class' => 'btn btn-warning']) ?></td>
-                        <td><?= Html::a('Edit', ['/question/edit', 'q_id' => $question->q_id], ['class' => 'btn btn-warning']) ?></td>
-                        <td><?= Html::a(
-                            'Delete',
-                            ['/question/delete', 'q_id' => $question->q_id],
-                            ['class' => 'btn btn-danger', 'data' => ['confirm' => 'Are you sure you want to delete this item?', 'method' => 'post']]
-                        ) ?>
-                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
