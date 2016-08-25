@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\widgets\Breadcrumbs;
 use yii\helpers\Url;
 use yii\grid\GridView;
@@ -40,7 +41,7 @@ $this->params['breadcrumbs'][] = [
                     var editor = editormd("editormd-view", {
                      width  : "100%",
                      readOnly: true,
-                     markdown: <?= json_encode($question['q_content'])?>,
+                     markdown: <?= Json::htmlEncode($question['q_content'])?>,
                      path : "/res/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
                    });
                 });

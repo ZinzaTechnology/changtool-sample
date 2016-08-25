@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\widgets\ActiveForm;
 use yii\widgets\Breadcrumbs;
 
@@ -80,7 +81,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
                 $q_count = $start + 1;
                 foreach ($questions_answers as $question) { ?>
                     <div style='background: #ebebe0' class='editormdCl m-b-md m-t-md' id='<?= $question->q_id ?>'></div>
-                    <div class='hidden' id='<?= $question->q_id.'_hd' ?>'><?= json_encode($question->q_content)?></div>
+                    <div class='hidden' id='<?= $question->q_id.'_hd' ?>'><?= Json::htmlEncode($question->q_content)?></div>
                 <?php
                 ++$q_count;
                     // Display answer of this question

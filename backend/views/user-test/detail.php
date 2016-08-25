@@ -1,9 +1,13 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use common\lib\components\AppConstant;
+
+$this->registerJsFile('/res/js/plugins/dataTables/datatables.min.js', ['position' => static::POS_BEGIN]);
+$this->registerCssFile('/res/css/plugins/dataTables/datatables.min.css');
 
 $this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
 $this->registerCssFile('/res/css/plugins/editormd.min.css');
@@ -21,19 +25,6 @@ $this->registerJsFile('/res/lib/jquery.flowchart.min.js');
 $this->title = $tile;
 $this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => Url::toRoute('/user-test')];
 $this->params['breadcrumbs'][] = $this->title;
-
-$this->registerJsFile('/res/js/plugins/dataTables/datatables.min.js', ['position' => static::POS_BEGIN]);
-$this->registerCssFile('/res/css/plugins/dataTables/datatables.min.css');
-
-$this->registerCssFile('/res/css/plugins/editormd.min.css');
-$this->registerJsFile('/res/lib/marked.min.js');
-$this->registerJsFile('/res/lib/prettify.min.js');
-$this->registerJsFile('/res/lib/flowchart.min.js');
-$this->registerJsFile('/res/lib/raphael.min.js');
-$this->registerJsFile('/res/lib/underscore.min.js');
-$this->registerJsFile('/res/lib/sequence-diagram.min.js');
-$this->registerJsFile('/res/lib/jquery.flowchart.min.js');
-$this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
 ?>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -64,7 +55,7 @@ $(document).ready(function(){
                         <td class="text-center">Question <?= $idx + 1 ?></td>
                         <td>
                             <div style='background: #F5F5F6' class="editormdCl m-b-xs" id="<?= $qu['qc_id']  ?>"></div>
-                            <div class="hidden" id="<?= $qu['qc_id'].'_hd' ?>"><?= json_encode($qu['qc_content']) ?></div>
+                            <div class="hidden" id="<?= $qu['qc_id'].'_hd' ?>"><?= Json::htmlEncode($qu['qc_content']) ?></div>
                             <?php if(isset($qu['answers'])): ?>
                                 <?php if ($qu['qc_type'] == AppConstant::QUESTION_TYPE_SINGLE_ANSWER) : ?>
                                     <?php foreach ($qu['answers'] as $ans) : ?>

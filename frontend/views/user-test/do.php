@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use common\lib\components\AppConstant;
@@ -49,7 +50,7 @@ $this->registerJsFile('/res/lib/jquery.flowchart.min.js');
                             <td>Question <?= $idx + 1 ?></td>
                             <td>
                                 <div style='background: #ebebe0' class='editormdCl m-b-md m-t-md' id='<?= $qu['qc_id'] ?>'></div>
-                                <div class='hidden' id='<?= $qu['qc_id'] ?>_hd'><?= json_encode($qu['qc_content']) ?></div>
+                                <div class='hidden' id='<?= $qu['qc_id'] ?>_hd'><?= Json::htmlEncode($qu['qc_content']) ?></div>
                                 <?php if ($qu['qc_type'] == AppConstant::QUESTION_TYPE_SINGLE_ANSWER) : ?>
                                     <?php foreach ($qu['answers'] as $ans) : ?>
                                         <?= Html::radio("questions[$qc_id][]", false, [

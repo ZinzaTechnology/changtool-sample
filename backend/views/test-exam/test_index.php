@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use yii\widgets\ActiveForm;
@@ -67,7 +68,7 @@ $this->registerCssFile('/res/css/paging.css', [], null);
                         <td><?= $type[$question->q_type] ?></td>
                         <td>
                             <div class='editormdCl' id='<?= $question->q_id?>'></div>
-                            <div class='hidden' id='<?= $question->q_id ?>_hd'><?= json_encode($question->q_content) ?></div>
+                            <div class='hidden' id='<?= $question->q_id ?>_hd'><?= Json::htmlEncode($question->q_content) ?></div>
                         </td>
                         <td><?= $question->created_at ?></td>
                         <td><?= $question->updated_at ?></td>
