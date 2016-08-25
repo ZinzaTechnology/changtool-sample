@@ -211,37 +211,10 @@ class LogicUserTest extends LogicBase
         return $result;
     }
 
-    public function setMark($id) {
-    	$testExam = UserTest::findOne($id);
-    	if ($testExam && $testExam->ut_status == "DONE") {
-    		$answer = unserialize($testExam->ut_user_answer_ids);
-    		$amountQuestion = TestExam::findOne($testExam->te_id)->te_num_of_questions;
-    		$countTrue = 0;
-    		$keys = array_keys($answer);
-    		$parent = 0;
-    		foreach ($answer as $elements) {
-    			$countInside = 0;
-    			foreach ($elements as $element) {
-    				if (AnswerClone::findOne($element)->ac_status == 1)
-    					$countInside++;
-    					else $countInside--;
-    			}
-    			if ($countInside == count(AnswerClone::find()->where(['qc_id'=>str_replace('question-','',$keys[$parent]),'ac_status'=>1])->asArray()->all()))
-    				$countTrue++;
-    				$parent++;
-    		}
-    		Yii::$app->db->createCommand()->update('user_test', [
-    				'ut_mark' => $countTrue
-    		], "ut_id = {$id}"
-    		)->execute();
-    	}
-    	
-    }
-
     public function findUserTestDataByUtId($ut_id)
     {
         // find user test
-        $userTest = UserTest::queryOne($ut_id);
+        $userTest = $this->findUserTestInfoByUtId($ut_id);
 
         if ($userTest) {
             // find questions of the test
@@ -256,7 +229,20 @@ class LogicUserTest extends LogicBase
         }
 
         return $userTest;
+    }
 
+    public function findUserTestInfoByUtId($ut_id)
+    {
+        // find user test
+        $userTest = UserTest::queryOne($ut_id);
+
+        if ($userTest) {
+            // find corresponding test exam data
+            $logicTestExam = new LogicTestExam();
+            $userTest->test_exam = $logicTestExam->findTestExamById($userTest->te_id);
+        }
+
+        return $userTest;
     }
 
     public function scoreUserTest($userTestData, $userAnswers)
@@ -294,21 +280,4 @@ class LogicUserTest extends LogicBase
 
         return $score;
     }
-
-    public function actionMark()
-    {
-    	$id = Yii::$app->request->get('id');
-    	$array = unserialize(UserTest::findOne($id)->ut_user_answer_ids);
-    	array_shift($array);
-    	if ($mark = UserTest::getMark($id)) {
-    		return $this->render('test/result', [
-    				'mark' => $mark
-    		]);
-    	} else {
-    		return $this->redirect(Url::toRoute('/'));
-    	}
-    }
-  
-    
-    
 }

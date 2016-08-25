@@ -28,7 +28,10 @@ use yii\db\Expression;
 class UserTest extends \common\models\AppActiveRecord
 {
     public static $is_logic_delete = false;
+
     public $question_clones = [];
+
+    public $test_exam = null;
 
     /**
      * @inheritdoc
