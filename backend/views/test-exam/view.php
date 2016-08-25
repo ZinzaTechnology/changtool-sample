@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
                 ++$q_count;
                     // Display answer of this question
                 foreach ($question->answers as $answer) {
-                    echo "- &nbsp;". $answer->qa_content ."&nbsp;";
+                    echo "- &nbsp;". htmlentities($answer->qa_content) ."&nbsp;";
                     echo ($answer->qa_status == 1) ? "<span class='label label-primary'>True</span>" : '';
                     echo "<br>";
                 }
