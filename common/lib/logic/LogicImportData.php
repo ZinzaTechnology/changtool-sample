@@ -35,7 +35,6 @@ class LogicImportData extends LogicBase
         } catch (\Exception $ex) {
             throw $ex;
         }
-        
         return $rowData;
     }
     
@@ -63,9 +62,9 @@ class LogicImportData extends LogicBase
         //first data
         $question = array_slice($data[0], 1, 4);
         $answer = array_slice($data[0], 5, 2);
-        if (count($question) > 2) {
+        if (count(array_filter($question)) > 2) {
             $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
-            if(count($answer)<2){
+            if(empty($answer[1])){
                 $answer = [$answer[0], 0];
             }
             if ($answer[1] == 0) {
@@ -82,28 +81,29 @@ class LogicImportData extends LogicBase
         
         $count = 0;
         foreach($data as $row){
-            $question = array_slice($data[0], 1, 4);
-            $answer = array_slice($data[0], 5, 2);
-            if ($question[1] > 2) {
-                if ($countTrueAnswer > 0 && $countFalseAnswer > 0){
+            $count++;
+            $question = array_slice($row, 1, 4);
+            $answer = array_slice($row, 5, 2);
+            if (count(array_filter($question)) > 2) {
+                if ($countTrueAnswer > 0){
                     $countTrueAnswer = 0;
                     $countFalseAnswer = 0;
-                    if(count($answer) < 2){
-                        $answer = [$answer[0], 0];
-                    }
-                    if ($answer[1] == 0) {
-                        $countFalseAnswer++;
-                    } else {
-                        $countTrueAnswer++;
-                    }
-                    $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
-                    $answersData[] = $answer;
                 } else {
-                    Yii::$app->session->setFlash('error', "Must have at least 1 true answer and 1 false answer! at line {$count}");
+                    Yii::$app->session->setFlash('error', "Must have at least 1 true answer! ~ question having line {$count}");
                     return;
                 }
+                if(empty($answer[1])){
+                    $answer = [$answer[0], 0];
+                }
+                if ($answer[1] == 0) {
+                    $countFalseAnswer++;
+                } else {
+                    $countTrueAnswer++;
+                }
+                $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
+                $answersData[] = $answer;
             } else {
-                if(count($answer) < 2){
+                if(empty($answer[1])){
                     $answer = [$answer[0], 0];
                 }
                 if ($answer[1] == 0) {
@@ -113,7 +113,6 @@ class LogicImportData extends LogicBase
                 }
                 $answersData[count($answersData) - 1] = array_merge($answersData[count($answersData) - 1], $answer);
             }
-            $count++;
         }
         $transaction = Question::getDb()->beginTransaction();
         try{
@@ -146,6 +145,7 @@ class LogicImportData extends LogicBase
         $answerStatus = '';
         
         foreach($data as $answer){
+            $answerContent = [];
             for($i = 0; $i < count($answer); $i++){
                 if($i % 2 == 0){
                     $answerContent = [$questionID, $answer[$i]];
