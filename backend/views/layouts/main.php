@@ -112,7 +112,7 @@ $current_user = Yii::$app->user->identity;
                         ],
                     ],
                 ]);
-            endif; ?>
+                endif; ?>
             </ul>
 
         </div>

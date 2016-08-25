@@ -81,14 +81,14 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
                 foreach ($questions_answers as $question) { ?>
                     <div style='background: #ebebe0' class='editormdCl m-b-md m-t-md' id='<?= $question->q_id ?>'></div>
                     <div class='hidden' id='<?= $question->q_id.'_hd' ?>'><?= json_encode($question->q_content)?></div>
-                <?php 
+                <?php
                 ++$q_count;
                     // Display answer of this question
                 foreach ($question->answers as $answer) {
                     echo "- &nbsp;". $answer->qa_content ."&nbsp;";
                     echo ($answer->qa_status == 1) ? "<span class='label label-primary'>True</span>" : '';
                     echo "<br>";
-                    }
+                }
                 }
                 $form = ActiveForm::end();
             } else {
