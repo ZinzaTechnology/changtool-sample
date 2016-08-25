@@ -8,11 +8,11 @@
 namespace common\lib\logic;
 
 use Yii;
-use yii\helpers\ArrayHelper;
 use common\models\Question;
 use common\models\QuestionTag;
 use common\models\TestExamQuestions;
 use common\lib\components\AppConstant;
+use common\lib\helpers\AppArrayHelper;
 
 class LogicQuestion extends LogicBase
 {
@@ -31,32 +31,32 @@ class LogicQuestion extends LogicBase
         $questionQuery = Question::query();
         
         if (! empty($params)) {
-            $q_content = $params ['content'];
-            $q_category = $params ['category'];
-            $q_type = $params ['type'];
-            $qt_content = $params ['qt_content'];
-            $q_level = $params ['level'];
+            $q_content = $params['content'];
+            $q_category = $params['category'];
+            $q_type = $params['type'];
+            $qt_content = $params['qt_content'];
+            $q_level = $params['level'];
             
             if ($q_content != null) {
                 $questionQuery->andWhere([
                     'like',
                     'q_content',
-                    $q_content 
+                    $q_content
                 ]);
             }
             if ($q_category != null) {
                 $questionQuery->andWhere([
-                    'q_category' => $q_category 
+                    'q_category' => $q_category
                 ]);
             }
             if ($q_type != null) {
                 $questionQuery->andWhere([
-                    'q_type' => $q_type 
+                    'q_type' => $q_type
                 ]);
             }
             if ($q_level != null) {
                 $questionQuery->andWhere([
-                    'q_level' => $q_level 
+                    'q_level' => $q_level
                 ]);
             }
             if ($qt_content != null) {
@@ -67,14 +67,14 @@ class LogicQuestion extends LogicBase
                 $qtags = QuestionTag::query()->andWhere([
                     'IN',
                     'tag_id',
-                    $tag_ids 
+                    $tag_ids
                 ])->all();
-                $q_ids = ArrayHelper::getColumn($qtags, 'q_id');
+                $q_ids = AppArrayHelper::getColumn($qtags, 'q_id');
                 
                 $questionQuery->andWhere([
                     'IN',
                     'q_id',
-                    $q_ids 
+                    $q_ids
                 ]);
             }
         }
@@ -91,15 +91,16 @@ class LogicQuestion extends LogicBase
     {
         $question = new Question();
         if (! empty($params)) {
-            $question->q_content = $params ['q_content'];
-            $question->q_category = $params ['q_category'];
-            $question->q_type = $params ['q_type'];
-            $question->q_level = $params ['q_level'];
+            $question->q_content = $params['q_content'];
+            $question->q_category = $params['q_category'];
+            $question->q_type = $params['q_type'];
+            $question->q_level = $params['q_level'];
             $question->is_deleted = 0;
             if ($question->validate() && $question->save()) {
                 return $question;
-            } else
+            } else {
                 $question = null;
+            }
         }
         
         return $question;
@@ -108,19 +109,21 @@ class LogicQuestion extends LogicBase
     public function updateQuestion($params)
     {
         if (! empty($params)) {
-            $question = $this->findQuestionById($params ['q_id']);
+            $question = $this->findQuestionById($params['q_id']);
             if ($question != null) {
-                $question->q_content = $params ['q_content'];
-                $question->q_category = $params ['q_category'];
-                $question->q_type = $params ['q_type'];
-                $question->q_level = $params ['q_level'];
+                $question->q_content = $params['q_content'];
+                $question->q_category = $params['q_category'];
+                $question->q_type = $params['q_type'];
+                $question->q_level = $params['q_level'];
                 $question->is_deleted = 0;
                 if ($question->validate() && $question->save()) {
                     return $question;
-                } else
+                } else {
                     $question = null;
-            } else
+                }
+            } else {
                 $question = null;
+            }
         }
         
         return $question;
@@ -187,7 +190,7 @@ class LogicQuestion extends LogicBase
         $questions = [];
         if (! empty($question_ids)) {
             $questions = Question::queryAll([
-                'q_id' => $question_ids 
+                'q_id' => $question_ids
             ]);
         }
         return $questions;
@@ -203,26 +206,26 @@ class LogicQuestion extends LogicBase
         $questions = [];
         if (! empty($q_ids)) {
             $questions = Question::queryAll([
-                'q_id' => $q_ids 
+                'q_id' => $q_ids
             ]);
         }
         return $questions;
     }
     
-    public function findAnswerByQuestionIds($q_ids)
+    public function findQuestionDataByIds($q_ids)
     {
-        $logicAnswer = new LogicAnswer();
-        
-        $answers = $logicAnswer->findAnswerByQuestionId($q_ids);
-        $answer_group_by_qid = [];
-        foreach($q_ids as $q_id) {
-            $answer_group_by_qid[$q_id] = [];
-        }
+        $questions = $this->findQuestionByIds($q_ids);
+        $questions = AppArrayHelper::index($questions, 'q_id');
 
-        foreach ($answers as $answer) {
-            $answer_group_by_qid[$answer->q_id][] = $answer;
+        if (!empty($questions)) {
+            $logicAnswer = new LogicAnswer();
+            $answers = $logicAnswer->findAnswerByQuestionId($q_ids);
+
+            foreach ($answers as $answer) {
+                $questions[$answer->q_id]->answers[] = $answer;
+            }
         }
-        return $answer_group_by_qid;
+        return $questions;
     }
 
     /**
@@ -232,7 +235,7 @@ class LogicQuestion extends LogicBase
     public function findQuestionByCategory($q_category)
     {
         $questions = Question::queryAll([
-            'q_category' => $q_category 
+            'q_category' => $q_category
         ]);
         return $questions;
     }

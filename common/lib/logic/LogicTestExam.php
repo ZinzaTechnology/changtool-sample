@@ -17,7 +17,6 @@ use common\models\TestExamQuestions;
 use common\lib\helpers\AppArrayHelper;
 use common\lib\components\AppConstant;
 
-
 class LogicTestExam extends LogicBase
 {
     public function __construct()
@@ -28,15 +27,16 @@ class LogicTestExam extends LogicBase
     private function create_link($url, $filter = [])
     {
         $string = '';
-        foreach ($filter as $key => $val){
-            if($val != ''){
+        foreach ($filter as $key => $val) {
+            if ($val != '') {
                 $string .= "&{$key}={$val}";
             }
         }
         return $url . ($string ? '?'.ltrim($string, '&') : '');
     }
     
-    public function pagingTestExam($te_id, $base_link, $current_page, $limit, $question_ids){
+    public function pagingTestExam($te_id, $base_link, $current_page, $limit, $question_ids)
+    {
         $logicTestExamQuestions = new LogicTestExamQuestions();
         $logicQuestion = new LogicQuestion();
         
@@ -51,13 +51,10 @@ class LogicTestExam extends LogicBase
         
         // Only query question on this page
         $paging_question_ids = array_slice($question_ids, $paging['start'], $paging['limit']);
-        $paging_questions = $logicQuestion->findQuestionByIds($paging_question_ids);
-        
-        $pagging_questions_answers = $logicQuestion->findAnswerByQuestionIds($paging_question_ids);
+        $pagging_questions_answers = $logicQuestion->findQuestionDataByIds($paging_question_ids);
         
         // Save questions on this page and return to display
-        $paging['pagging_questions'] = $paging_questions;
-        $paging['pagging_questions_answers'] = $pagging_questions_answers;        
+        $paging['pagging_questions_answers'] = $pagging_questions_answers;
         
         return $paging;
     }
@@ -66,10 +63,9 @@ class LogicTestExam extends LogicBase
     {
         $total_page = ceil($total_records / $limit);
 
-        if($current_page > $total_page){
+        if ($current_page > $total_page) {
             $current_page = $total_page;
-        }
-        else if($current_page < 1){
+        } elseif ($current_page < 1) {
             $current_page = 1;
         }
 
@@ -77,26 +73,25 @@ class LogicTestExam extends LogicBase
         $html = '';
 
         // Display pre button
-        if($current_page > 1 && $total_page > 1){
+        if ($current_page > 1 && $total_page > 1) {
             $html .= '<a href="'.str_replace('{page}', $current_page - 1, $link).'">Prev   </a>';
         }
-        for($i = 1; $i <= $total_page; $i++){
-           if ($i == $current_page){
-               $html .= '<span>'.$i.'   </span>';
-           }
-           else{
-               $html .= '<a href="'.str_replace('{page}', $i, $link).'">'.$i.'   </a>';
-           }
+        for ($i = 1; $i <= $total_page; $i++) {
+            if ($i == $current_page) {
+                $html .= '<span>'.$i.'   </span>';
+            } else {
+                $html .= '<a href="'.str_replace('{page}', $i, $link).'">'.$i.'   </a>';
+            }
         }
-        if ($current_page < $total_page && $total_page > 1){
+        if ($current_page < $total_page && $total_page > 1) {
             $html .= '<a href="'.str_replace('{page}', $current_page + 1, $link).'">Next</a>';
         }
-        return array(
+        return [
             'start' => $start,
             'limit' => $limit,
             'html' => $html
-        );
-     }
+        ];
+    }
      
     /**
      * Creates data provider instance with search query applied
