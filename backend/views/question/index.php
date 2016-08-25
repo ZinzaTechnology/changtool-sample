@@ -4,50 +4,69 @@ use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use yii\grid\GridView;
 
+$this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
+$this->registerCssFile('/res/css/plugins/editormd.min.css');
+$this->registerJsFile('/res/lib/marked.min.js');
+$this->registerJsFile('/res/lib/prettify.min.js');
+$this->registerJsFile('/res/lib/flowchart.min.js');
+$this->registerJsFile('/res/lib/raphael.min.js');
+$this->registerJsFile('/res/lib/underscore.min.js');
+$this->registerJsFile('/res/lib/sequence-diagram.min.js');
+$this->registerJsFile('/res/lib/jquery.flowchart.min.js');
+
 $this->title = "Question Manager";
-$this->params ['breadcrumbs'] [] = $this->title;
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="ibox">
-	<div class="ibox-title">
-		<h1><?= $this->title ?></h1>
+    <div class="ibox-title">
+        <h1><?= $this->title ?></h1>
         <?=Breadcrumbs::widget([ 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [ ] ])?>
     </div>
-	<br>
-	<div class="ibox-content">
+    <br>
+    <div class="ibox-content">
         <?= Html::a('Create New Question', ['/question/insert-question'], ['class' => 'btn btn-primary']);?>
     </div>
-	<div class="ibox-content">
+    <div class="ibox-content">
         <?= $this->render('/question/_search', ['level' => $level, 'category' => $category, 'type' => $type,'selected' => $selected]); ?>
      </div>
-	<br>
-	<div class="ibox-content">
-		<h3>Question</h3>
+    <br>
+    <div class="ibox-content">
+        <h3>Question</h3>
         <?php
         echo GridView::widget([
             'dataProvider' => $dataProvider,
             'columns' => [
                 [
-                    'class' => 'yii\grid\SerialColumn' 
+                    'class' => 'yii\grid\SerialColumn'
                 ],
-                'q_content',
+                [
+                    'attribute' => 'q_content',
+                    "content" => function ($model, $key, $index, $column) use ($category) {
+                        //$content = str_replace("\n", "<br>", $model->q_content);
+                        $content_id = "q_content_".$model->q_id;
+                        $content = '<div class="editormdCl" id="'.$content_id.'"></div>';
+                        $content .= "<div class='hidden' id='{$content_id}_hd'>".json_encode($model->q_content)."</div>";
+                        return $content;
+                    }
+                ],
                 [
                     'attribute' => 'q_category',
                     "content" => function ($model, $key, $index, $column) use ($category) {
-                        return $category [$model->q_category];
-                    } 
+                        return $category[$model->q_category];
+                    }
                 ],
                 [
-                    'attribute' => 'q_category',
+                    'attribute' => 'q_level',
                     "content" => function ($model, $key, $index, $column) use ($level) {
-                        return $level [$model->q_level];
-                    } 
+                        return $level[$model->q_level];
+                    }
                 ],
                 [
-                    'attribute' => 'q_category',
+                    'attribute' => 'q_type',
                     "content" => function ($model, $key, $index, $column) use ($type) {
-                        return $type [$model->q_type];
-                    } 
+                        return $type[$model->q_type];
+                    }
                 ],
                 'created_at',
                 'updated_at',
@@ -66,9 +85,9 @@ $this->params ['breadcrumbs'] [] = $this->title;
                         'delete' => function ($url, $model) {
                             return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
                                 'data-confirm' => 'Are you sure you want to delete this item?',
-                                'data-method' => 'post' 
+                                'data-method' => 'post'
                             ]);
-                        } 
+                        }
                     ],
                     
                     'urlCreator' => function ($action, $dataProvider, $key, $index) {
@@ -76,26 +95,51 @@ $this->params ['breadcrumbs'] [] = $this->title;
                         if ($action === 'view') {
                             return Url::to([
                                 'question/view',
-                                'q_id' => $dataProvider ['q_id'] 
+                                'q_id' => $dataProvider['q_id']
                             ]);
                         }
                         if ($action === 'edit') {
                             return Url::to([
                                 'question/edit-question',
-                                'q_id' => $dataProvider ['q_id'] 
+                                'q_id' => $dataProvider['q_id']
                             ]);
                         }
                         if ($action === 'delete') {
                             return Url::to([
                                 'question/delete',
-                                'q_id' => $dataProvider ['q_id'] 
+                                'q_id' => $dataProvider['q_id']
                             ]);
                         }
                         return $url;
-                    } 
-                ] 
-            ] 
+                    }
+                ]
+            ]
         ]);
         ?>  
-    	</div>
+        </div>
 </div>
+
+<script>
+$(function() {
+    $(".editormdCl").each(function(idx, el) {
+        var el_id = el.id;
+        editormd.markdownToHTML(el.id, {
+            markdown        : JSON.parse($("#" + el_id + "_hd").html()),
+            //htmlDecode      : true,
+            htmlDecode      : "style,script,iframe",  // you can filter tags decode
+            //toc             : false,
+            tocm            : true,    // Using [TOCM]
+            //tocContainer    : "#custom-toc-container", 
+            //gfm             : false,
+            //tocDropdown     : true,
+            // markdownSourceCode : true, 
+            emoji           : true,
+            taskList        : true,
+            tex             : true,  
+            flowChart       : true,  
+            sequenceDiagram : true,  
+        });
+    });
+
+});
+</script>
