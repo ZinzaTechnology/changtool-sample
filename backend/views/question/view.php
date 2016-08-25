@@ -37,7 +37,7 @@ $this->params ['breadcrumbs'] [] = [
 				<td colspan="2"><h4>Question content </h2><br>
 					<div id="editormd-view">
 						<textarea class="editormd-markdown-textarea" name="Question[q_content]"></textarea>
-        				<textarea class="editormd-html-textarea" name="Question[q_content_html]"></textarea>
+        				<textarea class="editormd-markdown-textarea" name="Question[q_content]"></textarea>
 					</div>
 				</td>
 				
