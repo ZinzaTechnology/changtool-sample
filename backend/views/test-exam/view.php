@@ -7,13 +7,6 @@ use yii\widgets\Breadcrumbs;
 
 $this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
 $this->registerCssFile('/res/css/plugins/editormd.min.css');
-$this->registerJsFile('/res/lib/marked.min.js');
-$this->registerJsFile('/res/lib/prettify.min.js');
-$this->registerJsFile('/res/lib/flowchart.min.js');
-$this->registerJsFile('/res/lib/raphael.min.js');
-$this->registerJsFile('/res/lib/underscore.min.js');
-$this->registerJsFile('/res/lib/sequence-diagram.min.js');
-$this->registerJsFile('/res/lib/jquery.flowchart.min.js');
 
 /* @var $this yii\web\View */
 /* @var $testExam backend\models\TestExam */
@@ -121,23 +114,13 @@ $this->params['breadcrumbs'][] = ['label' => 'Test Manager', 'url' => ['index']]
 $(function() {
     $(".editormdCl").each(function(idx, el) {
         var el_id = el.id;
-        editormd.markdownToHTML(el.id, {
+        var editor = editormd(el_id, {
+            width  : "100%",
+            readOnly: true,
+            watch: false,
             markdown        : JSON.parse($("#" + el_id + "_hd").html()),
-            //htmlDecode      : true,
-            htmlDecode      : "style,script,iframe",  // you can filter tags decode
-            //toc             : false,
-            tocm            : true,    // Using [TOCM]
-            //tocContainer    : "#custom-toc-container", 
-            //gfm             : false,
-            //tocDropdown     : true,
-            // markdownSourceCode : true, 
-            emoji           : true,
-            taskList        : true,
-            tex             : true,  
-            flowChart       : true,  
-            sequenceDiagram : true,  
+            path : "/res/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
         });
     });
-
 });
 </script>

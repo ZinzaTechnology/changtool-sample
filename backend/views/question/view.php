@@ -39,11 +39,11 @@ $this->params['breadcrumbs'][] = [
                 <script>
                 $(function() {
                     var editor = editormd("editormd-view", {
-                     width  : "100%",
-                     readOnly: true,
-                     markdown: <?= Json::htmlEncode($question['q_content'])?>,
-                     path : "/res/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
-                   });
+                        width  : "100%",
+                        readOnly: true,
+                        markdown: <?= Json::htmlEncode($question['q_content'])?>,
+                        path : "/res/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
+                    });
                 });
                 </script>
                 
