@@ -164,7 +164,8 @@ class LogicTestExam extends LogicBase
                 $count = $logicTestExamQuestions->deleteTestExamQuestionsByTestId($te_id);
                 
                 // Delete testExam
-                $testExam->delete();
+                $testExam->is_deleted = 1;
+                $testExam->save();
                 
                 // Delete ok, apply to Database
                 $transaction->commit();
