@@ -30,7 +30,7 @@ $this->title = 'Dashboard';
             ?>
             <div class='col-md-3'>
                 <a href='<?= $link ?>'>
-                    <div class="widget yellow-bg p-lg text-center">
+                    <div class="widget lazur-bg p-lg text-center">
                         <div class="m-b-md">
                             
                             <h1 class="m-xs"><?= $data['te_title'] ?></h1>
