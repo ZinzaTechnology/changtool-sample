@@ -156,6 +156,7 @@ class LogicUserTest extends LogicBase
         $query->andFilterWhere(['ut_status' => $params['ut_status']]);
         $query->andFilterWhere(['>=', 'ut_start_at', $params['ut_start_at']]);
         $query->andFilterWhere(['<=', 'ut_finished_at', $params['ut_finished_at']]);
+        $query->andFilterWhere(['user.is_deleted' => AppConstant::MODEL_IS_DELETED_NOT_DELETED]);
 
         $query->addOrderBy(['ut_id' => SORT_DESC]);
         return $query->all();
