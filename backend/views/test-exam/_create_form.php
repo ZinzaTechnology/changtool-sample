@@ -64,7 +64,9 @@ use common\controllers\GlobalVariableControllser;
             </td>
         </tr>
         <tr>
-            <td><?= Html::submitButton('Create', ['class' => 'btn btn-success']) ?></td>
+            <td><?= Html::submitButton('Create', ['name' => 'submit', 'value' => 'create', 'class' => 'btn btn-success']) ?>
+            <?= Html::submitButton('Create with random questions', ['name' => 'submit', 'value' => 'create_random_question', 'class' => 'btn btn-success']) ?>
+            </td>
         </tr>
 
     </table>
