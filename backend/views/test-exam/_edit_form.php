@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
+use yii\helpers\Json;
 
 $this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
 $this->registerCssFile('/res/css/plugins/editormd.min.css');
@@ -90,7 +91,7 @@ $this->registerCssFile('/res/css/plugins/editormd.min.css');
                     echo "Question $q_count (q_id: $aq->q_id)";
                     echo '</label>';
                     echo '<div style="background: #ebebe0" class="editormdCl m-b-md m-t-md" id="'.$aq->q_id.'"></div>';
-                    echo "<div class='hidden' id='{$aq->q_id}_hd'>".json_encode($aq->q_content)."</div>";
+                    echo "<div class='hidden' id='{$aq->q_id}_hd'>".Json::htmlEncode($aq->q_content)."</div>";
                     echo '</div>';
                     echo '<div class="col-md-3" style="padding-top: 20px">';
                     echo Html::a("Delete Question $q_count", ['deleteq','te_id' => $testExam->te_id, 'q_id' => $aq['q_id']], [
