@@ -35,5 +35,3 @@ $this->params['breadcrumbs'][] = 'Edit';
 
     </div>
 </div>
-
-
