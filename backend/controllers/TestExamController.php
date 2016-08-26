@@ -106,28 +106,27 @@ class TestExamController extends BackendController
         $request = Yii::$app->request->post();
         $params = [];
         $newTest = new TestExam();
+        $id = 0;
         if (!empty($request)) {
             $params = AppArrayHelper::filterKeys(
                 $request['TestExam'],
                 ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']
             );
-            $id = 0;
             if ($request['submit']=='create') {
                 $test = $logicTestExam->insertTestExam(['TestExam' => $params]);
-                $id = (isset($test->te_id)) ? $test->te_id : 0;
+                $id = ($test > 0) ? $test : 0;
             } else {
                 if($test = $logicTestExam->generateQuestion($params)){
-                    $id = (isset($test->te_id)) ? $test->te_id : 0;
+                    $id = ($test > 0) ? $test : 0;
                 }
             }
-            if ($id>0) {
-                return $this->redirect(['update', 'id' => $id]);
+            if ($id > 0) {
+                return $this->redirect(['view', 'id' => $id]);
             } else {
                 $this->setSessionFlash('error', 'Error occur when creating new test');
                 $this->goReferrer();
             }
         }
-
         return $this->render('create', [
             'testExam' => $newTest,
             'test_category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
