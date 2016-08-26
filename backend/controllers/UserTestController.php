@@ -77,9 +77,9 @@ class UserTestController extends BackendController
         $testExam = new TestExam;
         return $this->render('assign', [
             'userModel' => $user,
-            'userData' => $user->find()->where(['is_deleted' => 0]),
+            'userData' => $user->query(),
             'testExam' => $testExam,
-            'testList' => $testExam->find()->where($logicUserTest->getTestExamParams()),
+            'testList' => $testExam->query()->andWhere($logicUserTest->getTestExamParams()),
             'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
             'level' => AppConstant::$TEST_EXAM_LEVEL_NAME,
             'category_choice' => $logicUserTest->getChoice()[0],
