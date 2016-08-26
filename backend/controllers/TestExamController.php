@@ -111,13 +111,20 @@ class TestExamController extends BackendController
                 $request['TestExam'],
                 ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']
             );
-
-            $newTest = $logicTestExam->insertTestExam(['TestExam' => $params]);
-
-            if ($newTest->te_id) {
-                return $this->redirect(['update', 'id' => $newTest->te_id]);
+            $id = 0;
+            if ($request['submit']=='create') {
+                $test = $logicTestExam->insertTestExam(['TestExam' => $params]);
+                $id = (isset($test->te_id)) ? $test->te_id : 0;
             } else {
-                $this->setSessionFlash('error', 'Error occur when creating new test'.Html::errorSummary($newTest));
+                if($test = $logicTestExam->generateQuestion($params)){
+                    $id = (isset($test->te_id)) ? $test->te_id : 0;
+                }
+            }
+            if ($id>0) {
+                return $this->redirect(['update', 'id' => $id]);
+            } else {
+                $this->setSessionFlash('error', 'Error occur when creating new test');
+                $this->goReferrer();
             }
         }
 

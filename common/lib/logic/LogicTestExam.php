@@ -16,6 +16,7 @@ use yii\data\ActiveDataProvider;
 use common\models\TestExamQuestions;
 use common\lib\helpers\AppArrayHelper;
 use common\lib\components\AppConstant;
+use yii\db\Expression;
 
 class LogicTestExam extends LogicBase
 {
@@ -57,6 +58,77 @@ class LogicTestExam extends LogicBase
         $paging['pagging_questions_answers'] = $pagging_questions_answers;
         
         return $paging;
+    }
+    
+    public function generateQuestion($params)
+    {
+        $amount = $params['te_num_of_questions'];
+        $category = $params['te_category'];
+        $level = $params['te_level'];
+        $transaction = TestExam::getDb()->beginTransaction();
+        try{
+            $this->insertTestExam(['TestExam' => $params]);
+            $testExamID = Yii::$app->db->getLastInsertID();
+            switch ($level){
+                case (AppConstant::TEST_EXAM_LEVEL_EASY):
+                    $amountIntermediate = AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE;
+                case (AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE):
+                    $amountIntermediate = AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE;
+                    break;
+                case (AppConstant::TEST_EXAM_LEVEL_HARD):
+                    $amountIntermediate = AppConstant::TEST_EXAM_HARD_PERCENT_QUESTION_INTERMEDIATE;
+                    break;
+            }
+            $amountIntermediate = round($amountIntermediate * $amount / 100);
+            $amountHard = $amount - $amountIntermediate;
+            
+            $intermediate = Question::query()
+                    ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_INTERMEDIATE])
+                    ->orderBy(new Expression('rand()'))
+                    ->limit($amountIntermediate)
+                    ->asArray()
+                    ->all();
+            $hard = Question::query()
+                    ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_HARD])
+                    ->orderBy(new Expression('rand()'))
+                    ->limit($amountHard)
+                    ->asArray()
+                    ->all();
+            $questions = array_merge($intermediate, $hard);
+            $ids = \yii\helpers\ArrayHelper::getColumn($questions, 'q_id');
+            for($count = 0; $count < count($ids); $count++){
+                $ids[$count] = [$testExamID, $ids[$count]];
+                $ids[$count] = array_merge($ids[$count], [date('Y-m-d H:i:s')]);
+            }
+            
+            Yii::$app->db->createCommand()->batchInsert('test_exam_questions', ['te_id', 'q_id', 'created_at'], $ids)->execute();
+            $transaction->commit();
+            return $testExamID;
+        } catch (Exception $ex) {
+            $transaction->rollBack();
+            throw $ex;
+        }
+        return 0;
+    }
+    
+    public function saveGenerateQuestion($data){
+        $transaction = Question::getDb()->beginTransaction();
+        try{
+            $ids = \yii\helpers\ArrayHelper::getColumn($data, 'q_id');
+            for($count = 0; $count < count($ids); $count++){
+                $ids[$count] = [$ids[$count], $testExamID];
+                $ids[$count] = array_merge($ids[$count], [date('Y-m-d H:i:s')]);
+            }
+            if(count($ids)){
+                Yii::$app->db->createCommand()->batchInsert('test_exam_questions', ['q_id', 'te_id', 'created_at'], $ids)->execute();
+                $transaction->commit();
+                return true;
+            }
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            throw $ex;
+        }
+        return false;
     }
     
     private function paging($link, $total_records, $current_page, $limit)
