@@ -9,6 +9,7 @@ use common\lib\components\AppConstant;
 use common\lib\logic\LogicQuestion;
 use common\lib\logic\LogicAnswer;
 use common\lib\helpers\AppArrayHelper;
+use yii\helpers\Html;
 
 class QuestionController extends BackendController
 {
@@ -83,57 +84,6 @@ class QuestionController extends BackendController
         return $this->render('view', $data);
     }
 
-    public function insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status)
-    {
-        $params = [];
-        // insert questions
-        $params = AppArrayHelper::filterKeys($request_question, [
-            'q_content',
-            'q_category',
-            'q_level',
-            'q_type',
-            'qt_content'
-        ]);
-        $question = $logicQuestion->createQuestion($params);
-        if ($question != null) {
-            $q_id = $question->q_id;
-            // insert answers
-            $answerarray = [];
-            foreach ($request_answer as $val) {
-                $params = AppArrayHelper::filterKeys($val, [
-                    'qa_content',
-                    'qa_status'
-                ]);
-                $answer = $logicAnswer->createAnswerByQuesion($params, $q_id);
-                if ($answer != null) {
-                    $answerarray[] = $answer;
-                } else {
-                    Yii::$app->session->setFlash('error', 'Error occurs when create this question!');
-                    return $this->goReferrer();
-                }
-            }
-            $dataProvider = new ArrayDataProvider([
-                'allModels' => $answerarray,
-                'pagination' => [
-                    'pagesize' => AppConstant::PAGING_ADD_QUESTION_PAGE_SIZE,
-                ]
-            ]);
-            $data = [
-                'dataProvider' => $dataProvider,
-                'question' => $question,
-                'category' => $category,
-                'type' => $type,
-                'level' => $level,
-                'answer_status' => $answer_status,
-            ];
-            
-            return $data;
-        } else {
-            Yii::$app->session->setFlash('error', 'Error occurs when create this question!');
-            return $this->goReferrer();
-        }
-    }
-
     public function actionInsertQuestion()
     {
         $answer_status = AppConstant::$ANSWER_STATUS_NAME;
@@ -158,36 +108,44 @@ class QuestionController extends BackendController
             'answer_status' => $answer_status,
         ];
 
-        $request = Yii::$app->request->post();
-        if (! empty($request)) {
-            $request_question = Yii::$app->request->post()['Question'];
-            $request_answer = Yii::$app->request->post()['Answer'];
-            if ((! empty($request_question)) && (! empty($request_answer))) {
-                $countTrue = 0;
-                $countFalse = 0;
-                foreach ($request_answer as $val) {
-                    if ($val['qa_status'] == 1) {
-                        $countTrue++;
-                    }else $countFalse++;
-                }
-                switch(true){
-                    case ($countTrue < $request_question['q_type']):
-                        Yii::$app->session->setFlash('error', 'Amount of true answer must be equal or more than question type!');
-                        return $this->goReferrer();
-                        break;
-                    case ($countTrue >= 1 && $countFalse >= 1):
-                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
-                        break;
-                    default:
-                        Yii::$app->session->setFlash('error', 'Answer must have at least 1 true answer and 1 false answer!');
-                        return $this->goReferrer();
-                        break;
-                }
-                return $this->render('view', $data);
+
+        // In case first access
+        if (empty(Yii::$app->request->post())) {
+            return $this->render('insert-question', $data);
+        }
+
+        $request = AppArrayHelper::filterKeys(Yii::$app->request->post(), ['Question', 'Answer']);
+        // In case parameters are invalid
+        if (empty($request['Question']) || empty($request['Answer'])) {
+            $this->setSessionFlash('error', 'Invalid parameters');
+            return $this->render('insert-question', $data);
+        }
+
+        $countTrue = 0;
+        $countFalse = 0;
+        foreach ($request['Answer'] as $val) {
+            if ($val['qa_status'] == 1) {
+                $countTrue++;
+            } else {
+                $countFalse++;
             }
         }
 
-        return $this->render('insert-question', $data);
+        // Error if there are no true answers
+        if ($countTrue < 1) {
+            $this->setSessionFlash('error', 'Amount of true answer must be more than 0!');
+            return $this->goReferrer();
+        }
+        
+        // Go on to insert question
+        $question = $logicQuestion->insertQuestionAndAnswers($request['Question'], $request['Answer']);
+        if (! empty($question->errors)) {
+            $this->setSessionFlash('error', Html::errorSummary($question));
+            return $this->render('insert-question', $data);
+        }
+
+        // Insert success
+        return $this->redirect(['view', 'q_id' => $question->q_id]);
     }
 
     public function editQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status, $answer_old)
@@ -199,7 +157,7 @@ class QuestionController extends BackendController
             'q_category',
             'q_level',
             'q_type',
-            'qt_content' 
+            'qt_content'
         ]);
         
         $question = $logicQuestion->updateQuestion($params);
@@ -208,11 +166,10 @@ class QuestionController extends BackendController
             // delete old answers
             if ($answer_old != null) {
                 foreach ($answer_old as $val_old) {
-                    
                     $i = 0;
                     foreach ($request_answer as $val) {
                         $params = AppArrayHelper::filterKeys($val, [
-                            'qa_id' 
+                            'qa_id'
                         ]);
                         if ($val_old['qa_id'] == $params['qa_id']) {
                             $i = $i + 1;
@@ -230,7 +187,7 @@ class QuestionController extends BackendController
                 $params = AppArrayHelper::filterKeys($val, [
                     'qa_id',
                     'qa_content',
-                    'qa_status' 
+                    'qa_status'
                 ]);
                 $answer = $logicAnswer->updateAnswerByQuesion($params, $q_id);
                 if ($answer != null) {
@@ -243,8 +200,8 @@ class QuestionController extends BackendController
             $dataProvider = new ArrayDataProvider([
                 'allModels' => $answerarray,
                 'pagination' => [
-                    'pagesize' => 5 
-                ] 
+                    'pagesize' => 5
+                ]
             ]);
             $data = [
                 'dataProvider' => $dataProvider,
@@ -252,7 +209,7 @@ class QuestionController extends BackendController
                 'category' => $category,
                 'type' => $type,
                 'level' => $level,
-                'answer_status' => $answer_status 
+                'answer_status' => $answer_status
             ];
             return $data;
         } else {
@@ -269,12 +226,13 @@ class QuestionController extends BackendController
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
         $tag = AppConstant::$QUESTION_TAG_NAME;
+
         $logicQuestion = new LogicQuestion();
         $logicAnswer = new LogicAnswer();
         if (($q_id = Yii::$app->request->get('q_id')) != null) {
             if (($question = $logicQuestion->findQuestionById($q_id)) != null) {
                 $answer = [
-                    $logicAnswer->initAnswer() 
+                    $logicAnswer->initAnswer()
                 ];
                 $data = [
                     'question' => $question,
@@ -283,7 +241,7 @@ class QuestionController extends BackendController
                     'type' => $type,
                     'level' => $level,
                     'answer_status' => $answer_status,
-                    'q_id' => $q_id 
+                    'q_id' => $q_id
                 ];
                 if (($answer = $logicAnswer->findAnswerByQuestionId($q_id)) != null) {
                     $session['answer'] = $answer;
@@ -294,7 +252,7 @@ class QuestionController extends BackendController
                         'type' => $type,
                         'level' => $level,
                         'answer_status' => $answer_status,
-                        'q_id' => $q_id 
+                        'q_id' => $q_id
                     ];
                 }
                 return $this->render('edit-question', $data);
@@ -317,15 +275,17 @@ class QuestionController extends BackendController
                 foreach ($request_answer as $val) {
                     if ($val['qa_status'] == 1) {
                         $countTrue++;
-                    }else $countFalse++;
+                    } else {
+                        $countFalse++;
+                    }
                 }
-                switch(true){
+                switch (true) {
                     case ($countTrue < $request_question['q_type']):
                         Yii::$app->session->setFlash('error', 'Amount of true answer must be equal or more than question type!');
                         return $this->goReferrer();
                         break;
                     case ($countTrue >= 1 && $countFalse >= 1):
-                        $data = $this->insertQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
+                        $data = $this->editQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
                         break;
                     default:
                         Yii::$app->session->setFlash('error', 'Answer must have at least 1 true answer and 1 false answer!');
@@ -345,7 +305,7 @@ class QuestionController extends BackendController
             $result = $logicQuestion->deleteQuestionById($q_id);
             if ($result) {
                 return $this->redirect([
-                    '/question' 
+                    '/question'
                 ]);
             } else {
                 Yii::$app->session->setFlash('error', 'Error occurs when deleting this question!');
@@ -353,8 +313,4 @@ class QuestionController extends BackendController
             }
         }
     }
-
-   
-
-   
 }

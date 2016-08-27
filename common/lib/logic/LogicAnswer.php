@@ -7,6 +7,7 @@
  */
 namespace common\lib\logic;
 
+use Yii;
 use yii\helpers\ArrayHelper;
 use common\models\Answer;
 
@@ -25,7 +26,7 @@ class LogicAnswer extends LogicBase
     public function findAnswerByQuestionId($q_id)
     {
         return Answer::queryAll([
-            'q_id' => $q_id 
+            'q_id' => $q_id
         ]);
     }
 
@@ -39,28 +40,22 @@ class LogicAnswer extends LogicBase
         $answers_ids = ArrayHelper::getColumn($answers, 'qa_id');
         
         return Answer::updateAll([
-            'is_deleted' => 1 
+            'is_deleted' => 1
         ], [
-            'qa_id' => $answers_ids 
+            'qa_id' => $answers_ids
         ]);
     }
 
-    public function createAnswerByQuesion($params, $q_id)
+    public function insertBatchAnswer($params)
     {
-        $answer = new Answer();
-        
-        if (! empty($params)) {
-            $answer->q_id = $q_id;
-            $answer->qa_content = $params['qa_content'];
-            $answer->qa_status = $params['qa_status'];
-            $answer->is_deleted = 0;
-            if ($answer->validate() && $answer->save()) {
-                return $answer;
-            } else
-                $answer = null;
+        $db = Yii::$app->db;
+        $count = 0;
+        $dataInsert = [];
+        foreach ($params as $answer) {
+            $dataInsert[] = [$answer['q_id'], $answer['qa_content'], $answer['qa_status'], date('Y-m-d H:i:s')];
         }
-        
-        return $answer;
+        $db->createCommand()->batchInsert(Answer::tableName(), ['q_id', 'qa_content', 'qa_status', 'created_at'], $dataInsert)->execute();
+        return [$db->getLastInsertID(), $count];
     }
 
     public function updateAnswerByQuesion($params, $q_id)
@@ -74,8 +69,9 @@ class LogicAnswer extends LogicBase
                 $answer->is_deleted = 0;
                 if ($answer->save() && $answer->validate()) {
                     return $answer;
-                } else
+                } else {
                     $answer = null;
+                }
             } else {
                 $answer = $this->findByAnswerId($params['qa_id']);
                 if ($answer != null) {
@@ -84,10 +80,12 @@ class LogicAnswer extends LogicBase
                     $answer->is_deleted = 0;
                     if ($answer->validate() && $answer->save()) {
                         return $answer;
-                    } else
+                    } else {
                         $answer = null;
-                } else
+                    }
+                } else {
                     $answer = null;
+                }
             }
         }
         
@@ -105,8 +103,9 @@ class LogicAnswer extends LogicBase
             $answer->is_deleted = 0;
             if ($answer->validate() && $answer->save()) {
                 return $answer;
-            } else
+            } else {
                 $answer = null;
+            }
         }
         
         return $answer;
@@ -115,7 +114,6 @@ class LogicAnswer extends LogicBase
     public function updateAnswer($params)
     {
         if (! empty($params)) {
-            
             $answer = $this->findByAnswerId($params['qa_id']);
             
             if ($answer != null) {
@@ -125,12 +123,13 @@ class LogicAnswer extends LogicBase
                 $answer->is_deleted = 0;
                 
                 if ($answer->validate() && $answer->save()) {
-                    
                     return $answer;
-                } else
+                } else {
                     $answer = null;
-            } else
+                }
+            } else {
                 $answer = null;
+            }
         }
         
         return $answer;

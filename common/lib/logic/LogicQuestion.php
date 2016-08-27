@@ -83,33 +83,12 @@ class LogicQuestion extends LogicBase
         return $questions;
     }
 
-    /**
-     *
-     * @return Question|null (found ActiveRecord)
-     */
-    public function createQuestion($params)
-    {
-        $question = new Question();
-        if (! empty($params)) {
-            $question->q_content = $params['q_content'];
-            $question->q_category = $params['q_category'];
-            $question->q_type = $params['q_type'];
-            $question->q_level = $params['q_level'];
-            $question->is_deleted = 0;
-            if ($question->validate() && $question->save()) {
-                return $question;
-            } else {
-                $question = null;
-            }
-        }
-        
-        return $question;
-    }
-
     public function updateQuestion($params)
     {
         if (! empty($params)) {
             $question = $this->findQuestionById($params['q_id']);
+            var_dump($question);
+            die;
             if ($question != null) {
                 $question->q_content = $params['q_content'];
                 $question->q_category = $params['q_category'];
@@ -238,5 +217,58 @@ class LogicQuestion extends LogicBase
             'q_category' => $q_category
         ]);
         return $questions;
+    }
+
+    /**
+     *
+     * @return (Question) (newly created ActiveRecord)
+     */
+    public function insertQuestionAndAnswers($questionParams, $answerParams)
+    {
+        $logicAnswer = new LogicAnswer();
+
+        // insert questions
+        $qParams = [];
+        $qParams = AppArrayHelper::filterKeys($questionParams, [
+            'q_content',
+            'q_category',
+            'q_level',
+            'q_type',
+            'qt_content'
+        ]);
+        $question = new Question;
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            // validate question model and insert into db
+            $question->load(['Question' => $qParams]);
+            if (! $question->validate() || ! $question->save()) {
+                return $question;
+            }
+
+            // if ok, continue to insert answers
+            if ($question != null) {
+                $q_id = $question->q_id;
+                // insert answers
+                $answerarray = [];
+                foreach ($answerParams as $answer) {
+                    $ins = AppArrayHelper::filterKeys($answer, [
+                        'qa_content',
+                        'qa_status'
+                    ]);
+                    $ins['q_id'] = $q_id;
+                    $aParams[] = $ins;
+                }
+
+                $answers = $logicAnswer->insertBatchAnswer($aParams);
+                $question->answers = $logicAnswer->findAnswerByQuestionId($q_id);
+
+                $transaction->commit();
+                return $question;
+            }
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
     }
 }
