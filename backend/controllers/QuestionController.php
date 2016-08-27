@@ -121,20 +121,10 @@ class QuestionController extends BackendController
             return $this->render('insert-question', $data);
         }
 
-        $countTrue = 0;
-        $countFalse = 0;
-        foreach ($request['Answer'] as $val) {
-            if ($val['qa_status'] == 1) {
-                $countTrue++;
-            } else {
-                $countFalse++;
-            }
-        }
-
         // Error if there are no true answers
-        if ($countTrue < 1) {
-            $this->setSessionFlash('error', 'Amount of true answer must be more than 0!');
-            return $this->goReferrer();
+        if (!$logicQuestion->checkValidTrueAnswerNumber($request['Question'], $request['Answer'])) {
+            $this->setSessionFlash('error', 'Number of right answer must be > 0!');
+            return $this->render('insert-question', $data);
         }
         
         // Go on to insert question
@@ -148,79 +138,8 @@ class QuestionController extends BackendController
         return $this->redirect(['view', 'q_id' => $question->q_id]);
     }
 
-    public function editQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status, $answer_old)
-    {
-        // update question
-        $params = AppArrayHelper::filterKeys($request_question, [
-            'q_id',
-            'q_content',
-            'q_category',
-            'q_level',
-            'q_type',
-            'qt_content'
-        ]);
-        
-        $question = $logicQuestion->updateQuestion($params);
-        if ($question != null) {
-            $q_id = $question->q_id;
-            // delete old answers
-            if ($answer_old != null) {
-                foreach ($answer_old as $val_old) {
-                    $i = 0;
-                    foreach ($request_answer as $val) {
-                        $params = AppArrayHelper::filterKeys($val, [
-                            'qa_id'
-                        ]);
-                        if ($val_old['qa_id'] == $params['qa_id']) {
-                            $i = $i + 1;
-                        }
-                    }
-                    if ($i == 0) {
-                        $logicAnswer->deleteAnswerById($val_old['qa_id']);
-                    }
-                }
-            }
-            // update answer
-            $answerarray = [];
-            
-            foreach ($request_answer as $val) {
-                $params = AppArrayHelper::filterKeys($val, [
-                    'qa_id',
-                    'qa_content',
-                    'qa_status'
-                ]);
-                $answer = $logicAnswer->updateAnswerByQuesion($params, $q_id);
-                if ($answer != null) {
-                    $answerarray[] = $answer;
-                } else {
-                    Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
-                    return $this->goReferrer();
-                }
-            }
-            $dataProvider = new ArrayDataProvider([
-                'allModels' => $answerarray,
-                'pagination' => [
-                    'pagesize' => 5
-                ]
-            ]);
-            $data = [
-                'dataProvider' => $dataProvider,
-                'question' => $question,
-                'category' => $category,
-                'type' => $type,
-                'level' => $level,
-                'answer_status' => $answer_status
-            ];
-            return $data;
-        } else {
-            Yii::$app->session->setFlash('error', 'Error occurs when update this question!');
-            return $this->goReferrer();
-        }
-    }
-
     public function actionEditQuestion()
     {
-        $session = Yii::$app->session;
         $answer_status = AppConstant::$ANSWER_STATUS_NAME;
         $category = AppConstant::$QUESTION_CATEGORY_NAME;
         $type = AppConstant::$QUESTION_TYPE_NAME;
@@ -229,72 +148,75 @@ class QuestionController extends BackendController
 
         $logicQuestion = new LogicQuestion();
         $logicAnswer = new LogicAnswer();
-        if (($q_id = Yii::$app->request->get('q_id')) != null) {
-            if (($question = $logicQuestion->findQuestionById($q_id)) != null) {
-                $answer = [
-                    $logicAnswer->initAnswer()
-                ];
-                $data = [
-                    'question' => $question,
-                    'answer' => $answer,
-                    'category' => $category,
-                    'type' => $type,
-                    'level' => $level,
-                    'answer_status' => $answer_status,
-                    'q_id' => $q_id
-                ];
-                if (($answer = $logicAnswer->findAnswerByQuestionId($q_id)) != null) {
-                    $session['answer'] = $answer;
-                    $data = [
-                        'question' => $question,
-                        'answer' => $answer,
-                        'category' => $category,
-                        'type' => $type,
-                        'level' => $level,
-                        'answer_status' => $answer_status,
-                        'q_id' => $q_id
-                    ];
-                }
-                return $this->render('edit-question', $data);
-            } else {
-                Yii::$app->session->setFlash('error', 'Error occurs when editting this answer!');
-                return $this->goReferrer();
-            }
+        $q_id = Yii::$app->request->get('q_id');
+        $question = $logicQuestion->findQuestionById($q_id);
+
+        // invalid question id provided
+        if (!$question) {
+            $this->setSessionFlash('error', 'Question not found');
+            return $this->redirect('index');
         }
-        
+
+        // find question answer
+        $answers = $logicAnswer->findAnswerByQuestionId($q_id);
+        if (!$answers) {
+            $answers = [$logicAnswer->initAnswer()];
+        }
+        Yii::$app->session->set('edit-answers', $answers);
+        $data = [
+            'question' => $question,
+            'answers' => $answers,
+            'category' => $category,
+            'type' => $type,
+            'level' => $level,
+            'answer_status' => $answer_status,
+        ];
+        return $this->render('edit-question', $data);
+    }
+
+    public function actionExecuteEdit()
+    {
+        // if no post request, return to index
         $request = Yii::$app->request->post();
-        $params = [];
-        if (! empty($request)) {
-            $answer_old = $session['answer'];
-            unset($session['answer']);
-            $request_question = Yii::$app->request->post()['Question'];
-            $request_answer = Yii::$app->request->post()['Answer'];
-            if ((! empty($request_question)) && (! empty($request_answer))) {
-                $countTrue = 0;
-                $countFalse = 0;
-                foreach ($request_answer as $val) {
-                    if ($val['qa_status'] == 1) {
-                        $countTrue++;
-                    } else {
-                        $countFalse++;
-                    }
-                }
-                switch (true) {
-                    case ($countTrue < $request_question['q_type']):
-                        Yii::$app->session->setFlash('error', 'Amount of true answer must be equal or more than question type!');
-                        return $this->goReferrer();
-                        break;
-                    case ($countTrue >= 1 && $countFalse >= 1):
-                        $data = $this->editQuestion($request_question, $request_answer, $logicAnswer, $logicQuestion, $category, $type, $level, $answer_status);
-                        break;
-                    default:
-                        Yii::$app->session->setFlash('error', 'Answer must have at least 1 true answer and 1 false answer!');
-                        return $this->goReferrer();
-                        break;
-                }
-                return $this->render('view', $data);
-            }
+        if (empty($request)) {
+            $this->setSessionFlash('error', 'Invalid parameters');
+            return $this->goReferrer();
         }
+
+        // if no old answers in session, redirect to index page
+        $oldAnswers = Yii::$app->session->get('edit-answers');
+        if (!$oldAnswers) {
+            $this->setSessionFlash('error', 'Unknown error occurs! Please try again');
+            return $this->goReferrer();
+        }
+
+        $request = AppArrayHelper::filterKeys($request, ['Question', 'Answer']);
+        // In case parameters are invalid
+        if (empty($request['Question']) || empty($request['Answer'])) {
+            $this->setSessionFlash('error', 'Invalid parameters');
+            return $this->goReferrer();
+        }
+
+        // Error if there are no true answers
+        $logicQuestion = new LogicQuestion();
+        if (!$logicQuestion->checkValidTrueAnswerNumber($request['Question'], $request['Answer'])) {
+            $this->setSessionFlash('error', 'Number of right answer must be > 0!');
+            return $this->goReferrer();
+        }
+
+        // Go on to update question
+        $question = $logicQuestion->updateQuestionAndAnswers($request['Question'], $request['Answer']);
+        if (!$question) {
+            $this->setSessionFlash('error', 'Corresponding question not found');
+            return $this->goReferrer();
+        }
+        if (! empty($question->errors)) {
+            $this->setSessionFlash('error', Html::errorSummary($question));
+            return $this->goReferrer();
+        }
+
+        // updat success
+        return $this->redirect(['view', 'q_id' => $question->q_id]);
     }
 
     public function actionDelete()

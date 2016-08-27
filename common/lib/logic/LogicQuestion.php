@@ -83,31 +83,6 @@ class LogicQuestion extends LogicBase
         return $questions;
     }
 
-    public function updateQuestion($params)
-    {
-        if (! empty($params)) {
-            $question = $this->findQuestionById($params['q_id']);
-            var_dump($question);
-            die;
-            if ($question != null) {
-                $question->q_content = $params['q_content'];
-                $question->q_category = $params['q_category'];
-                $question->q_type = $params['q_type'];
-                $question->q_level = $params['q_level'];
-                $question->is_deleted = 0;
-                if ($question->validate() && $question->save()) {
-                    return $question;
-                } else {
-                    $question = null;
-                }
-            } else {
-                $question = null;
-            }
-        }
-        
-        return $question;
-    }
-
     public function initQuestion()
     {
         return $question = new Question();
@@ -264,11 +239,102 @@ class LogicQuestion extends LogicBase
                 $question->answers = $logicAnswer->findAnswerByQuestionId($q_id);
 
                 $transaction->commit();
-                return $question;
             }
         } catch (Exception $e) {
             $transaction->rollBack();
             throw $e;
         }
+
+        return $question;
+    }
+
+    public function checkValidTrueAnswerNumber($questionParams, $answerParams)
+    {
+        $countTrue = 0;
+        $countFalse = 0;
+        foreach ($answerParams as $val) {
+            if (isset($val['qa_status']) && $val['qa_status'] == AppConstant::ANSWER_STATUS_RIGHT) {
+                $countTrue++;
+            } else {
+                $countFalse++;
+            }
+        }
+
+        return ($countTrue > 0);
+    }
+
+    public function updateQuestionAndAnswers($questionParams, $answerParams)
+    {
+        // update question
+        $questionParams = AppArrayHelper::filterKeys($questionParams, [
+            'q_id',
+            'q_content',
+            'q_category',
+            'q_level',
+            'q_type',
+        ]);
+        
+        $question = $this->findQuestionById($questionParams['q_id']);
+        if (!$question) {
+            return null;
+        }
+        $question->load(['Question' => $questionParams]);
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            // update the question
+            if (!$question->validate() || !$question->save()) {
+                return $question;
+            }
+
+            // if ok, continue to update the answers
+            $logicAnswer = new LogicAnswer();
+
+            $oldAnswers = Yii::$app->session->get('edit-answers');
+            $oldAnswers = AppArrayHelper::index($oldAnswers, 'qa_id');
+
+            // prepare new answers to be inserted
+            // and existing answers to be updated
+            $newAnswers = [];
+            $existingAnswers = [];
+            $q_id = $question->q_id;
+            foreach ($answerParams as $ans) {
+                $ans = AppArrayHelper::filterKeys($ans, ['qa_id', 'qa_content', 'qa_status']);
+
+                if ($ans['qa_id'] == null) {
+                    // accumulate newAnswers for later insertBatch
+                    $ans['q_id'] = $q_id;
+                    $newAnswers[] = $ans;
+                } elseif (isset($oldAnswers[$ans['qa_id']])) {
+                    // update existing answer immediately
+                    $existingAnswers[] = $ans;
+                    $logicAnswer->updateAnswer($ans);
+                }
+            }
+
+            // insert new answers
+            if (!empty($newAnswers)) {
+                $logicAnswer->insertBatchAnswer($newAnswers);
+            }
+
+            // delete old answers
+            $existingAnswers = AppArrayHelper::index($existingAnswers, 'qa_id');
+            $deleteAnswerIds = [];
+            foreach ($oldAnswers as $oldAns) {
+                if (!isset($existingAnswers[$oldAns['qa_id']])) {
+                    $deleteAnswerIds[] = $oldAns['qa_id'];
+                }
+            }
+            $logicAnswer->deleteAnswerById($deleteAnswerIds);
+
+            $question->answers = $logicAnswer->findAnswerByQuestionId($q_id);
+            Yii::$app->session->remove('edit-answers');
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+
+        return $question;
     }
 }

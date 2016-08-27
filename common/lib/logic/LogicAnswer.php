@@ -10,6 +10,7 @@ namespace common\lib\logic;
 use Yii;
 use yii\helpers\ArrayHelper;
 use common\models\Answer;
+use common\lib\components\AppConstant;
 
 class LogicAnswer extends LogicBase
 {
@@ -40,7 +41,7 @@ class LogicAnswer extends LogicBase
         $answers_ids = ArrayHelper::getColumn($answers, 'qa_id');
         
         return Answer::updateAll([
-            'is_deleted' => 1
+            'is_deleted' => AppConstant::MODEL_IS_DELETED_DELETED,
         ], [
             'qa_id' => $answers_ids
         ]);
@@ -58,94 +59,20 @@ class LogicAnswer extends LogicBase
         return [$db->getLastInsertID(), $count];
     }
 
-    public function updateAnswerByQuesion($params, $q_id)
-    {
-        if ($params != null && $q_id != null) {
-            if ($params['qa_id'] == null) {
-                $answer = new Answer();
-                $answer->q_id = $q_id;
-                $answer->qa_content = $params['qa_content'];
-                $answer->qa_status = $params['qa_status'];
-                $answer->is_deleted = 0;
-                if ($answer->save() && $answer->validate()) {
-                    return $answer;
-                } else {
-                    $answer = null;
-                }
-            } else {
-                $answer = $this->findByAnswerId($params['qa_id']);
-                if ($answer != null) {
-                    $answer->qa_content = $params['qa_content'];
-                    $answer->qa_status = $params['qa_status'];
-                    $answer->is_deleted = 0;
-                    if ($answer->validate() && $answer->save()) {
-                        return $answer;
-                    } else {
-                        $answer = null;
-                    }
-                } else {
-                    $answer = null;
-                }
-            }
-        }
-        
-        return $answer;
-    }
-
-    public function createAnswer($params)
-    {
-        $answer = new Answer();
-        
-        if (! empty($params)) {
-            $answer->q_id = $params['q_id'];
-            $answer->qa_content = $params['qa_content'];
-            $answer->qa_status = $params['qa_status'];
-            $answer->is_deleted = 0;
-            if ($answer->validate() && $answer->save()) {
-                return $answer;
-            } else {
-                $answer = null;
-            }
-        }
-        
-        return $answer;
-    }
-
     public function updateAnswer($params)
     {
-        if (! empty($params)) {
-            $answer = $this->findByAnswerId($params['qa_id']);
-            
-            if ($answer != null) {
-                $answer->q_id = $params['q_id'];
-                $answer->qa_content = $params['qa_content'];
-                $answer->qa_status = $params['qa_status'];
-                $answer->is_deleted = 0;
-                
-                if ($answer->validate() && $answer->save()) {
-                    return $answer;
-                } else {
-                    $answer = null;
-                }
-            } else {
-                $answer = null;
-            }
-        }
+        $answer = $this->findByAnswerId($params['qa_id']);
+        $answer->load(['Answer' => $params]);
+        $answer->validate();
+        $answer->save();
         
         return $answer;
     }
 
     public function deleteAnswerById($qa_id)
     {
-        // must do in transaction
-        $answer = Answer::queryOne($qa_id);
-        if ($answer) {
-            $answer->is_deleted = 1;
-            $answer->save();
-            return $answer;
-        }
-        
-        return null;
+        $num = Answer::updateAll(['is_deleted' => AppConstant::MODEL_IS_DELETED_DELETED], ['qa_id' => $qa_id]);
+        return $num;
     }
 
     public function findByAnswerId($qa_id)

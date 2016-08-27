@@ -17,7 +17,7 @@ $this->registerCssFile('/res/css/plugins/editormd.min.css');
     </div>
     <br>
 
-    <?php $form = ActiveForm :: begin(['action' => ['question/edit-question'], 'id' => 'form_create', 'method' => 'post',])?>
+    <?php $form = ActiveForm :: begin(['action' => ['question/execute-edit'], 'id' => 'form_edit', 'method' => 'post',])?>
         <div class="ibox-content">
             <?php // $form ->field($question, 'q_content')->textArea(['placeholder' => 'input question ?','row' => '15','style'=>'resize'])?>
 
@@ -28,7 +28,7 @@ $this->registerCssFile('/res/css/plugins/editormd.min.css');
             <?= $form->field($question, 'q_category')->dropDownList($category, ['prompt' => '---Select---']); ?>
             <?= $form->field($question, 'q_level')->radioList($level); ?>
             <?= $form->field($question, 'q_type')->radioList($type); ?>
-            <?=  $form->field($question, 'q_id')->hiddenInput(['value' => $q_id])->label(false);?>
+            <?= $form->field($question, 'q_id')->hiddenInput(['value' => $question->q_id])->label(false);?>
             <hr width=100%px align="left" />
 
             <div class="panel panel-default">
@@ -47,8 +47,8 @@ $this->registerCssFile('/res/css/plugins/editormd.min.css');
                         'min' => 1, // 0 or 1 (default 1)
                         'insertButton' => '.add-item', // css class
                         'deleteButton' => '.remove-item', // css class
-                        'model' => $answer[0],
-                        'formId' => 'form_create',
+                        'model' => $answers[0],
+                        'formId' => 'form_edit',
                         'formFields' => [
                             'qa_id',
                             'qa_content',
@@ -56,10 +56,9 @@ $this->registerCssFile('/res/css/plugins/editormd.min.css');
                         ]
                     ]);
                     ?>
-                
-                        <div class="container-items">
                         <!-- widgetContainer -->
-                            <?php foreach ($answer as $i => $answers) :  ?>
+                        <div class="container-items">
+                            <?php foreach ($answers as $i => $answer) :  ?>
                                 <div class="item panel panel-default">
                                     <!-- widgetBody -->
                                     <div class="panel-heading">
@@ -75,9 +74,9 @@ $this->registerCssFile('/res/css/plugins/editormd.min.css');
                                         <div class="clearfix"></div>
                                     </div>
                                     <div class="panel-body">
-                                        <?= Html::activeHiddenInput($answers, "[{$i}]qa_id"); ?>
-                                        <?= $form->field($answers, "[{$i}]qa_content")->textInput(['maxlength' => true])?>
-                                        <?= $form->field($answers, "[{$i}]qa_status")->checkbox(); ?>
+                                        <?= Html::activeHiddenInput($answer, "[{$i}]qa_id"); ?>
+                                        <?= $form->field($answer, "[{$i}]qa_content")->textInput(['maxlength' => true])?>
+                                        <?= $form->field($answer, "[{$i}]qa_status")->checkbox(); ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
