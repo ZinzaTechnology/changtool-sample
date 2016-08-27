@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "317d7badf81265e3774b072edc6ddd2e",
-    "content-hash": "1b6e153e2f74c007298868143dabdb60",
+    "hash": "50d51fb788c562f3e6058d6129945154",
+    "content-hash": "c7e7800df830471e0e220e27246a037c",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -325,6 +325,62 @@
             "time": "2016-07-16 12:58:58"
         },
         {
+            "name": "fxp/composer-asset-plugin",
+            "version": "v1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fxpio/composer-asset-plugin.git",
+                "reference": "d7d189e8ffac26a2e39e26a9c75e1fc5c2e2b98d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fxpio/composer-asset-plugin/zipball/d7d189e8ffac26a2e39e26a9c75e1fc5c2e2b98d",
+                "reference": "d7d189e8ffac26a2e39e26a9c75e1fc5c2e2b98d",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "composer/composer": "^1.0.0"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Fxp\\Composer\\AssetPlugin\\FxpAssetPlugin",
+                "branch-alias": {
+                    "dev-master": "1.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Fxp\\Composer\\AssetPlugin\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "François Pluchino",
+                    "email": "francois.pluchino@gmail.com"
+                }
+            ],
+            "description": "NPM/Bower Dependency Manager for Composer",
+            "homepage": "https://github.com/fxpio/composer-asset-plugin",
+            "keywords": [
+                "asset",
+                "bower",
+                "composer",
+                "dependency manager",
+                "nodejs",
+                "npm",
+                "package"
+            ],
+            "time": "2016-08-03 07:44:07"
+        },
+        {
             "name": "kartik-v/yii2-krajee-base",
             "version": "v1.8.6",
             "source": {
@@ -434,12 +490,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/maksyutin/yii2-dual-list-box.git",
-                "reference": "d4f165d2a36024cb4e049d74b0730261cdb878dc"
+                "reference": "395c6c65c9a242d55067d787bbadad4aa49972fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maksyutin/yii2-dual-list-box/zipball/d4f165d2a36024cb4e049d74b0730261cdb878dc",
-                "reference": "d4f165d2a36024cb4e049d74b0730261cdb878dc",
+                "url": "https://api.github.com/repos/maksyutin/yii2-dual-list-box/zipball/395c6c65c9a242d55067d787bbadad4aa49972fa",
+                "reference": "395c6c65c9a242d55067d787bbadad4aa49972fa",
                 "shasum": ""
             },
             "require": {
@@ -475,7 +531,7 @@
                 "yii 2",
                 "yii2"
             ],
-            "time": "2015-02-27 23:36:21"
+            "time": "2016-08-22 10:06:58"
         },
         {
             "name": "moonlandsoft/yii2-phpexcel",
