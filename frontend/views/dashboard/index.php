@@ -53,5 +53,7 @@ $this->title = 'Dashboard';
                 </a>    
             </div>
         <?php endforeach; ?>
+    <?php else : ?>
+        <h1>No tests assigned</h1>
     <?php endif; ?>
 </div>
