@@ -51,24 +51,24 @@ $current_user = Yii::$app->user->identity;
                 <li class="active">
                     <a href="<?= URL::toRoute("/user/login")?>"><i class="fa fa-sign-in"></i><span class="nav-label">Login</span></a>
                 </li>
-                <?php else :
-                echo SideMenu::widget([
-                    'options' => [
-                        'tag' => null,
-                    ],
-                    'customTemplateOptions' => ['icon'],
-                    'items' => [
-                        [
-                            'label' => 'Dashboard',
-                            'icon' => 'fa-th-large',
-                            'url' => ["/dashboard"],
-                            'controllers' => [
-                                'dashboard' => '*',
+                <?php else : ?>
+                    <?= SideMenu::widget([
+                        'options' => [
+                            'tag' => null,
+                        ],
+                        'customTemplateOptions' => ['icon'],
+                        'items' => [
+                            [
+                                'label' => 'Dashboard',
+                                'icon' => 'fa-th-large',
+                                'url' => ["/dashboard"],
+                                'controllers' => [
+                                    'dashboard' => '*',
+                                ],
                             ],
                         ],
-                    ],
-                ]);
-endif; ?>
+                    ]); ?>
+                <?php endif; ?>
             </ul>
 
         </div>
@@ -101,9 +101,7 @@ endif; ?>
 
         <footer class="footer">
             <div class="footer">
-                <p class="pull-left">&copy; ZINZA Technology<?= date('Y') ?></p>
-
-                <p class="pull-right"><?= Yii::powered() ?></p>
+                <p class="pull-left">&copy; ZINZA Technology <?= date('Y') ?></p>
             </div>
         </footer>
 

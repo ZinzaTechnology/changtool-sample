@@ -30,8 +30,8 @@ class UserController extends BackendController
     {
         return [
             'access' => [
-            	'class' => AccessControl::className(),
-            	'rules' => [
+                'class' => AccessControl::className(),
+                'rules' => [
                     [
                         'allow' => false,
                         'roles' => ['?'],
@@ -46,9 +46,9 @@ class UserController extends BackendController
                 ],
             ],
             'verbs' => [
-            	'class' => VerbFilter::className(),
-            	'actions' => [
-                	'delete' => ['post'],
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['post'],
                 ],
             ],
         ];
@@ -144,6 +144,7 @@ class UserController extends BackendController
         if ($model->load(Yii::$app->request->post()) && $model->login('ADMIN')) {
             return $this->redirect(['/user/index']);
         } else {
+            $this->layout = 'none';
             return $this->render('login', [
                 'model' => $model,
             ]);
@@ -181,7 +182,7 @@ class UserController extends BackendController
                 ]);
             }
         } else {
-            $this->setSessionFlash('error', 'Invalid user'); 
+            $this->setSessionFlash('error', 'Invalid user');
         }
         return $this->redirect('index');
     }
@@ -198,7 +199,7 @@ class UserController extends BackendController
         if (!empty($id)) {
             $model = $logicUser->findUserById($id);
             
-            if($model == null) {
+            if ($model == null) {
                 $this->setSessionFlash('error', 'User not found');
             } else {
                 $logicUser->deleteUserById($id);
@@ -216,27 +217,25 @@ class UserController extends BackendController
      */
     
     public function actionUpdate($id)
-    {        
-        $request = Yii::$app->request->post();                
+    {
+        $request = Yii::$app->request->post();
+        $logicUser = new LogicUser();
         
         if (!empty($id)) {
-            $user = LogicUser::findUserById($id);
+            $user = $logicUser->findUserById($id);
             
             if (empty($user)) {
                 $this->setSessionFlash('error', 'User not found');
                 return $this->redirect('index');
-            } else {               
-                
+            } else {
                 if (isset($request['User'])) {
-                    $updateUser = new LogicUser();
-                    
                     $params = AppArrayHelper::filterKeys($request['User'], ['u_fullname', 'u_role', 'u_mail']);
-                    $updateUser->updateUser($user, $params);
+                    $logicUser->updateUser($user, $params);
                     
                     return $this->redirect('index');
                 }
             
-            return $this->render('update', [
+                return $this->render('update', [
                     'model' => $user,
                 ]);
             }
@@ -254,22 +253,20 @@ class UserController extends BackendController
     
     public function actionChangepassword($id)
     {
-        $request = Yii::$app->request->post();        
+        $request = Yii::$app->request->post();
         
+        $logicUser = new LogicUser();
         if (!empty($id)) {
-            $user = LogicUser::findUserById($id);
+            $user = $logicUser->findUserById($id);
             
             if (empty($user)) {
                 $this->setSessionFlash('error', 'User not found');
                 return $this->redirect('index');
             } else {
-                
                 if (isset($request['User'])) {
-                    $changePwd = new LogicUser();
-                    
                     $params = AppArrayHelper::filterKeys($request['User'], ['u_password_hash', 'confirm_pwd_update']);
-                    $user = $changePwd->changePassword($user, $params);
-                    if($user ==  null) {
+                    $user = $logicUser->changePassword($user, $params);
+                    if ($user == null) {
                         $this->setSessionFlash('error', 'Confirm password incorrect!');
                         return $this->redirect('changepassword');
                     }
@@ -286,28 +283,5 @@ class UserController extends BackendController
             
             return $this->redirect('index');
         }
-    }
-    
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    
-    public function getUsername()
-    {
-        return $this->hasOne(User::className(), ['id' => 'u_name']);
-    }
-    
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    
-    public function getFullname()
-    {
-        return $this->hasOne(User::className(), ['id' => 'u_fullname']);
-    }
-    
-    public function getEmail()
-    {
-        return $this->hasOne(User::className(), ['id' => 'u_mail']);
     }
 }

@@ -52,67 +52,67 @@ $current_user = Yii::$app->user->identity;
                 <li class="active">
                     <a href="<?= Url::toRoute("/user/login")?>"><i class="fa fa-sign-in"></i> <span class="nav-label">Login</span></a>
                 </li>
-                <?php else :
-                echo SideMenu::widget([
-                    'options' => [
-                        'tag' => null,
-                    ],
-                    'customTemplateOptions' => ['icon'],
-                    'items' => [
-                        [
-                            'label' => 'Dashboard',
-                            'icon' => 'fa-delicious',
-                            'url' => ["/dashboard"],
-                            'controllers' => [
-                                'dashboard' => '*',
-                            ],
+                <?php else : ?>
+                    <?= SideMenu::widget([
+                        'options' => [
+                            'tag' => null,
                         ],
-                        [
-                            'label' => 'Account Manager',
-                            'icon' => 'fa-users',
-                            'url' => ["/user"],
-                            'controllers' => [
-                                'user' => '*',
+                        'customTemplateOptions' => ['icon'],
+                        'items' => [
+                            [
+                                'label' => 'Dashboard',
+                                'icon' => 'fa-delicious',
+                                'url' => ["/dashboard"],
+                                'controllers' => [
+                                    'dashboard' => '*',
+                                ],
                             ],
+                            [
+                                'label' => 'Account Manager',
+                                'icon' => 'fa-users',
+                                'url' => ["/user"],
+                                'controllers' => [
+                                    'user' => '*',
+                                ],
 
-                        ],
-                        [
-                            'label' => 'Question Manager',
-                            'icon' => 'fa-question-circle',
-                            'url' => ["/question"],
-                            'controllers' => [
-                                'question' => '*',
                             ],
+                            [
+                                'label' => 'Question Manager',
+                                'icon' => 'fa-question-circle',
+                                'url' => ["/question"],
+                                'controllers' => [
+                                    'question' => '*',
+                                ],
 
-                        ],
-                        [
-                            'label' => 'Test Manager',
-                            'icon' => 'fa-book',
-                            'url' => ["/test-exam"],
-                            'controllers' => [
-                                'test-exam' => '*',
                             ],
+                            [
+                                'label' => 'Test Manager',
+                                'icon' => 'fa-book',
+                                'url' => ["/test-exam"],
+                                'controllers' => [
+                                    'test-exam' => '*',
+                                ],
 
-                        ],
-                        [
-                            'label' => 'User Test Manager',
-                            'icon' => 'fa-tasks',
-                            'url' => ["/user-test"],
-                            'controllers' => [
-                                'user-test' => '*',
+                            ],
+                            [
+                                'label' => 'User Test Manager',
+                                'icon' => 'fa-tasks',
+                                'url' => ["/user-test"],
+                                'controllers' => [
+                                    'user-test' => '*',
+                                ],
+                            ],
+                            [
+                                'label' => 'Import Data',
+                                'icon' => 'fa-upload',
+                                'url' => ["/import-data"],
+                                'controllers' => [
+                                    'import-data' => '*',
+                                ],
                             ],
                         ],
-                        [
-                            'label' => 'Import Data',
-                            'icon' => 'fa-upload',
-                            'url' => ["/import-data"],
-                            'controllers' => [
-                                'import-data' => '*',
-                            ],
-                        ],
-                    ],
-                ]);
-                endif; ?>
+                    ]); ?>
+                <?php endif; ?>
             </ul>
 
         </div>
@@ -145,9 +145,7 @@ $current_user = Yii::$app->user->identity;
 
         <footer class="footer">
             <div class="footer">
-                <p class="pull-left">&copy; ZINZA Technology<?= date('Y') ?></p>
-
-                <p class="pull-right"><?= Yii::powered() ?></p>
+                <p class="pull-left">&copy; ZINZA Technology <?= date('Y') ?></p>
             </div>
         </footer>
 

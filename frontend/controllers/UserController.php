@@ -35,6 +35,7 @@ class UserController extends FrontendController
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->redirect(['/dashboard']);
         } else {
+            $this->layout = 'none';
             return $this->render('login', [
                 'model' => $model,
             ]);
