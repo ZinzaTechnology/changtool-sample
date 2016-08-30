@@ -1,6 +1,7 @@
 <?php
 use yii\helpers\Html;
 use yii\helpers\Url;
+
 ?>
 
 <?= Html::beginForm(Url::toRoute('question/index'), 'post'); ?>
@@ -23,8 +24,10 @@ use yii\helpers\Url;
     </tr>
     <tr>
         <td colspan="6">
-            <?= Html::submitButton('Search', ['class' => 'btn btn-success', 'name' => 'submit', 'value' => 'search']) ?>
-            <?= Html::a('Refresh', ['/question/index'], ['class' => 'btn btn-info']) ?>
+            <div class="form-group">
+                <?= Html::submitButton('Search', ['class' => 'btn btn-success', 'name' => 'submit', 'value' => 'search']) ?>
+                <?= Html::resetButton('Refresh', ['class' => 'btn btn-info']) ?>
+            </div>
         </td>
     </tr>
 </table>
