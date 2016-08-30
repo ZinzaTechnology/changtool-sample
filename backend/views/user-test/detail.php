@@ -53,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?php if ($qu['qc_type'] == AppConstant::QUESTION_TYPE_SINGLE_ANSWER) : ?>
                                     <?php foreach ($qu['answers'] as $ans) : ?>
                                         <?=
-                                        Html::radio("questions[$qc_id][]", isset($userAnswer[$qc_id][$ans['ac_id']]) ? true : false, [
+                                        Html::radio("questions[$qc_id][]", (isset($userAnswer[$qc_id]) && in_array($ans['ac_id'], $userAnswer[$qc_id])) ? true : false, [
                                             'class' => 'i-checks',
                                             'disabled' => true])
                                         ?>
@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?php else : ?>
                                     <?php foreach ($qu['answers'] as $ans) : ?>
                                         <?=
-                                        Html::checkbox("questions[$qc_id][]", isset($userAnswer[$qc_id][$ans['ac_id']]) ? true : false, [
+                                        Html::checkbox("questions[$qc_id][]", (isset($userAnswer[$qc_id]) && in_array($ans['ac_id'], $userAnswer[$qc_id])) ? true : false, [
                                             'class' => 'i-checks',
                                             'disabled' => true])
                                         ?>

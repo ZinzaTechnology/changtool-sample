@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ])
         ?>
     </div>
-    <?= Html::beginForm(Url::toRoute(__METHOD__), 'get', ['class' => 'form']); ?>
+    <?= Html::beginForm(Url::toRoute(__METHOD__), 'GET', ['class' => 'form']); ?>
     <div class="row m-b-md">
         <div class="col-md-3">
             <div class="ibox-content">

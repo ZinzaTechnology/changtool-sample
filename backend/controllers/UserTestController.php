@@ -11,6 +11,7 @@ use common\models\TestExam;
 use common\models\User;
 use common\lib\components\AppConstant;
 use common\lib\logic\LogicUserTest;
+use common\lib\helpers\AppArrayHelper;
 
 class UserTestController extends BackendController
 {
@@ -26,12 +27,9 @@ class UserTestController extends BackendController
 
     public function actionIndex()
     {
-        $params = null;
-        if ($param = Yii::$app->request->get()) {
-            if ($param['submit'] == 'search') {
-                $params = $param;
-            }
-        }
+        $params = Yii::$app->request->get();
+        $params = AppArrayHelper::filterKeys($params, ['u_name', 'te_title', 'te_category', 'te_level', 'ut_start_at', 'ut_finished_at', 'ut_status']);
+
         return $this->render('index', [
                 'selected' => $params,
                 'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
