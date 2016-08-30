@@ -60,17 +60,16 @@ class QuestionClone extends AppActiveRecord
     public function saveQuestionClone($data)
     {
         $db = Yii::$app->db;
-        $count = 0;
         $dataInsert = [];
         foreach ($data as $elements) {
             foreach ($elements['question'] as $question) {
                 if ($question) {
+                    $question['q_content'] = \yii\helpers\Json::encode($question['q_content']);
                     $dataInsert[] = [$question['q_content'], $question['q_type'], $elements['ut_id'], $question['q_id'], date('Y-m-d H:i:s')];
-                    $count++;
                 }
             }
         }
         $db->createCommand()->batchInsert(self::tableName(), ['qc_content', 'qc_type', 'ut_id', 'q_id', 'created_at'], $dataInsert)->execute();
-        return [$db->getLastInsertID(), $count];
+        return $db->getLastInsertID();
     }
 }

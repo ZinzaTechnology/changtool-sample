@@ -9,6 +9,7 @@ namespace common\lib\logic;
 
 use Yii;
 use common\models\Question;
+use yii\helpers\Json;
 
 class LogicImportData extends LogicBase
 {
@@ -63,8 +64,10 @@ class LogicImportData extends LogicBase
         $question = array_slice($data[0], 1, 4);
         $answer = array_slice($data[0], 5, 2);
         if (count(array_filter($question)) > 2) {
+            $question[3] = Json::encode($question[3]);
             $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
             if(empty($answer[1])){
+                $answer[0] = Json::encode($answer[0]);
                 $answer = [$answer[0], 0];
             }
             if ($answer[1] == 0) {
@@ -85,6 +88,7 @@ class LogicImportData extends LogicBase
             $question = array_slice($row, 1, 4);
             $answer = array_slice($row, 5, 2);
             if (count(array_filter($question)) > 2) {
+                $question[3] = Json::encode($question[3]);
                 if ($countTrueAnswer >= 1){
                     $countTrueAnswer = 0;
                     $countFalseAnswer = 0;
@@ -93,6 +97,7 @@ class LogicImportData extends LogicBase
                     return;
                 }
                 if(empty($answer[1])){
+                    $answer[0] = Json::encode($answer[0]);
                     $answer = [$answer[0], 0];
                 }
                 if ($answer[1] == 0) {
@@ -104,6 +109,7 @@ class LogicImportData extends LogicBase
                 $answersData[] = $answer;
             } else {
                 if(empty($answer[1])){
+                    $answer[0] = Json::encode($answer[0]);
                     $answer = [$answer[0], 0];
                 }
                 if ($answer[1] == 0) {
