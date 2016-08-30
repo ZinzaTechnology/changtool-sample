@@ -6,7 +6,7 @@ use Yii;
 use common\lib\logic\LogicUserTest;
 use common\lib\components\AppConstant;
 use common\lib\helpers\AppArrayHelper;
-use common\models\TestExam;
+use yii\data\ArrayDataProvider;
 
 /**
  * Dashboard controller
@@ -44,8 +44,18 @@ class DashboardController extends FrontendController
     {
         $logicUserTest = new LogicUserTest();
         $userTests = $logicUserTest->findUserTestBySearch(['u_id' => Yii::$app->user->id]);
+
+        $userTestDataProvider = new ArrayDataProvider([
+            'allModels' => $userTests,
+            'pagination' => [
+                'pageSize' => AppConstant::PAGING_INDEX_PAGE_SIZE,
+            ],
+            'sort' => [
+                'attributes' => ['created_at'],
+            ],
+        ]);
         return $this->render('index', [
-            'user_test_models' => $userTests,
+            'userTestDataProvider' => $userTestDataProvider,
             'category' => AppConstant::$QUESTION_CATEGORY_NAME,
         ]);
     }

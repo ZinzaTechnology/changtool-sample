@@ -127,13 +127,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     'view' => function ($url, $model) {
                         return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', Url::toRoute(['detail', 'id' => $model['ut_id']]));
                     },
-                            'delete' => function ($url, $model) {
-                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete', 'id' => $model['ut_id']]), ['onclick' => "return confirm('Do you really want to delete this?')"]);
-                            }
-                        ],
-                    ],
+                    'delete' => function ($url, $model) {
+                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete', 'id' => $model['ut_id']]), ['onclick' => "return confirm('Do you really want to delete this?')"]);
+                    }
                 ],
-            ]);
-            ?>
-        </div>
-        <?php Pjax::end(); ?>
+            ],
+        ],
+    ]);
+    ?>
+</div>
+<?php Pjax::end(); ?>

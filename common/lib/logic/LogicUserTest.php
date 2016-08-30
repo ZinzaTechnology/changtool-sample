@@ -281,4 +281,9 @@ class LogicUserTest extends LogicBase
 
         return $score;
     }
+
+    public function getQueryForActiveDataProvider($params)
+    {
+        return UserTest::query()->andFilterWhere($params);
+    }
 }

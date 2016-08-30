@@ -1,59 +1,103 @@
 <?php
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\Breadcrumbs;
+use yii\grid\GridView;
+use yii\grid\ActionColumn;
+use yii\widgets\Pjax;
 
 $this->title = 'Dashboard';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-index">
-    <?php if ($user_test_models) : ?>
-        <?php foreach ($user_test_models as $count => $data) : ?>
-            <?php
-            $link = [];
-            $stClass = "";
-            $started = false;
-            switch ($data['ut_status']) {
-                case "DONE":
-                    $link = Url::toRoute(['/user-test/result', 'id' => $data['ut_id']]);
-                    $stClass = "badge-plain";
-                    $started = true;
-                    break;
-                case "DOING":
-                    $link = Url::toRoute(['user-test/do', 'id' => $data['ut_id']]);
-                    $stClass = "badge-danger";
-                    $started = true;
-                    break;
-                case "ASSIGNED":
-                    $link = Url::toRoute(['user-test/start-test', 'id' => $data['ut_id']]);
-                    $stClass = "badge-primary";
-                    break;
-            }
-            ?>
-            <div class='col-md-3'>
-                <a href='<?= $link ?>'>
-                    <div class="widget lazur-bg p-lg text-center">
-                        <div class="m-b-md">
-                            
-                            <h1 class="m-xs"><?= $data['te_title'] ?></h1>
-                            
-                            <?= $category[$data['te_category']] ?><br>
-                            Question: <?=  $data['te_num_of_questions'] ?>
-                            <h3><span class="badge <?= $stClass ?>"><?= $data['ut_status'] ?></span></h3>
-
-                            <?php if ($data['ut_status'] == "DONE") : ?>
-                                <h1><i class="fa fa-eye"></i> View Result</h1>
-                                <small>Score: <?= $data['ut_mark'] ?></small>
-                            <?php elseif ($data['ut_status'] == "DOING") : ?>
-                                <h1><i class="fa fa-play"></i> Continue</h1>
-                                <small>Start at: <?= $data['ut_start_at'] ?></small>
-                            <?php elseif ($data['ut_status'] == "ASSIGNED") : ?>
-                                <h1><i class="fa fa-play-circle-o"></i> Start</h1>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </a>    
-            </div>
-        <?php endforeach; ?>
-    <?php else : ?>
-        <h1>No tests assigned</h1>
-    <?php endif; ?>
+<div class="ibox">
+    <div class="ibox-title">
+        <h1><?= $this->title ?></h1>
+    </div>
+    <br>
+    <div class="ibox-content">
+        <?php Pjax::begin() ?>
+        <?= GridView::widget([
+            'dataProvider' => $userTestDataProvider,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                [
+                    'attribute' => 'Category',
+                    'value' => function ($model) use ($category) {
+                        return $category[$model['te_category']];
+                    },
+                ],
+                [
+                    'attribute' => 'Title',
+                    'value' => function ($model) {
+                        return $model['te_title'];
+                    },
+                ],
+                [
+                    'attribute' => 'Status',
+                    'content' => function ($model, $key, $index, $column) {
+                        $stClass = "";
+                        switch ($model['ut_status']) {
+                            case "DONE":
+                                $stClass = "badge-plain";
+                                break;
+                            case "DOING":
+                                $stClass = "badge-danger";
+                                break;
+                            case "ASSIGNED":
+                                $stClass = "badge-primary";
+                                break;
+                        }
+                        return "<span class='badge $stClass'>{$model['ut_status']}</span>";
+                    },
+                ],
+                ['class' => 'yii\grid\ActionColumn',
+                    'template' => '{action}',
+                    'buttons' => [
+                        'action' => function ($url, $model) {
+                            $link = [];
+                            $text = "";
+                            $icon = "";
+                            switch ($model['ut_status']) {
+                                case "DONE":
+                                    $link = Url::toRoute(['/user-test/result', 'id' => $model['ut_id']]);
+                                    $text = "Results";
+                                    $icon = "fa-eye";
+                                    break;
+                                case "DOING":
+                                    $link = Url::toRoute(['user-test/do', 'id' => $model['ut_id']]);
+                                    $text = "Continue";
+                                    $icon = "fa-play";
+                                    break;
+                                case "ASSIGNED":
+                                    $link = Url::toRoute(['user-test/start-test', 'id' => $model['ut_id']]);
+                                    $text = "Start";
+                                    $icon = "fa-play-circle-o";
+                                    break;
+                            }
+                            return Html::a("<i class='fa $icon'></i> $text", $link);
+                        },
+                    ],
+                ],
+                [
+                    'attribute' => 'Mark',
+                    'value' => function ($model) {
+                        return $model['ut_mark'];
+                    },
+                ],
+                [
+                    'attribute' => 'Start Time',
+                    'value' => function ($model) {
+                        return $model['ut_start_at'];
+                    },
+                ],
+                [
+                    'attribute' => 'End Time',
+                    'value' => function ($model) {
+                        return $model['ut_finished_at'];
+                    },
+                ],
+            ],
+        ]); ?>
+        <?php Pjax::end(); ?>
+    </div>
 </div>
