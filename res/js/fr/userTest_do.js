@@ -16,6 +16,21 @@ $(function() {
     var display = document.querySelector('#countdown');
     startTimer(duration, display);
 
+    // convert markdowntohtml
+    $(".editormdCl").each(function(idx, el) {
+        var el_id = el.id;
+        editormd.markdownToHTML(el.id, {
+            markdown        : JSON.parse($("#" + el_id + "_hd").html()),
+            htmlDecode      : "style,script,iframe",  // you can filter tags decode
+            tocm            : true,    // Using [TOCM]
+            emoji           : true,
+            taskList        : true,
+            tex             : true,
+            flowChart       : true,
+            sequenceDiagram : true,
+        });
+    });
+
     // init dataTables for the test
     testFormDT = $("#testTable").DataTable({
         sort: false,
@@ -24,7 +39,20 @@ $(function() {
 
 function testFormSubmit() {
     formSubmitting = true;
-    data = testFormDT.$('input').submit();
+    var data = testFormDT.$('input').submit();
+    var idInput = $("input[name='ut_id']");
+    var form = $('<form></form>');
+
+    form.attr("method", "post");
+    form.attr("action", "/user-test/submit");
+
+    form.append(idInput);
+    $.each(data, function(key, input) {
+        form.append(input);
+    });
+
+    $(document.body).append(form);
+    form.submit();
 };
 
 function startTimer(duration, display) {

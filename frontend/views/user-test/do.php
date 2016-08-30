@@ -75,33 +75,8 @@ $this->registerJsFile('/res/lib/jquery.flowchart.min.js');
             </table>
 
             <div class="hr-line-solid"></div>
-            <?=  Html::submitButton('Submit', ['class' => 'btn btn-primary', "onclick" => 'testFormSubmit()'])  ?>
+            <?=  Html::submitButton('Submit', ['class' => 'btn btn-primary', "onclick" => 'testFormSubmit();return false;'])  ?>
         
         <?php Html::endForm(); ?>
     </div>
 </div>
-
-<script>
-$(function() {
-    $(".editormdCl").each(function(idx, el) {
-        var el_id = el.id;
-        editormd.markdownToHTML(el.id, {
-            markdown        : JSON.parse($("#" + el_id + "_hd").html()),
-            //htmlDecode      : true,
-            htmlDecode      : "style,script,iframe",  // you can filter tags decode
-            //toc             : false,
-            tocm            : true,    // Using [TOCM]
-            //tocContainer    : "#custom-toc-container", 
-            //gfm             : false,
-            //tocDropdown     : true,
-            // markdownSourceCode : true, 
-            emoji           : true,
-            taskList        : true,
-            tex             : true,  
-            flowChart       : true,  
-            sequenceDiagram : true,  
-        });
-    });
-
-});
-</script>

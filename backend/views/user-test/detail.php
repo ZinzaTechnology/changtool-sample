@@ -26,13 +26,6 @@ $this->title = $tile;
 $this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => Url::toRoute('/user-test')];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<script type="text/javascript">
-$(document).ready(function(){
-    $('#testTable').DataTable({
-        sort: false,
-    });
-});
-</script>
 <div class="ibox">
     <div class="ibox-title m-b-md">
         <h1><?= Html::encode($this->title) ?></h1>
@@ -56,16 +49,16 @@ $(document).ready(function(){
                         <td>
                             <div style='background: #F5F5F6' class="editormdCl m-b-xs" id="<?= $qu['qc_id']  ?>"></div>
                             <div class="hidden" id="<?= $qu['qc_id'].'_hd' ?>"><?= Json::htmlEncode($qu['qc_content']) ?></div>
-                            <?php if(isset($qu['answers'])): ?>
+                            <?php if (isset($qu['answers'])) : ?>
                                 <?php if ($qu['qc_type'] == AppConstant::QUESTION_TYPE_SINGLE_ANSWER) : ?>
                                     <?php foreach ($qu['answers'] as $ans) : ?>
                                         <?=
-                                        Html::radio("questions[$qc_id][]", isset($userAnswer[$qc_id][$ans['ac_id']])? true : false, [
+                                        Html::radio("questions[$qc_id][]", isset($userAnswer[$qc_id][$ans['ac_id']]) ? true : false, [
                                             'class' => 'i-checks',
                                             'disabled' => true])
                                         ?>
                                         <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?>
-                                        <?php if($ans['ac_status']==1): ?>
+                                        <?php if ($ans['ac_status'] == 1) : ?>
                                             <span class="label label-primary">True</span>
                                         <?php endif; ?>
                                         <br>
@@ -73,12 +66,12 @@ $(document).ready(function(){
                                 <?php else : ?>
                                     <?php foreach ($qu['answers'] as $ans) : ?>
                                         <?=
-                                        Html::checkbox("questions[$qc_id][]", isset($userAnswer[$qc_id][$ans['ac_id']])? true : false, [
+                                        Html::checkbox("questions[$qc_id][]", isset($userAnswer[$qc_id][$ans['ac_id']]) ? true : false, [
                                             'class' => 'i-checks',
                                             'disabled' => true])
                                         ?>
                                         <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?>
-                                        <?php if($ans['ac_status']==1): ?>
+                                        <?php if ($ans['ac_status'] == 1) : ?>
                                             <span class="label label-primary">True</span>
                                         <?php endif; ?>
                                         <br>
@@ -115,5 +108,8 @@ $(function() {
         });
     });
 
+    $('#testTable').DataTable({
+        sort: false,
+    });
 });
 </script>

@@ -4,7 +4,6 @@ use yii\helpers\Url;
 use yii\widgets\Breadcrumbs;
 use yii\grid\GridView;
 use yii\grid\ActionColumn;
-use yii\widgets\Pjax;
 
 $this->title = 'Dashboard';
 $this->params['breadcrumbs'][] = $this->title;
@@ -15,7 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     <br>
     <div class="ibox-content">
-        <?php Pjax::begin() ?>
         <?= GridView::widget([
             'dataProvider' => $userTestDataProvider,
             'columns' => [
@@ -98,6 +96,5 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ],
         ]); ?>
-        <?php Pjax::end(); ?>
     </div>
 </div>
