@@ -19,8 +19,7 @@ class QuestionController extends BackendController
         $category = AppConstant::$QUESTION_CATEGORY_NAME;
         $type = AppConstant::$QUESTION_TYPE_NAME;
         $level = AppConstant::$QUESTION_LEVEL_NAME;
-        $request = Yii::$app->request->post();
-        
+        $request = Yii::$app->request->get();
         $params = AppArrayHelper::filterKeys($request, [
             'content',
             'category',
@@ -31,13 +30,13 @@ class QuestionController extends BackendController
         ]);
         $logicQuestion = new LogicQuestion();
         $questions = $logicQuestion->findQuestionBySearch($params);
-        
         $dataProvider = new ArrayDataProvider([
             'allModels' => $questions,
             'pagination' => [
                 'pagesize' => AppConstant::PAGING_INDEX_PAGE_SIZE,
             ]
         ]);
+        
         $data = [
             'selected' => $params,
             'dataProvider' => $dataProvider,

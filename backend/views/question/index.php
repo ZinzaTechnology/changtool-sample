@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'class' => 'yii\grid\SerialColumn'
                 ],
                 [
-                    'attribute' => 'q_content',
+                    'attribute' => 'content',
                     "content" => function ($model, $key, $index, $column) use ($category) {
                         $content_id = "q_content_".$model->q_id;
                         $content = '<div class="editormdCl" id="'.$content_id.'"></div>';
@@ -44,19 +44,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                 ],
                 [
-                    'attribute' => 'q_category',
+                    'attribute' => 'category',
                     "content" => function ($model, $key, $index, $column) use ($category) {
                         return $category[$model->q_category];
                     }
                 ],
                 [
-                    'attribute' => 'q_level',
+                    'attribute' => 'level',
                     "content" => function ($model, $key, $index, $column) use ($level) {
                         return $level[$model->q_level];
                     }
                 ],
                 [
-                    'attribute' => 'q_type',
+                    'attribute' => 'type',
                     "content" => function ($model, $key, $index, $column) use ($type) {
                         return $type[$model->q_type];
                     }

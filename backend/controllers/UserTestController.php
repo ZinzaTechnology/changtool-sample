@@ -27,7 +27,7 @@ class UserTestController extends BackendController
     public function actionIndex()
     {
         $params = null;
-        if ($param = Yii::$app->request->post()) {
+        if ($param = Yii::$app->request->get()) {
             if ($param['submit'] == 'search') {
                 $params = $param;
             }

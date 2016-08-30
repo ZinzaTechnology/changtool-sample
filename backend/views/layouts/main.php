@@ -145,7 +145,7 @@ $current_user = Yii::$app->user->identity;
 
         <footer class="footer">
             <div class="footer">
-                <p class="pull-left">&copy; ZINZA Technology<?= date('Y') ?></p>
+                <p class="pull-left">&copy; ZINZA Technology <?= date('Y') ?></p>
 
                 <p class="pull-right"><?= Yii::powered() ?></p>
             </div>
