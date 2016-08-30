@@ -78,6 +78,7 @@ $this->registerCssFile('/res/css/paging.css', [], null);
             </tbody>
         </table>
         <div id="pageNavPosition"></div>
+        <div class="hr-line-solid"></div>
         <?= Html::submitButton('Add', ['name' => 'te_update', 'value' => 'add_question_complete', 'class' => 'btn btn-primary']) ?>
         <?= Html::a('Back', ['/test-exam/update?id='.$id], ['class' => 'btn btn-primary pull-right']) ?>
         <?php ActiveForm::end(); ?>

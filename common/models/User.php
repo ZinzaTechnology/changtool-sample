@@ -74,7 +74,7 @@ class User extends AppActiveRecord implements IdentityInterface
     {
         return [
             'u_id' => 'User ID',
-            'u_name' => 'Username',
+            'u_name' => 'User Name',
             'u_mail' => 'Email',
             'u_phone' => 'Phone number',
             'u_password_hash' => 'Password',
@@ -84,7 +84,7 @@ class User extends AppActiveRecord implements IdentityInterface
             'u_created_at' => 'User Created At',
             'u_updated_at' => 'User Updated At',
             'is_deleted' => 'User Is Deleted',
-            'u_fullname' => 'Fullname',
+            'u_fullname' => 'Full Name',
             'globalSearch' => '',
             'confirm_pwd_create' => 'Confirm password',
             'new_password' => 'New password',

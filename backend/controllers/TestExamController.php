@@ -114,14 +114,17 @@ class TestExamController extends BackendController
             );
             if ($request['submit']=='create') {
                 $test = $logicTestExam->insertTestExam(['TestExam' => $params]);
-                $id = ($test > 0) ? $test : 0;
+                $testExamID = Yii::$app->db->getLastInsertID();
+                $id = ($testExamID > 0) ? $testExamID : 0;
+                
             } else {
                 if($test = $logicTestExam->generateQuestion($params)){
                     $id = ($test > 0) ? $test : 0;
                 }
             }
             if ($id > 0) {
-                return $this->redirect(['view', 'id' => $id]);
+               
+                return $this->redirect(['update', 'id' => $id]);
             } else {
                 $this->setSessionFlash('error', 'Error occur when creating new test');
                 $this->goReferrer();
