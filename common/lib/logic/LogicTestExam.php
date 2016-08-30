@@ -67,8 +67,7 @@ class LogicTestExam extends LogicBase
         $level = $params['te_level'];
         $transaction = TestExam::getDb()->beginTransaction();
         try{
-            $this->insertTestExam(['TestExam' => $params]);
-            $testExamID = Yii::$app->db->getLastInsertID();
+            $testExamID = $this->insertTestExam(['TestExam' => $params]);
             switch ($level){
                 case (AppConstant::TEST_EXAM_LEVEL_EASY):
                     $amountIntermediate = AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE;
@@ -261,7 +260,7 @@ class LogicTestExam extends LogicBase
 
         if ($testExam->load($params) && $testExam->validate()) {
             if ($testExam->save()) {
-                return Yii::$app->db->getLastInsertID();
+                return $testExam->te_id;
             }
         }
 
