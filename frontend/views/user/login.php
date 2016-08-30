@@ -39,12 +39,6 @@ use yii\bootstrap\ActiveForm;
 
                 <?= $form->field($model, 'rememberMe')->checkbox() ?>
 
-                <!--
-                <a href="#"><small>Forgot password?</small></a>
-                <p class="text-muted text-center"><small>Do not have an account?</small></p>
-                <a class="btn btn-sm btn-white btn-block" href="register.html">Create an account</a>
-                -->
-
                 <div class="form-group">
                     <?= Html::submitButton('Login', ['class' => 'btn btn-primary block full-width m-b', 'name' => 'login-button']) ?>
                 </div>
