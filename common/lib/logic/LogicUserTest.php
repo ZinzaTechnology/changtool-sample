@@ -195,7 +195,9 @@ class LogicUserTest extends LogicBase
 
     public function findAnswersRandomByQuestionId($questionID, $type)
     {
-        $amountTrueAnswer = mt_rand(1, 4);
+        if ($type == 1) {
+            $amountTrueAnswer = 1;
+        } else $amountTrueAnswer = mt_rand(1, 4);
         $selectTrue = Answer::query()
             ->where(['q_id' => $questionID, 'qa_status' => AppConstant::ANSWER_STATUS_RIGHT])
             ->orderBy(new Expression('rand()'))
