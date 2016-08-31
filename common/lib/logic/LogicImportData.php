@@ -23,7 +23,7 @@ class LogicImportData extends LogicBase
         parent::__construct();
     }
 
-    public function getDataFromFileExcel($fileDirectory)
+    private function getDataFromFileExcel($fileDirectory)
     {
         $rowData = [];
         try{
@@ -43,7 +43,7 @@ class LogicImportData extends LogicBase
         return $rowData;
     }
     
-    public function parseQuestion($array)
+    private function parseQuestion($array)
     {
         $question = array_filter($array);
         if (count($question) == 4) {
@@ -54,7 +54,7 @@ class LogicImportData extends LogicBase
         }
     }
     
-    public function parseAnswer($array)
+    private function parseAnswer($array)
     {
         $answer = array_filter($array);
         if(count($answer) >= 1){
@@ -131,14 +131,14 @@ class LogicImportData extends LogicBase
         }
     }
     
-    public function insertQuestionToDatabase($table, $data)
+    private function insertQuestionToDatabase($table, $data)
     {
         $questionAttribute = ['q_category', 'q_level', 'q_type', 'q_content', 'created_at'];
         Yii::$app->db->createCommand()->batchInsert($table, $questionAttribute, $data)->execute();
         return Yii::$app->db->getLastInsertID();
     }
     
-    public function insertAnswerToDatabase($table, $q_id, $data)
+    private function insertAnswerToDatabase($table, $q_id, $data)
     {
         $questionID = $q_id;
         $answerAttribute = ['q_id', 'qa_content', 'qa_status', 'created_at'];
