@@ -7,6 +7,7 @@ use yii\helpers\Json;
 
 $this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
 $this->registerCssFile('/res/css/plugins/editormd.min.css');
+$this->registerCssFile('/res/css/paging.css', [], null);
 ?>
 
 <div class="test-exam-form">

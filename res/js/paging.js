@@ -14,7 +14,7 @@ function Pager(tableName, itemsPerPage) {
             else
                 rows[i].style.display = '';
         }
-    }
+    };
     
     this.showPage = function(pageNumber) {
     	if (! this.inited) {
@@ -29,21 +29,34 @@ function Pager(tableName, itemsPerPage) {
         var newPageAnchor = document.getElementById('pg'+this.currentPage);
         newPageAnchor.className = 'pg-selected';
         
+        var newPageAnchorPrev = document.getElementById('pg_prev');
+        if(this.currentPage == 1) {
+            newPageAnchorPrev.className = 'pg-selected';
+        } else {
+            newPageAnchorPrev.className = 'pg-normal';
+        }
+        
+        var newPageAnchorNext = document.getElementById('pg_next');
+        if (this.currentPage == this.pages) {
+            newPageAnchorNext.className = 'pg-selected';
+        } else {
+            newPageAnchorNext.className = 'pg-normal';
+        }
         var from = (pageNumber - 1) * itemsPerPage + 1;
         var to = from + itemsPerPage - 1;
         this.showRecords(from, to);
-    }   
+    };   
     
     this.prev = function() {
         if (this.currentPage > 1)
             this.showPage(this.currentPage - 1);
-    }
+    };
     
     this.next = function() {
         if (this.currentPage < this.pages) {
             this.showPage(this.currentPage + 1);
         }
-    }                        
+    };                        
     
     this.init = function() {
         var rows = document.getElementById(tableName).rows;
@@ -51,7 +64,7 @@ function Pager(tableName, itemsPerPage) {
         var records = (rows.length - 1); 
         this.pages = Math.ceil(records / itemsPerPage);
         this.inited = true;
-    }
+    };
 
     this.showPageNav = function(pagerName, positionId) {
     	if (! this.inited) {
@@ -59,13 +72,14 @@ function Pager(tableName, itemsPerPage) {
     		return;
     	}
     	var element = document.getElementById(positionId);
-
-    	var pagerHtml = '<span onclick="' + pagerName + '.prev();" class="pg-normal"> &#171 Prev </span> | ';
+    	var pagerHtml = '<div class=paging_client>';
+        pagerHtml += '<span id="pg_prev" onclick="' + pagerName + '.prev();" class="pg-normal"> << </span>';
         for (var page = 1; page <= this.pages; page++) {
-            pagerHtml += '<span id="pg' + page + '" class="pg-normal" onclick="' + pagerName + '.showPage(' + page + ');">' + page + '</span> | ';
+            pagerHtml += '<span id="pg' + page + '" class="pg-normal" onclick="' + pagerName + '.showPage(' + page + ');">' + page + '</span>';
         }
-        pagerHtml += '<span onclick="'+pagerName+'.next();" class="pg-normal"> Next &#187;</span>';   
+        pagerHtml += '<span id="pg_next" onclick="'+pagerName+'.next();" class="pg-normal"> >> </span>';  
+        pagerHtml += '</div>';
         element.innerHTML = pagerHtml;
-    }
+    };
 }
 

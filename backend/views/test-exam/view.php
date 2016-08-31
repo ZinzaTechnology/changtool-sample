@@ -7,7 +7,7 @@ use yii\widgets\Breadcrumbs;
 
 $this->registerJsFile('/res/js/plugins/bootstrap-markdown/editormd.min.js');
 $this->registerCssFile('/res/css/plugins/editormd.min.css');
-
+$this->registerCssFile('/res/css/paging.css', [], null);
 /* @var $this yii\web\View */
 /* @var $testExam backend\models\TestExam */
 

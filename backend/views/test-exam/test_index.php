@@ -84,7 +84,7 @@ $this->registerCssFile('/res/css/paging.css', [], null);
         <script type="text/javascript">
             var pager = new Pager('results', <?= $pagging_size ?>); 
             pager.init(); 
-            pager.showPageNav('pager', 'pageNavPosition'); 
+            pager.showPageNav('pager', 'pageNavPosition');
             pager.showPage(1);
         </script>
     </div>

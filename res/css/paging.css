@@ -1,12 +1,63 @@
+.paging_client {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
 .pg-normal {
-	color: black;
+	border: solid 1px gray;
+        color:#444444;
+        background: #ffffff;
+        padding-bottom: 4px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 4px;
 	font-weight: normal;
 	text-decoration: none;    
 	cursor: pointer;    
 }
 .pg-selected {
-	color: black;
+	border: solid 1px gray;
+        background:#eeeeee; 
+        color:#444444;
+        padding-bottom: 4px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 4px;
 	font-weight: bold;        
-	text-decoration: underline;
-	cursor: pointer;
+	list-style: none;
+	cursor: not-allowed;
+}
+
+.paging {
+    padding-top: 30px;
+    padding-bottom: 15px;
+}
+
+.paging ul {
+   float:left; 
+   margin-left: -40px;
+}
+.paging li {
+    float:left; 
+    list-style: none;
+    
+}
+.paging a {
+    border: solid 1px gray;
+    color:#444444;
+    background: #ffffff;
+    padding-bottom: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+}
+.paging span {
+    border: solid 1px gray;
+    background:#eeeeee; 
+    color:#444444;
+    padding-bottom: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+    cursor: not-allowed;
 }
