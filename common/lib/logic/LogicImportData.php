@@ -9,11 +9,15 @@ namespace common\lib\logic;
 
 use Yii;
 use common\models\Question;
-use yii\helpers\Json;
 
 class LogicImportData extends LogicBase
 {
-
+    private $_questions = [];
+    private $_answers = [];
+    private $_trueAnswers = 0;
+    private $_falseAnswers = 0;
+    private $_isNewQuestion = false;
+    
     public function __construct()
     {
         parent::__construct();
@@ -39,6 +43,39 @@ class LogicImportData extends LogicBase
         return $rowData;
     }
     
+    public function parseQuestion($array)
+    {
+        $question = array_filter($array);
+        if (count($question) == 4) {
+            $this->_isNewQuestion = true;
+            $this->_questions[] = array_merge($question, [date('Y-m-d H:i:s')]);
+        } else {
+            $this->_isNewQuestion = false;
+        }
+    }
+    
+    public function parseAnswer($array)
+    {
+        $answer = array_filter($array);
+        if(count($answer) >= 1){
+            $answer[0] = (string) $array[0];
+            if (empty($answer[1])) {
+                $answer = [$answer[0], 0]; 
+            }
+            if ($answer[1] == 1) {
+                $this->_trueAnswers++;
+            } else {
+                $this->_falseAnswers++;
+            }
+            if ($this->_isNewQuestion) {
+                $this->_answers[] = $array;
+            }
+            else {
+                $this->_answers[count($this->_answers) - 1] = array_merge($this->_answers[count($this->_answers) - 1], $answer);
+            }
+        }
+    }
+    
     public function insertDataByFileExcel($fileDirectory)
     {
         $defaultAttribute = ['question', 'category', 'level', 'type', 'content', 'answers', 'answer_is_true'];
@@ -53,86 +90,45 @@ class LogicImportData extends LogicBase
         }
         array_shift($data);
         
-        $questionsData = [];
-        $answersData = [];
-        $questionType = 0;
-        $countTrueAnswer = 0;
-        $countFalseAnswer = 0;
-        $isNewQuestion = false;
-        
-        //first data
-        $question = array_slice($data[0], 1, 4);
-        $answer = array_slice($data[0], 5, 2);
-        if (count(array_filter($question)) > 2) {
-            $question[3] = Json::encode($question[3]);
-            $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
-            if(empty($answer[1])){
-                $answer[0] = Json::encode($answer[0]);
-                $answer = [$answer[0], 0];
-            }
-            if ($answer[1] == 0) {
-                $countFalseAnswer++;
-            } else {
-                $countTrueAnswer++;
-            }
-            $answersData[] = $answer;
+        $first_question = array_slice($data[0], 1, 4);
+        $first_answer = array_slice($data[0], 5, 2);
+        $first_question = array_filter($first_question);
+        if (count($first_question) == 4) {
+            $this->parseQuestion($first_question);
+            $this->_isNewQuestion = true;
+            $this->parseAnswer($first_answer);
         } else {
             Yii::$app->session->setFlash('error', "First record must have question's information");
             return;
         }
         array_shift($data);
         
-        $count = 0;
-        foreach($data as $row){
-            $count++;
+        foreach($data as $position => $row){
             $question = array_slice($row, 1, 4);
             $answer = array_slice($row, 5, 2);
-            if (count(array_filter($question)) > 2) {
-                $question[3] = Json::encode($question[3]);
-                if ($countTrueAnswer >= 1){
-                    $countTrueAnswer = 0;
-                    $countFalseAnswer = 0;
+            $this->parseQuestion($question);
+            if ($this->_isNewQuestion) {
+                if ($this->_trueAnswers >= 1) {
+                    $this->_trueAnswers = 0;
+                    $this->_falseAnswers = 0;
                 } else {
-                    Yii::$app->session->setFlash('error', "Must have at least 1 true answer! ~ question having line {$count}");
+                    Yii::$app->session->setFlash('error', "Must have at least 1 true answer! ~ question having line {$position}");
                     return;
                 }
-                if(empty($answer[1])){
-                    $answer[0] = Json::encode($answer[0]);
-                    $answer = [$answer[0], 0];
-                }
-                if ($answer[1] == 0) {
-                    $countFalseAnswer++;
-                } else {
-                    $countTrueAnswer++;
-                }
-                $questionsData[] = array_merge($question, [date('Y-m-d H:i:s')]);
-                $answersData[] = $answer;
-            } else {
-                if(empty($answer[1])){
-                    $answer[0] = Json::encode($answer[0]);
-                    $answer = [$answer[0], 0];
-                }
-                if ($answer[1] == 0) {
-                    $countFalseAnswer++;
-                } else {
-                    $countTrueAnswer++;
-                }
-                $answersData[count($answersData) - 1] = array_merge($answersData[count($answersData) - 1], $answer);
             }
+            $this->parseAnswer($answer);
         }
+        
         $transaction = Question::getDb()->beginTransaction();
         try{
-            $questionsID = $this->insertQuestionToDatabase('question', $questionsData);
-            $answersID = $this->insertAnswerToDatabase('answer', $questionsID, $answersData);
+            $questionsID = $this->insertQuestionToDatabase('question', $this->_questions);
+            $answersID = $this->insertAnswerToDatabase('answer', $questionsID, $this->_answers);
             $transaction->commit();
             Yii::$app->session->setFlash('success', 'Import successful!');
-            return true;
         } catch (Exception $ex) {
             $transaction->rollBack();
             throw $ex;
         }
-        
-        return false;
     }
     
     public function insertQuestionToDatabase($table, $data)
