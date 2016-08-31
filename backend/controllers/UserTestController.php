@@ -38,6 +38,7 @@ class UserTestController extends BackendController
         if ($param = Yii::$app->request->get()) {
             $params = \yii\helpers\ArrayHelper::merge($params, $param);
         }
+
         return $this->render('index', [
                 'selected' => $params,
                 'category' => AppConstant::$TEST_EXAM_CATEGORY_NAME,
