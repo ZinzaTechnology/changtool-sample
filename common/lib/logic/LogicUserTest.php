@@ -75,9 +75,9 @@ class LogicUserTest extends LogicBase
         $userTest = new UserTest;
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if ($lastUT_ID_count = $userTest->saveUserTest($this->_testExam)) {
+            if ($lastUT_ID = $userTest->saveUserTest($this->_testExam)) {
                 $questions = [];
-                $userTestID = $lastUT_ID_count[0];
+                $userTestID = $lastUT_ID;
                 foreach ($this->_testExam['te_id'] as $teID) {
                     $question = AppArrayHelper::toArray((new LogicQuestion)->findQuestionByTestId($teID));
                     foreach ($this->_testExam['u_id'] as $userID) {
@@ -85,9 +85,9 @@ class LogicUserTest extends LogicBase
                         $userTestID++;
                     }
                 }
-                if ($questionCloneID_count = (new QuestionClone)->saveQuestionClone($questions)) {
+                if ($questionCloneID = (new QuestionClone)->saveQuestionClone($questions)) {
                     $answers = [];
-                    $questionCloneID = $questionCloneID_count[0];
+                    $questionCloneID = $questionCloneID;
                     foreach ($questions as $question => $aQuesttion) {
                         foreach ($aQuesttion['question'] as $elementOfQuestion => $attribute) {
                             $answer = $this->findAnswersRandomByQuestionId($attribute['q_id'], $attribute['q_type']);
@@ -125,8 +125,10 @@ class LogicUserTest extends LogicBase
                     $record->delete();
                     break;
                 case 'DONE':
+                    \Yii::$app->session->setFlash('error', "Finished test can't be deleted!");
                     break;
                 case 'DOING':
+                    \Yii::$app->session->setFlash('error', "This test has been doing by user. You can't delete it!");
                     break;
             }
             $transaction->commit();
