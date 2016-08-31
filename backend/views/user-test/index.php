@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ])
         ?>
     </div>
-    <?= Html::beginForm(Url::toRoute(__METHOD__), 'POST', ['class' => 'form']); ?>
+    <?= Html::beginForm(Url::toRoute(__METHOD__), 'GET', ['class' => 'form']); ?>
     <div class="row m-b-md">
         <div class="col-md-3">
             <div class="ibox-content">
@@ -64,8 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <label>Status</label>
                     <?= Html::dropDownList('ut_status', $selected['ut_status'], $status, ['prompt' => 'Select Status...', 'class' => 'form-control']) ?>
                 </div>
-                <?= Html::submitButton('Search', ['class' => 'btn btn-primary', 'name' => 'submit', 'value' => 'search']) ?>
-                <?= Html::submitButton('Reset', ['class' => 'btn btn-white', 'name' => 'submit', 'value' => 'reset']) ?>
+                <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
             </div>
             <div class="text-center m-t-sm">
                 <?= Html::a('Assign test to User', ['assign'], ['class' => 'btn btn-success']) ?>
