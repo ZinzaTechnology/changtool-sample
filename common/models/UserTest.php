@@ -77,17 +77,15 @@ class UserTest extends \common\models\AppActiveRecord
     public static function saveUserTest($data)
     {
         $db = Yii::$app->db;
-        $count = 0;
         $dataInsert = [];
         foreach ($data['te_id'] as $test) {
             foreach ($data['u_id'] as $user) {
                 if (!self::query()->where(['te_id' => $test, 'u_id' => $user])->exists()) {
                     $dataInsert[] = [$test, $user, date('Y-m-d H:i:s')];
-                    $count++;
                 }
             }
         }
         $db->createCommand()->batchInsert(self::tableName(), ['te_id', 'u_id', 'created_at'], $dataInsert)->execute();
-        return [$db->getLastInsertID(), $count];
+        return $db->getLastInsertID();
     }
 }

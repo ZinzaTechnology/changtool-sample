@@ -66,8 +66,9 @@ class AnswerClone extends AppActiveRecord
         $dataInsert = [];
         foreach ($data as $elements) {
             foreach ($elements['answer'] as $answer) {
-                $answer['qa_content'] = \yii\helpers\Json::encode($answer['qa_content']);
+                if ($answer) {
                 $dataInsert[] = [$elements['qc_id'], $answer['qa_content'], $answer['qa_status'], date('Y-m-d H:i:s')];
+                }
             }
         }
         $db->createCommand()->batchInsert(self::tableName(), ['qc_id', 'ac_content', 'ac_status', 'created_at'], $dataInsert)->execute();

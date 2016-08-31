@@ -64,7 +64,6 @@ class QuestionClone extends AppActiveRecord
         foreach ($data as $elements) {
             foreach ($elements['question'] as $question) {
                 if ($question) {
-                    $question['q_content'] = \yii\helpers\Json::encode($question['q_content']);
                     $dataInsert[] = [$question['q_content'], $question['q_type'], $elements['ut_id'], $question['q_id'], date('Y-m-d H:i:s')];
                 }
             }
