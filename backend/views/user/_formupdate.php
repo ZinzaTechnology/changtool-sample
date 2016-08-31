@@ -17,7 +17,7 @@ use common\models\User;
         
             <?= $form->field($model, 'u_fullname')->textInput(['maxlength' => true]) ?>   
         
-            <?= $form->field($model, 'u_mail')->textInput(['maxlenght' => true]) ?>  
+            <?= $form->field($model, 'u_mail')->textInput(['maxlenght' => true, 'placeholder' => 'Optional']) ?>  
         
             <?= $form->field($model, 'u_role')->dropDownList([ 'ADMIN' => 'ADMIN', 'USER' => 'USER', ]) ?> 
             
