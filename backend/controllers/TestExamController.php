@@ -112,7 +112,7 @@ class TestExamController extends BackendController
                 $request['TestExam'],
                 ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']
             );
-            if ($request['submit']=='create') {
+            if ($request['actionSubmit']=='create') {
                 $test = $logicTestExam->insertTestExam(['TestExam' => $params]);
                 $id = ($test > 0) ? $test : 0;
             } else {
