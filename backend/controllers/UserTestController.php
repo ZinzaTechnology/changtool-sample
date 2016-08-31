@@ -26,9 +26,17 @@ class UserTestController extends BackendController
 
     public function actionIndex()
     {
-        $params = ['u_name', 'te_title', 'te_category', 'te_level', 'ut_start_at', 'ut_finished_at', 'ut_status'];
+        $params = [
+            'u_name' => null,
+            'te_title' => null,
+            'te_category' => null,
+            'te_level' => null,
+            'ut_start_at' => null,
+            'ut_finished_at' => null,
+            'ut_status' => null
+        ];
         if ($param = Yii::$app->request->get()) {
-            $params = $param;
+            $params = \yii\helpers\ArrayHelper::merge($params, $param);
         }
         return $this->render('index', [
                 'selected' => $params,
