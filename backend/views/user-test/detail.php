@@ -26,13 +26,6 @@ $this->title = $tile;
 $this->params['breadcrumbs'][] = ['label' => 'User Test', 'url' => Url::toRoute('/user-test')];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<script type="text/javascript">
-$(document).ready(function(){
-    $('#testTable').DataTable({
-        sort: false,
-    });
-});
-</script>
 <div class="ibox">
     <div class="ibox-title m-b-md">
         <h1><?= Html::encode($this->title) ?></h1>
@@ -55,35 +48,38 @@ $(document).ready(function(){
                         <td class="text-center">Question <?= $idx + 1 ?></td>
                         <td>
                             <div style='background: #F5F5F6' class="editormdCl m-b-xs" id="<?= $qu['qc_id']  ?>"></div>
-                            <div class="hidden" id="<?= $qu['qc_id'].'_hd' ?>"><?= Json::htmlEncode($qu['qc_content']) ?></div>
+                            <div class="hidden" id="<?= $qu['qc_id'].'_hd' ?>"><?= Json::htmlEncode(Html::encode($qu['qc_content'])) ?></div>
                             <?php if(isset($qu['answers'])): ?>
-                                <?php if ($qu['qc_type'] == AppConstant::QUESTION_TYPE_SINGLE_ANSWER) : ?>
-                                    <?php foreach ($qu['answers'] as $ans) : ?>
-                                        <?=
-                                        Html::radio("questions[$qc_id][]", (isset($userAnswer[$qc_id]) && in_array($ans['ac_id'], $userAnswer[$qc_id])) ? true : false, [
-                                            'class' => 'i-checks',
-                                            'disabled' => true])
-                                        ?>
-                                        <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?>
-                                        <?php if($ans['ac_status']==1): ?>
-                                            <span class="label label-primary">True</span>
-                                        <?php endif; ?>
-                                        <br>
-                                    <?php endforeach; ?>
-                                <?php else : ?>
-                                    <?php foreach ($qu['answers'] as $ans) : ?>
-                                        <?=
-                                        Html::checkbox("questions[$qc_id][]", (isset($userAnswer[$qc_id]) && in_array($ans['ac_id'], $userAnswer[$qc_id])) ? true : false, [
-                                            'class' => 'i-checks',
-                                            'disabled' => true])
-                                        ?>
-                                        <?= Html::label($ans['ac_content'], "q_{$qc_id}_{$ans['ac_id']}") ?>
-                                        <?php if($ans['ac_status']==1): ?>
-                                            <span class="label label-primary">True</span>
-                                        <?php endif; ?>
-                                        <br>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
+                                    <?php if ($qu['qc_type'] == AppConstant::QUESTION_TYPE_SINGLE_ANSWER) : ?>
+                                        <?php foreach ($qu['answers'] as $ans) : ?>
+                                            <div class="i-checks">
+                                                <?=
+                                                Html::radio("questions[$qc_id][]", (isset($userAnswer[$qc_id]) && in_array($ans['ac_id'], $userAnswer[$qc_id])) ? true : false, [
+                                                    'class' => 'i-checks',
+                                                    'disabled' => true])
+                                                ?>
+                                                <?= Html::label(Html::encode($ans['ac_content']), "q_{$qc_id}_{$ans['ac_id']}") ?>
+                                                <?php if($ans['ac_status']==1): ?>
+                                                    <span class="label label-primary">True</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php else : ?>
+                                        <?php foreach ($qu['answers'] as $ans) : ?>
+                                            <div class="i-checks">
+                                                <?=
+                                                Html::checkbox("questions[$qc_id][]", (isset($userAnswer[$qc_id]) && in_array($ans['ac_id'], $userAnswer[$qc_id])) ? true : false, [
+                                                    'class' => 'i-checks',
+                                                    'disabled' => true])
+                                                ?>
+                                                <?= Html::label(Html::encode($ans['ac_content']), "q_{$qc_id}_{$ans['ac_id']}") ?>
+                                                <?php if($ans['ac_status']==1): ?>
+                                                    <span class="label label-primary">True</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </div>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -93,7 +89,7 @@ $(document).ready(function(){
     </div>
 </div>
 
-<script>
+<script type="text/javascript">
 $(function() {
     $(".editormdCl").each(function(idx, el) {
         var el_id = el.id;
@@ -115,5 +111,10 @@ $(function() {
         });
     });
 
+});
+$(document).ready(function(){
+    $('#testTable').DataTable({
+        sort: false,
+    });
 });
 </script>
