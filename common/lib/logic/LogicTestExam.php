@@ -68,7 +68,6 @@ class LogicTestExam extends LogicBase
         $transaction = TestExam::getDb()->beginTransaction();
         try{
             $params = $this->insertTestExam(['TestExam' => $params]);
-            $testExamID = Yii::$app->db->getLastInsertID();
             switch ($level){
                 case (AppConstant::TEST_EXAM_LEVEL_EASY):
                     $amountIntermediate = AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE;
@@ -94,14 +93,17 @@ class LogicTestExam extends LogicBase
                 $amountIntermediate = $amountIntermediate + ($amountHard - $count_hard);
                 if(($amountIntermediate * 100 / $amount) >= AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE && ($amountIntermediate * 100 / $amount) < AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
                 {
-                    $te_level = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
+                    $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
+                    
                 }else if(($amountIntermediate * 100 / $amount) >= AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
                       {
-                          $te_level = AppConstant::TEST_EXAM_LEVEL_EASY;
+                          $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_EASY;
+                         
                       }else {
-                          $te_level = AppConstant::TEST_EXAM_LEVEL_HARD;
+                          $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_HARD;
+                          
                       }
-                $testExam = $this->updateTestExam($params);     
+                $params = $this->updateTestExam($params);
             }
             $intermediate = Question::query()
                     ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_INTERMEDIATE])
@@ -112,13 +114,13 @@ class LogicTestExam extends LogicBase
             $questions = array_merge($intermediate, $hard);
             $ids = \yii\helpers\ArrayHelper::getColumn($questions, 'q_id');
             for($count = 0; $count < count($ids); $count++){
-                $ids[$count] = [$testExamID, $ids[$count]];
+                $ids[$count] = [$params['te_id'], $ids[$count]];
                 $ids[$count] = array_merge($ids[$count], [date('Y-m-d H:i:s')]);
             }
             
             Yii::$app->db->createCommand()->batchInsert('test_exam_questions', ['te_id', 'q_id', 'created_at'], $ids)->execute();
             $transaction->commit();
-            return $testExamID;
+            return $params['te_id'];
         } catch (Exception $ex) {
             $transaction->rollBack();
             throw $ex;
@@ -284,12 +286,11 @@ class LogicTestExam extends LogicBase
     }
     
     public function updateTestExam($params)
-    {
-        $testExam = $this->findTestExamById($params['te_id']);
-        if ($testExam->load($params) && $testExam->validate()) {
-            if ($testExam->save()) {
+    {   
+        $testExam = $this->findTestExamById($params['te_id']); 
+        $testExam['te_level'] = $params['te_level'];
+        if ( $testExam->validate() && $testExam->save()) {  
                 return $testExam;
-            }
         }
     }
   
