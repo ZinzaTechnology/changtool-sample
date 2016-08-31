@@ -29,7 +29,6 @@ $this->title = 'Accounts';
             },
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
-                'u_id',
                 'u_name',
                 'u_mail',
                 'u_fullname',
