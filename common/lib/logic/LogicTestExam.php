@@ -260,7 +260,7 @@ class LogicTestExam extends LogicBase
 
         if ($testExam->load($params) && $testExam->validate()) {
             if ($testExam->save()) {
-                return Yii::$app->db->getLastInsertID();
+                return $testExam->te_id;
             }
         }
 
