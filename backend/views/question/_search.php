@@ -26,7 +26,6 @@ use yii\helpers\Url;
         <td colspan="6">
             <div class="form-group">
                 <?= Html::submitButton('Search', ['class' => 'btn btn-success', 'name' => 'submit', 'value' => 'search']) ?>
-                <?= Html::resetButton('Refresh', ['class' => 'btn btn-info']) ?>
             </div>
         </td>
     </tr>

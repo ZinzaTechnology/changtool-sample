@@ -65,7 +65,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= Html::dropDownList('ut_status', $selected['ut_status'], $status, ['prompt' => 'Select Status...', 'class' => 'form-control']) ?>
                 </div>
                 <?= Html::submitButton('Search', ['class' => 'btn btn-primary', 'name' => 'submit', 'value' => 'search']) ?>
-                <?= Html::submitButton('Reset', ['class' => 'btn btn-white', 'name' => 'submit', 'value' => 'reset']) ?>
             </div>
             <div class="text-center m-t-sm">
                 <?= Html::a('Assign test to User', ['assign'], ['class' => 'btn btn-success']) ?>
