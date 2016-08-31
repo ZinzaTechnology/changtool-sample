@@ -21,7 +21,7 @@ use yii\widgets\ActiveForm;
     
             <?= $form->field($model, 'confirm_pwd_create')->passwordInput(['maxlength' => true,'required' => true]) ?>
     
-            <?= $form->field($model, 'u_mail')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'u_mail')->textInput(['maxlength' => true, 'placeholder' => 'Optional']) ?>
     
             <?= $form->field($model, 'u_role')->dropDownList(
                 ['ADMIN' => 'ADMIN', 'USER' => 'USER',],
