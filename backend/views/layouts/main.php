@@ -24,7 +24,7 @@ $current_user = Yii::$app->user->identity;
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body>
+<body class="fixed-sidebar">
 <?php $this->beginBody() ?>
 
 <div id="wrapper">
