@@ -6,7 +6,7 @@ use yii\filters\VerbFilter;
 use common\lib\logic\LogicUserTest;
 use common\lib\logic\LogicTestExam;
 use common\lib\helpers\AppArrayHelper;
-
+use common\lib\components\AppConstant;
 use yii\helpers\Url;
 
 /**
@@ -74,12 +74,7 @@ class UserTestController extends FrontendController
         // if the test have been done, redirect to result page
         $this->_redirectIfTestDone($userTestData);
 
-        $timeCount = 0;
-        $testExam = $logicTestExam->findTestExamById($userTestData['te_id']);
-        $testAllowed = $testExam['te_time'] * 60;
-        $mustFinishedAt = strtotime($userTestData['ut_start_at']) + $testAllowed;
-        $timeAccess = strtotime(date('Y-m-d H:i:s'));
-        $timeCount = $mustFinishedAt - $timeAccess;
+        $timeCount = $logicUserTest->getRemainTime($userTestData->test_exam->te_time, $userTestData->ut_start_at);
 
         // if time excess and not submit, score the test to 0
         // and redirect to result page
@@ -118,10 +113,17 @@ class UserTestController extends FrontendController
         // if the test have been done, redirect to result page
         $this->_redirectIfTestDone($userTestData);
 
-        // score the test
-        $score = $logicUserTest->scoreUserTest($userTestData, $qaSubmit);
-        $answer = serialize($qaSubmit);
-        $logicUserTest->updateUserTest($ut_id, ['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_mark' => $score, 'ut_user_answer_ids' => $answer]);
+        $timeCount = $logicUserTest->getRemainTime($userTestData->test_exam->te_time, $userTestData->ut_start_at);
+
+        if ($timeCount < AppConstant::USER_TEST_TOLERANT_TIME) {
+            // if submit after 10s of end time, score the test to 0
+            $logicUserTest->updateUserTest($ut_id, ['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_mark' => 0]);
+        } else {
+            // score the test
+            $score = $logicUserTest->scoreUserTest($userTestData, $qaSubmit);
+            $answer = serialize($qaSubmit);
+            $logicUserTest->updateUserTest($ut_id, ['ut_status' => 'DONE', 'ut_finished_at' => date('Y-m-d H:i:s'), 'ut_mark' => $score, 'ut_user_answer_ids' => $answer]);
+        }
 
         return $this->redirect(Url::toRoute(['result', 'id' => $ut_id]));
     }

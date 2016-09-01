@@ -67,7 +67,7 @@ function startTimer(duration, display) {
         display.textContent = minutes + ":" + seconds;
 
         if (--timer < 0) {
-            alert('Test time out!!!');
+            alert("Test time out!!!\nClose this dialog will automatically submit the test...\n(Please submit in 10 seconds)");
             testFormSubmit();
         }
     }, 1000);

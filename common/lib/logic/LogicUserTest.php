@@ -221,6 +221,9 @@ class LogicUserTest extends LogicBase
         $userTest = $this->findUserTestInfoByUtId($ut_id);
 
         if ($userTest) {
+            // find info of test exam
+            $logicTestExam = new LogicTestExam();
+            $userTest->test_exam = $logicTestExam->findTestExamById($userTest->te_id, false);
             // find questions of the test
             $question_clones = $this->findQuestionCloneByUtId($ut_id);
             $userTest->question_clones = AppArrayHelper::index($question_clones, 'qc_id');
@@ -288,5 +291,14 @@ class LogicUserTest extends LogicBase
     public function getQueryForActiveDataProvider($params)
     {
         return UserTest::query()->andFilterWhere($params);
+    }
+
+    public function getRemainTime($testTime, $startTime)
+    {
+        $timeCount = 0;
+        $testAllowed = $testTime * 60;
+        $mustFinishedAt = strtotime($startTime) + $testAllowed;
+        $timeAccess = strtotime(date('Y-m-d H:i:s'));
+        return $mustFinishedAt - $timeAccess;
     }
 }

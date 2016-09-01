@@ -132,6 +132,7 @@ class AppConstant
         self::USER_TEST_DOING => self::USER_TEST_DOING,
         self::USER_TEST_DONE => self::USER_TEST_DONE
     ];
+    const USER_TEST_TOLERANT_TIME = -10; // tolerate test submission after a certain amount of time
 
     /*
       * Define error

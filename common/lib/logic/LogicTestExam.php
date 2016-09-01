@@ -211,9 +211,9 @@ class LogicTestExam extends LogicBase
     /**
      * @return TestExam|null (found ActiveRecord)
      */
-    public function findTestExamById($id)
+    public function findTestExamById($id, $check_deleted = true)
     {
-        return TestExam::queryOne($id);
+        return TestExam::queryOne($id, $check_deleted);
     }
 
     /**
