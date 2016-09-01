@@ -174,22 +174,30 @@ class LogicTestExam extends LogicBase
         }
 
         $start = ($current_page - 1) * $limit;
-        $html = '';
+        $html = '<div class="paging"><ul>';
 
         // Display pre button
-        if ($current_page > 1 && $total_page > 1) {
-            $html .= '<a href="'.str_replace('{page}', $current_page - 1, $link).'">Prev   </a>';
-        }
-        for ($i = 1; $i <= $total_page; $i++) {
-            if ($i == $current_page) {
-                $html .= '<span>'.$i.'   </span>';
+        if ($total_page > 1) {
+            if ($current_page > 1) {
+                $html .= '<li><a href="'.str_replace('{page}', $current_page - 1, $link).'"> << </a></li>';
             } else {
-                $html .= '<a href="'.str_replace('{page}', $i, $link).'">'.$i.'   </a>';
+                $html .= '<li><span> << </span></li>';
+            }
+            for ($i = 1; $i <= $total_page; $i++) {
+                if ($i == $current_page) {
+                    $html .= '<li><span>'.$i.'   </span></li>';
+                } else {
+                    $html .= '<li><a href="'.str_replace('{page}', $i, $link).'">'.$i.'</a></li>';
+                }
+            }
+            if ($current_page < $total_page) {
+                $html .= '<li><a href="'.str_replace('{page}', $current_page + 1, $link).'"> >> </a></li>';
+            } else {
+                $html .= '<li><span> >> </span></li>';
             }
         }
-        if ($current_page < $total_page && $total_page > 1) {
-            $html .= '<a href="'.str_replace('{page}', $current_page + 1, $link).'">Next</a>';
-        }
+        
+        $html .= "</ul></div>";
         return [
             'start' => $start,
             'limit' => $limit,
