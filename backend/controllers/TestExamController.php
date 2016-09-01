@@ -112,26 +112,22 @@ class TestExamController extends BackendController
                 $request['TestExam'],
                 ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']
             );
-            if ($request['submit'] == 'create') {
-                if ($test = $logicTestExam->insertTestExam(['TestExam' => $params])) {
-                    $id = ($test['te_id'] > 0) ? $test['te_id'] : 0;
+            if ($request['actionSubmit'] == 'create') {
+                $test = $logicTestExam->insertTestExam(['TestExam' => $params]);
+                if ($test && $test->te_id > 0) {
+                    return $this->redirect(['update', 'id' => $test->te_id]);
                 } else {
                     $this->setSessionFlash('error', 'Error occur when creating new test');
-                    return $this->goReferrer();
+                    $this->goReferrer();
                 }
             } else {
-                if ($test = $logicTestExam->generateQuestion($params)) {
-                    $id = ($test['te_id'] > 0) ? $test['te_id'] : 0;
+                $test = $logicTestExam->generateQuestion($params);
+                if ($test && $test->te_id > 0) {
+                    return $this->redirect(['view', 'id' => $test->te_id]);
                 } else {
-                    $this->setSessionFlash('error', 'Can not find questions record in DB or Error occur when creating new test');
-                    return $this->goReferrer();
+                    $this->setSessionFlash('error', 'Error occur when creating new test');
+                    $this->goReferrer();
                 }
-            }
-            if ($id > 0) {
-                return $this->redirect(['update', 'id' => $id]);
-            } else {
-                $this->setSessionFlash('error', 'Error occur when creating new test');
-                $this->goReferrer();
             }
         }
         return $this->render('create', [
@@ -203,7 +199,7 @@ class TestExamController extends BackendController
                 $test_exam = Yii::$app->session['test_exam'];
                 if ($test_exam['testExam']['te_id'] != $id) {
                     // User cannot edit 2 testExams at the same time
-                    $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_code'].". Please commit or cancel this to edit other testExam");
+                    $this->setSessionFlash('error', "You are editting testExam id = ".$test_exam['testExam']['te_id'].". Please commit or cancel this to edit other testExam");
                     return $this->redirect(['update', 'id' => $test_exam['te_id']]);
                 }
                 $testExam  = $test_exam['testExam'];

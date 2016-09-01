@@ -16,7 +16,6 @@ use yii\data\ActiveDataProvider;
 use common\models\TestExamQuestions;
 use common\lib\helpers\AppArrayHelper;
 use common\lib\components\AppConstant;
-use yii\db\Expression;
 
 class LogicTestExam extends LogicBase
 {
@@ -68,12 +67,21 @@ class LogicTestExam extends LogicBase
         $test_exam_level_easy = AppConstant::TEST_EXAM_LEVEL_EASY;
         $test_exam_level_intermediate = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
         $test_exam_level_hard = AppConstant::TEST_EXAM_LEVEL_HARD;
+
         $amount = $params['te_num_of_questions'];
         $category = $params['te_category'];
         $level = $params['te_level'];
+
+        $logicQuestion = new LogicQuestion();
+
         $transaction = TestExam::getDb()->beginTransaction();
         try {
-            $params = $this->insertTestExam(['TestExam' => $params]);
+            // first, insert a new test information
+            $newTest = $this->insertTestExam(['TestExam' => $params]);
+
+            if (!empty($newTest->errors)) {
+                return $newTest;
+            }
             switch ($level) {
                 case ($test_exam_level_easy):
                     $amountIntermediate = $test_exam_easy;
@@ -84,69 +92,70 @@ class LogicTestExam extends LogicBase
                     $amountIntermediate = $test_exam_hard;
                     break;
             }
+
             $amountIntermediate = round($amountIntermediate * $amount / 100);
             $amountHard = $amount - $amountIntermediate;
-            $intermediate = Question::query()
-              ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_INTERMEDIATE])
-              ->orderBy(new Expression('rand()'))
-              ->limit($amountIntermediate)
-              ->asArray()
-              ->all();
+
+            // find desired intermediate questions
+            $qParams = ['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_INTERMEDIATE];
+            $intermediate = $logicQuestion->findRandomQuestion($qParams, $amountIntermediate);
             $count_intermediate = count($intermediate);
             
-            $hard = Question::query()
-              ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_HARD])
-              ->orderBy(new Expression('rand()'))
-              ->limit($amountHard)
-              ->asArray()
-              ->all();
+            // find desired hard questions
+            $qParams = ['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_HARD];
+            $hard = $logicQuestion->findRandomQuestion($qParams, $amountHard);
             $count_hard = count($hard);
+
+            // in case not enough hard questions
+            // and number of intermediate questions is ok
+            // compensate with intermediate questions
             if ($count_hard < $amountHard && $count_intermediate == $amountIntermediate) {
-                $amountIntermediate = $amountIntermediate + ($amountHard - $count_hard);
-                $intermediate = Question::query()
-                ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_INTERMEDIATE])
-                ->orderBy(new Expression('rand()'))
-                ->limit($amountIntermediate)
-                ->asArray()
-                ->all();
+                $amountIntermediate = $amount - $count_hard;
+                $qParams = ['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_INTERMEDIATE];
+                $intermediate = $logicQuestion->findRandomQuestion($qParams, $amountIntermediate);
                 $count_intermediate = count($intermediate);
             }
+
+            // in case not enough intermediate questions
+            // and number of hard questions is ok
+            // compensate with hard questions
             if ($count_hard == $amountHard && $count_intermediate < $amountIntermediate) {
                 $amountHard = $amountHard + ($amountIntermediate - $count_intermediate);
-                $hard = Question::query()
-                ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_HARD])
-                ->orderBy(new Expression('rand()'))
-                ->limit($amountHard)
-                ->asArray()
-                ->all();
+                $qParams = ['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_HARD];
+                $intermediate = $logicQuestion->findRandomQuestion($qParams, $amountHard);
                 $count_hard = count($hard);
             }
-            $a = $count_hard + $count_intermediate;
-            if ($a == 0) {
+            
+            // assign found questions to the test
+            // insert into test_exam_questions
+            $questions = array_merge($intermediate, $hard);
+            $teQuestions = [];
+            foreach ($questions as $question) {
+                $teQuestions[] = [$newTest->te_id, $question->q_id, date('Y-m-d H:i:s')];
+            }
+            Yii::$app->db->createCommand()->batchInsert('test_exam_questions', ['te_id', 'q_id', 'created_at'], $teQuestions)->execute();
+
+            // recalcuate the total number of questions
+            // and level of the test
+            $total = $count_hard + $count_intermediate;
+            if ($total == 0) {
                 return null;
             }
-            $b = $count_intermediate * 100 / $a;
-            if ($b >= $test_exam_medium && $b < $test_exam_easy) {
-                $params['te_level'] = $test_exam_level_intermediate;
-                $params['te_num_of_questions'] = $a;
-            } elseif ($b >= $test_exam_easy) {
-                $params['te_level'] = $test_exam_level_easy;
-                $params['te_num_of_questions'] = $a;
+            $ratio = $count_intermediate * 100 / $total;
+            if ($ratio >= $test_exam_medium && $ratio < $test_exam_easy) {
+                $level = $test_exam_level_intermediate;
+            } elseif ($ratio >= $test_exam_easy) {
+                $level = $test_exam_level_easy;
             } else {
-                $params['te_level'] = $test_exam_level_hard;
-                $params['te_num_of_questions'] = $a;
+                $level = $test_exam_level_hard;
             }
-            $params = $this->updateTestExam($params);
-            
-            $questions = array_merge($intermediate, $hard);
-            $ids = \yii\helpers\ArrayHelper::getColumn($questions, 'q_id');
-            for ($count = 0; $count < count($ids); $count++) {
-                $ids[$count] = [$params['te_id'], $ids[$count]];
-                $ids[$count] = array_merge($ids[$count], [date('Y-m-d H:i:s')]);
-            }
-            Yii::$app->db->createCommand()->batchInsert('test_exam_questions', ['te_id', 'q_id', 'created_at'], $ids)->execute();
+            $newTest->te_level = $level;
+            $newTest->te_num_of_questions = $total;
+            $newTest->validate();
+            $newTest->save();
+
             $transaction->commit();
-            return $params;
+            return $newTest;
         } catch (Exception $ex) {
             $transaction->rollBack();
             throw $ex;
@@ -227,6 +236,11 @@ class LogicTestExam extends LogicBase
             'pagination' => [
                 'pageSize' => AppConstant::PAGING_INDEX_PAGE_SIZE,
             ],
+            'sort' => [
+                'defaultOrder' => [
+                    'created_at' => SORT_DESC,
+                ]
+            ],
         ]);
 
         return $dataProvider;
@@ -281,16 +295,12 @@ class LogicTestExam extends LogicBase
     public function insertTestExam($params)
     {
         $testExam = new TestExam();
-
-        if ($testExam->load($params) && $testExam->validate()) {
-            if ($testExam->save()) {
-                return $testExam->te_id;
-            }
-        }
-
-        return 0;
+        $testExam->load($params);
+        $testExam->validate();
+        $testExam->save();
+        return $testExam;
     }
-    
+
     public function updateTestExam($params)
     {
         $testExam = $this->findTestExamById($params['te_id']);

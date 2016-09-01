@@ -13,6 +13,7 @@ use common\models\QuestionTag;
 use common\models\TestExamQuestions;
 use common\lib\components\AppConstant;
 use common\lib\helpers\AppArrayHelper;
+use yii\db\Expression;
 
 class LogicQuestion extends LogicBase
 {
@@ -336,5 +337,15 @@ class LogicQuestion extends LogicBase
         }
 
         return $question;
+    }
+
+    public function findRandomQuestion($params, $count)
+    {
+        $questions = Question::query()
+            ->andFilterWhere($params)
+            ->orderBy(new Expression('rand()'))
+            ->limit($count)
+            ->all();
+        return $questions;
     }
 }
