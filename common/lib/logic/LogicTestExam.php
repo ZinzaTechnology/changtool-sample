@@ -62,6 +62,12 @@ class LogicTestExam extends LogicBase
     
     public function generateQuestion($params)
     {
+        $test_exam_easy = AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE;
+        $test_exam_medium = AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE;
+        $test_exam_hard = AppConstant::TEST_EXAM_HARD_PERCENT_QUESTION_INTERMEDIATE;
+        $test_exam_level_easy = AppConstant::TEST_EXAM_LEVEL_EASY;
+        $test_exam_level_intermediate = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
+        $test_exam_level_hard = AppConstant::TEST_EXAM_LEVEL_HARD;
         $amount = $params['te_num_of_questions'];
         $category = $params['te_category'];
         $level = $params['te_level'];
@@ -69,37 +75,33 @@ class LogicTestExam extends LogicBase
         try{
             $params = $this->insertTestExam(['TestExam' => $params]);
             switch ($level){
-                case (AppConstant::TEST_EXAM_LEVEL_EASY):
-                    $amountIntermediate = AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE;
-                case (AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE):
-                    $amountIntermediate = AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE;
+                case ($test_exam_level_easy):
+                    $amountIntermediate = $test_exam_easy;
+                case ($test_exam_level_intermediate):
+                    $amountIntermediate = $test_exam_medium;
                     break;
-                case (AppConstant::TEST_EXAM_LEVEL_HARD):
-                    $amountIntermediate = AppConstant::TEST_EXAM_HARD_PERCENT_QUESTION_INTERMEDIATE;
+                case ($test_exam_level_hard):
+                    $amountIntermediate = $test_exam_hard;
                     break;
             }
-            
             $amountIntermediate = round($amountIntermediate * $amount / 100);
             $amountHard = $amount - $amountIntermediate;
-           
-           
             $intermediate = Question::query()
-            ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_INTERMEDIATE])
-            ->orderBy(new Expression('rand()'))
-            ->limit($amountIntermediate)
-            ->asArray()
-            ->all();
+              ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_INTERMEDIATE])
+              ->orderBy(new Expression('rand()'))
+              ->limit($amountIntermediate)
+              ->asArray()
+              ->all();
             $count_intermediate = count($intermediate);
             
             $hard = Question::query()
-            ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_HARD])
-            ->orderBy(new Expression('rand()'))
-            ->limit($amountHard)
-            ->asArray()
-            ->all();
+              ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_HARD])
+              ->orderBy(new Expression('rand()'))
+              ->limit($amountHard)
+              ->asArray()
+              ->all();
             $count_hard = count($hard);
-            if($count_hard < $amountHard && $count_intermediate == $amountIntermediate)
-            {    
+            if($count_hard < $amountHard && $count_intermediate == $amountIntermediate){   
                 $amountIntermediate = $amountIntermediate + ($amountHard - $count_hard);
                 $intermediate = Question::query()
                 ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_INTERMEDIATE])
@@ -108,10 +110,8 @@ class LogicTestExam extends LogicBase
                 ->asArray()
                 ->all();
                 $count_intermediate = count($intermediate);
-               
             }
-            if($count_hard == $amountHard && $count_intermediate < $amountIntermediate)
-            {
+            if($count_hard == $amountHard && $count_intermediate < $amountIntermediate){
                 $amountHard = $amountHard + ($amountIntermediate - $count_intermediate);
                 $hard = Question::query()
                 ->andWhere(['q_category' => $category, 'q_level' => AppConstant::QUESTION_LEVEL_HARD])
@@ -120,20 +120,22 @@ class LogicTestExam extends LogicBase
                 ->asArray()
                 ->all();
                 $count_hard = count($hard);
-               
             }
-            if(($count_intermediate * 100 / ($count_hard + $count_intermediate)) >= AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE && ($amountIntermediate * 100 / ($count_hard +$count_intermediate)) < AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-            {
-                $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
-                $params['te_num_of_questions'] =  $count_hard + $count_intermediate;
+            $a = $count_hard + $count_intermediate;
+            if($a == 0){
+                return null;
+            }
+            $b = $count_intermediate * 100 / $a;
+            if($b >= $test_exam_medium && $b < $test_exam_easy){
+                $params['te_level'] = $test_exam_level_intermediate;
+                $params['te_num_of_questions'] =  $a;
         
-            }else if(($count_intermediate * 100 / ($count_hard + $count_intermediate)) >= AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-            {
-                $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_EASY;
-                $params['te_num_of_questions'] =  $count_hard + $count_intermediate;
-            }else {
-                $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_HARD;
-                $params['te_num_of_questions'] =  $count_hard + $count_intermediate;
+            }else if($b >= $test_exam_easy){
+                $params['te_level'] = $test_exam_level_easy;
+                $params['te_num_of_questions'] =  $a;
+            }else{
+                $params['te_level'] = $test_exam_level_hard;
+                $params['te_num_of_questions'] =  $a;
             }
             $params = $this->updateTestExam($params);
             
@@ -143,35 +145,14 @@ class LogicTestExam extends LogicBase
                 $ids[$count] = [$params['te_id'], $ids[$count]];
                 $ids[$count] = array_merge($ids[$count], [date('Y-m-d H:i:s')]);
             }
-            
             Yii::$app->db->createCommand()->batchInsert('test_exam_questions', ['te_id', 'q_id', 'created_at'], $ids)->execute();
             $transaction->commit();
-            return $params['te_id'];
+            return $params;
         } catch (Exception $ex) {
             $transaction->rollBack();
             throw $ex;
         }
-        return 0;
-    }
-    
-    public function saveGenerateQuestion($data){
-        $transaction = Question::getDb()->beginTransaction();
-        try{
-            $ids = \yii\helpers\ArrayHelper::getColumn($data, 'q_id');
-            for($count = 0; $count < count($ids); $count++){
-                $ids[$count] = [$ids[$count], $testExamID];
-                $ids[$count] = array_merge($ids[$count], [date('Y-m-d H:i:s')]);
-            }
-            if(count($ids)){
-                Yii::$app->db->createCommand()->batchInsert('test_exam_questions', ['q_id', 'te_id', 'created_at'], $ids)->execute();
-                $transaction->commit();
-                return true;
-            }
-        } catch (\Exception $ex) {
-            $transaction->rollBack();
-            throw $ex;
-        }
-        return false;
+        return null;
     }
     
     private function paging($link, $total_records, $current_page, $limit)

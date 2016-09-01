@@ -113,13 +113,18 @@ class TestExamController extends BackendController
                 ['te_code', 'te_category', 'te_level', 'te_title', 'te_time', 'te_num_of_questions']
             );
             if ($request['submit']=='create') {
-                $test = $logicTestExam->insertTestExam(['TestExam' => $params]);
-                $testExamID = Yii::$app->db->getLastInsertID();
-                $id = ($testExamID > 0) ? $testExamID : 0;
-                
+                if($test = $logicTestExam->insertTestExam(['TestExam' => $params])){
+                    $id = ($test['te_id'] > 0) ? $test['te_id'] : 0;
+                }else {
+                    $this->setSessionFlash('error', 'Error occur when creating new test');
+                    return $this->goReferrer();
+                }
             } else {
                 if($test = $logicTestExam->generateQuestion($params)){
-                    $id = ($test > 0) ? $test : 0;
+                    $id = ($test['te_id'] > 0) ? $test['te_id'] : 0;
+                }else {
+                    $this->setSessionFlash('error', 'Can not find questions record in DB or Error occur when creating new test');
+                    return $this->goReferrer();
                 }
             }
             if ($id > 0) {
