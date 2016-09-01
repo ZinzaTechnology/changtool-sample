@@ -108,37 +108,7 @@ class LogicTestExam extends LogicBase
                 ->asArray()
                 ->all();
                 $count_intermediate = count($intermediate);
-                if($count_intermediate == $amountIntermediate)
-                {
-                    if(($amountIntermediate * 100 / $amount) >= AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE && ($amountIntermediate * 100 / $amount) < AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-                    {
-                        $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
-                    
-                    }else if(($amountIntermediate * 100 / $amount) >= AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-                    {
-                        $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_EASY;
-                         
-                    }else {
-                        $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_HARD;
-                    
-                    }
-                    $params = $this->updateTestExam($params);
-                }else {
-                     if(($amountIntermediate * 100 / ($count_hard +$count_intermediate)) >= AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE && ($amountIntermediate * 100 / ($count_hard +$count_intermediate)) < AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-                     {
-                          $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
-                          $params['te_num_of_questions'] =  $count_hard +$count_intermediate;
-                            
-                     }else if(($amountIntermediate * 100 / ($count_hard +$count_intermediate)) >= AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-                     {
-                           $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_EASY;
-                           $params['te_num_of_questions'] =  $count_hard +$count_intermediate;
-                     }else {
-                           $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_HARD;
-                           $params['te_num_of_questions'] =  $count_hard +$count_intermediate;
-                     }
-                  $params = $this->updateTestExam($params);
-                }
+               
             }
             if($count_hard == $amountHard && $count_intermediate < $amountIntermediate)
             {
@@ -150,55 +120,23 @@ class LogicTestExam extends LogicBase
                 ->asArray()
                 ->all();
                 $count_hard = count($hard);
-                if($count_hard == $amountHard)
-                {
-                    if(($amountHard * 100 / $amount) >= AppConstant::TEST_EXAM_HARD_PERCENT_QUESTION_INTERMEDIATE && ($amountHard * 100 / $amount) < AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-                    {
-                        $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
-                
-                    }else if(($amountHard * 100 / $amount) < AppConstant::TEST_EXAM_HARD_PERCENT_QUESTION_INTERMEDIATE)
-                    {
-                        $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_EASY;
-                         
-                    }else {
-                        $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_HARD;
-                
-                    }
-                    $params = $this->updateTestExam($params);
-                }else {
-                    if(($amountHard * 100 / ($count_hard + $count_intermediate)) >= AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE && ($amountHard * 100 / ($count_hard + $count_intermediate)) < AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-                    {
-                        $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
-                        $params['te_num_of_questions'] =  $count_hard + $count_intermediate;
-                
-                    }else if(($amountHard * 100 / ($count_hard + $count_intermediate)) >= AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-                    {
-                        $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_EASY;
-                        $params['te_num_of_questions'] =  $count_hard + $count_intermediate;
-                    }else {
-                        $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_HARD;
-                        $params['te_num_of_questions'] =  $count_hard + $count_intermediate;
-                    }
-                    $params = $this->updateTestExam($params);
-                }
+               
             }
-            if($count_hard < $amountHard && $count_intermediate < $amountIntermediate)
+            if(($count_intermediate * 100 / ($count_hard + $count_intermediate)) >= AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE && ($amountIntermediate * 100 / ($count_hard +$count_intermediate)) < AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
             {
-                if(($count_intermediate * 100 / ($count_hard +$count_intermediate)) >= AppConstant::TEST_EXAM_MEDIUM_PERCENT_QUESTION_INTERMEDIATE && ($count_intermediate * 100 / ($count_hard +$count_intermediate)) < AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-                {
-                    $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
-                    $params['te_num_of_questions'] =  $count_hard +$count_intermediate;
-                
-                }else if(($count_intermediate * 100 / ($count_hard +$count_intermediate)) >= AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
-                {
-                    $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_EASY;
-                    $params['te_num_of_questions'] =  $count_hard +$count_intermediate;
-                }else {
-                    $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_HARD;
-                    $params['te_num_of_questions'] =  $count_hard +$count_intermediate;
-                }
-                $params = $this->updateTestExam($params);
+                $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_INTERMEDIATE;
+                $params['te_num_of_questions'] =  $count_hard + $count_intermediate;
+        
+            }else if(($count_intermediate * 100 / ($count_hard + $count_intermediate)) >= AppConstant::TEST_EXAM_EASY_PERCENT_QUESTION_INTERMEDIATE)
+            {
+                $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_EASY;
+                $params['te_num_of_questions'] =  $count_hard + $count_intermediate;
+            }else {
+                $params['te_level'] = AppConstant::TEST_EXAM_LEVEL_HARD;
+                $params['te_num_of_questions'] =  $count_hard + $count_intermediate;
             }
+            $params = $this->updateTestExam($params);
+            
             $questions = array_merge($intermediate, $hard);
             $ids = \yii\helpers\ArrayHelper::getColumn($questions, 'q_id');
             for($count = 0; $count < count($ids); $count++){
