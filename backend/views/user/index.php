@@ -7,19 +7,21 @@ use yii\widgets\ActiveForm;
 use common\models\UserSearch;
 use common\models\User;
 use yii\data\Pagination;
+use yii\widgets\Breadcrumbs;
 
 $this->title = 'Accounts';
-
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="ibox">
-    <div class="user-index">    
-        <h1><?= Html::encode($this->title) ?></h1>
-        <p>
+	<div class="ibox-title">
+        <h1><?= $this->title ?></h1>
+        <?=Breadcrumbs::widget([ 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [ ] ])?>
+    </div>
+    <br>
+    <div class="ibox-content"> 
             <?= Html::a('New Account', ['create'], ['class' => 'btn btn-success']) ?>
             <?= $this->render('_search', ['model' => $searchModel]) ?>
-        </p>
-        
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'rowOptions' => function ($model, $key, $index, $grid) {
@@ -37,5 +39,5 @@ $this->title = 'Accounts';
                 ['class' => yii\grid\ActionColumn::className(), 'template' => '{update}']
             ],
         ]); ?>  
-    </div>
+     </div>
 </div>
